@@ -1,0 +1,175 @@
+{
+  "announce": "Deutsche Qualität... in Ihren Händen.",
+  "nav": {
+    "cart": "Warenkorb",
+    "compare": "Vergleichen",
+    "wishlist": "Merkliste",
+    "all": "Alle",
+    "login": "Anmelden / Registrieren",
+    "home": "Startseite",
+    "howItWorks": "So funktioniert's",
+    "contact": "Kontakt",
+    "mainMenu": "Hauptmenü",
+    "helpSettings": "Hilfe & Einstellungen",
+    "yourAccount": "Ihr Konto",
+    "help": "Hilfe",
+    "groupDe": "Ihr Wegweiser zu deutschen Produkten",
+    "groupAr": "Produkte für Deutschland"
+  },
+  "categories": {
+    "cat_makeup": "Make-up",
+    "cat_skincare": "Hautpflege",
+    "cat_haircare": "Haarpflege",
+    "cat_supplements": "Nahrungsergänzung",
+    "cat_food": "Lebensmittel & Getränke",
+    "cat_kidssnacks": "Kindersnacks",
+    "cat_personalcare": "Körperpflege"
+  },
+  "hero": {
+    "eyebrow": "DEUTSCHE PRODUKTE FÜR DIE ARABISCHE WELT",
+    "title": "Ihr verlässlicher Wegweiser zu deutschen Produkten.",
+    "subtitle": "Wir wählen deutsche Produkte sorgfältig aus und liefern sie zu wettbewerbsfähigen Preisen in die arabische Welt.\nMake-up, Hautpflege, Nahrungsergänzung, Lebensmittel und mehr — direkt beschafft.",
+    "cta1": "Deutsche Produkte kaufen"
+  },
+  "promo": {
+    "s1": "Rabatt auf Kosmetik & Hautpflege",
+    "s2num": "GRATIS",
+    "s2": "Kostenlose Lieferung ab 50 €"
+  },
+  "shop": {
+    "eyebrow": "DER SHOP",
+    "title": "Ihr Wegweiser zu deutschen Produkten",
+    "searchPh": "Produkte suchen...",
+    "sortFeatured": "Empfohlen",
+    "sortPriceAsc": "Preis: aufsteigend",
+    "sortPriceDesc": "Preis: absteigend",
+    "all": "Alle Produkte",
+    "allCats": "Alle Kategorien",
+    "addToCart": "Hinzufügen",
+    "addToCompare": "Vergleichen",
+    "empty": "Keine Produkte entsprechen Ihren Filtern.",
+    "results": "Produkte",
+    "descHeading": "Produktbeschreibung"
+  },
+  "compare": {
+    "title": "Produkte vergleichen",
+    "empty": "Noch keine Produkte zum Vergleichen hinzugefügt.",
+    "full": "Sie können maximal 4 Produkte vergleichen."
+  },
+  "wishlist": {
+    "empty": "Noch keine Produkte in der Merkliste.",
+    "loginRequired": "Melden Sie sich an, um Produkte zu merken."
+  },
+  "pp": {
+    "productInfo": "Produktinformationen",
+    "aboutProduct": "Über dieses Produkt",
+    "brand": "Marke",
+    "category": "Kategorie"
+  },
+  "filter": {
+    "title": "Filter",
+    "products": "Produkte",
+    "price": "Preis",
+    "brand": "Marke",
+    "reset": "Alle Filter zurücksetzen",
+    "upTo": "Bis"
+  },
+  "cart": {
+    "title": "Ihr Warenkorb",
+    "subtotal": "Zwischensumme",
+    "shippingNote": "Versand & Zoll werden beim Checkout berechnet.",
+    "checkout": "Zur Kasse",
+    "emptyCart": "Ihr Warenkorb ist leer."
+  },
+  "checkout": {
+    "title": "Kasse",
+    "fullName": "Vollständiger Name",
+    "email": "E-Mail",
+    "address": "Adresse",
+    "city": "Stadt",
+    "postal": "PLZ",
+    "country": "Land",
+    "phone": "Telefon",
+    "continueToPayment": "Weiter zur Zahlung",
+    "backToAddress": "Zurück zur Adresse",
+    "stepAddress": "Schritt 1 von 2 — Lieferadresse",
+    "stepPayment": "Schritt 2 von 2 — Zahlung",
+    "placeOrder": "Bestellung aufgeben",
+    "confirmTitle": "Bestellung erhalten",
+    "confirmDesc": "Danke — wir haben Ihre Bestellung erfasst und bestätigen den Versand per E-Mail.",
+    "continueShopping": "Weiter einkaufen",
+    "orderSummaryTitle": "Bestellübersicht",
+    "total": "Gesamt",
+    "paymentMethod": "Zahlungsmethode",
+    "payCard": "Kredit-/Debitkarte",
+    "paymentFailedTitle": "Zahlung fehlgeschlagen",
+    "processing": "Wird verarbeitet..."
+  },
+  "process": {
+    "eyebrow": "SO FUNKTIONIERT ES",
+    "title": "Von der Beschaffung bis zur Haustür",
+    "s1t": "Beschaffung & Prüfung",
+    "s1d": "Wir identifizieren verifizierte deutsche Hersteller und prüfen Qualität und Zuverlässigkeit.",
+    "s2t": "Qualität & Zertifizierung",
+    "s2d": "Jede Sendung wird vor dem Versand nach deutschen/EU- und Zielmarktstandards geprüft.",
+    "s3t": "Zoll & Logistik",
+    "s3d": "Wir übernehmen Exportdokumente, Zollabfertigung und Fracht — See, Luft oder Straße.",
+    "s4t": "Lieferung & Support",
+    "s4d": "Die Ware kommt planmäßig an — mit Unterstützung bei Retouren und Nachbestellungen."
+  },
+  "footer": {
+    "about": "deutschania ist ein Unternehmen mit Sitz in Deutschland, das authentische deutsche Produkte in die arabische Welt bringt.",
+    "rights": "Alle Rechte vorbehalten."
+  },
+  "auth": {
+    "loginTitle": "Anmelden",
+    "loginSubtitle": "Melden Sie sich bei Ihrem deutschania-Konto an.",
+    "registerTitle": "Konto erstellen",
+    "registerSubtitle": "Registrieren Sie sich bei deutschania für einen schnelleren Checkout.",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "dob": "Geburtsdatum",
+    "submit": "Weiter",
+    "createAccount": "Neues Konto erstellen",
+    "haveAccount": "Bereits ein Konto? Anmelden",
+    "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+    "continue": "Weiter",
+    "back": "Zurück",
+    "addressTitle": "Lieferadresse",
+    "addressSubtitle": "Wohin sollen wir Ihre Bestellungen liefern?",
+    "street": "Straße",
+    "buildingNo": "Hausnummer",
+    "city": "Stadt",
+    "postal": "Postleitzahl",
+    "mobile": "Mobilnummer",
+    "reviewTitle": "Angaben prüfen",
+    "reviewSubtitle": "Bitte prüfen Sie alles, bevor Sie das Konto erstellen.",
+    "edit": "Bearbeiten",
+    "confirmCreate": "Konto erstellen",
+    "stepAccount": "Konto",
+    "stepAddress": "Adresse",
+    "stepReview": "Überprüfung"
+  },
+  "admin": {
+    "products": "Produkte",
+    "brand": "Marke",
+    "price": "Preis (EUR)",
+    "save": "Speichern",
+    "saving": "Wird gespeichert...",
+    "productCol": "Produkt"
+  },
+  "errors": {
+    "INVALID_CREDENTIALS": "E-Mail oder Passwort ist falsch.",
+    "EMAIL_EXISTS": "Für diese E-Mail-Adresse besteht bereits ein Konto.",
+    "VALIDATION_ERROR": "Bitte überprüfen Sie Ihre Angaben.",
+    "CART_EMPTY": "Ihr Warenkorb ist leer.",
+    "NOT_FOUND": "Der angeforderte Artikel wurde nicht gefunden.",
+    "FORBIDDEN": "Sie sind nicht berechtigt, diese Aktion auszuführen.",
+    "PAYMENT_FAILED": "Zahlung konnte nicht gestartet werden. Bitte erneut versuchen.",
+    "UNAUTHORIZED": "Bitte melden Sie sich zuerst an.",
+    "UNKNOWN": "Ein unerwarteter Fehler ist aufgetreten. Bitte erneut versuchen."
+  }
+}

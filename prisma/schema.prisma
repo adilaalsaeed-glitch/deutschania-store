@@ -1,0 +1,165 @@
+// Prisma schema for the deutschania store.
+// Money is stored as integer cents (priceCents) to avoid floating-point rounding issues.
+// Translated text (name/description/category label) is stored as JSON: {"ar": "...", "de": "...", "en": "..."}.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  SHIPPED
+  CANCELLED
+}
+
+enum Origin {
+  de // German products sold into the Arab world
+  ar // products sourced from the Arab world, sold into Germany
+}
+
+model Category {
+  key       String   @id // e.g. "cat_makeup"
+  label     Json // {ar, de, en}
+  icon      String // emoji, kept from the original prototype
+  color     String // hex, used for card accents
+  sortOrder Int      @default(0) // display order everywhere categories are listed (Postgres doesn't guarantee row order without this)
+  origin    Origin
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  brand       String
+  name        Json // {ar, de, en}
+  description Json? // {ar, de, en}
+  attributes  Json? // [{label, value}] per active language, resolved at read time
+  priceCents  Int
+  currency    String   @default("EUR")
+  icon        String // fallback SVG key from the original prototype
+  imageUrl    String?
+  origin      Origin
+  categoryKey String
+  category    Category @relation(fields: [categoryKey], references: [key])
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  wishedBy   WishlistItem[]
+
+  @@index([categoryKey])
+  @@map("products")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  phone        String?
+  dateOfBirth  DateTime?
+  role         Role      @default(CUSTOMER)
+  createdAt    DateTime  @default(now())
+
+  addresses Address[]
+  cartItems CartItem[]
+  wishlist  WishlistItem[]
+  orders    Order[]
+
+  @@map("users")
+}
+
+model Address {
+  id         String  @id @default(cuid())
+  userId     String
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  street     String
+  buildingNo String?
+  city       String
+  postalCode String
+  country    String
+  phone      String
+  isDefault  Boolean @default(false)
+
+  @@map("addresses")
+}
+
+// Cart rows belong to a logged-in user (userId) or a guest (sessionId cookie) — exactly one is set.
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId String?
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@unique([sessionId, productId])
+  @@map("cart_items")
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@map("wishlist_items")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id])
+  email           String
+  shippingAddress Json // snapshot at time of order
+  subtotalCents   Int
+  totalCents      Int
+  currency        String      @default("EUR")
+  status          OrderStatus @default(PENDING)
+  paymentProvider String      @default("paytabs")
+  paytabsTranRef  String? // PayTabs tran_ref, set once the hosted payment page is created
+  paidAt          DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  items OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id               String  @id @default(cuid())
+  orderId          String
+  order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId        String?
+  product          Product? @relation(fields: [productId], references: [id])
+  nameSnapshot     Json // {ar, de, en} at time of purchase
+  priceCentsAtSale Int
+  quantity         Int
+
+  @@map("order_items")
+}
