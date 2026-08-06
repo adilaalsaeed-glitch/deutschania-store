@@ -78,6 +78,7 @@ See [`.env.example`](.env.example) for the full list. Summary:
 | `NEXTAUTH_URL` | Base URL of the app (`http://localhost:3000` in dev) |
 | `PAYTABS_PROFILE_ID`, `PAYTABS_SERVER_KEY` | From your PayTabs dashboard → Developers → Key Management |
 | `PAYTABS_REGION` | One of `SAU`, `ARE`, `EGY`, `OMN`, `JOR`, `KWT`, `IRQ`, `MAR`, `QAT`, `GLOBAL` — determines which regional PayTabs endpoint is used (see `src/lib/paytabs.ts`) |
+| `SITE_USERNAME`, `SITE_PASSWORD` | Optional. When both are set, `src/proxy.ts` gates the entire site (except the PayTabs webhook) behind HTTP Basic Auth — a stand-in for Vercel's paid-plan-only Password Protection, meant to be removed at launch. |
 
 Without PayTabs credentials, checkout will create the order in the database (status `PENDING`) but fail to redirect to a payment page — the error is surfaced on the checkout form rather than silently pretending payment succeeded.
 
