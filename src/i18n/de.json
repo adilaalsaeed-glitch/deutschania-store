@@ -151,7 +151,19 @@
     "confirmCreate": "Konto erstellen",
     "stepAccount": "Konto",
     "stepAddress": "Adresse",
-    "stepReview": "Überprüfung"
+    "stepReview": "Überprüfung",
+    "checkEmailTitle": "Überprüfen Sie Ihre E-Mail",
+    "checkEmailDesc": "Wir haben Ihnen einen Bestätigungslink per E-Mail geschickt. Klicken Sie darauf, um Ihr Konto zu aktivieren, und melden Sie sich dann an.",
+    "goToLogin": "Zur Anmeldung",
+    "emailNotVerified": "Ihr Konto ist noch nicht aktiviert. Prüfen Sie Ihre E-Mail oder fordern Sie einen neuen Bestätigungslink an.",
+    "resendVerification": "Bestätigungslink erneut senden",
+    "resendSent": "Gesendet! Bitte prüfen Sie Ihre E-Mail.",
+    "verifySuccessTitle": "Konto aktiviert",
+    "verifySuccessDesc": "Ihre E-Mail-Adresse wurde erfolgreich bestätigt. Sie können sich jetzt anmelden.",
+    "verifyExpiredTitle": "Link abgelaufen",
+    "verifyExpiredDesc": "Dieser Bestätigungslink ist abgelaufen oder wurde bereits verwendet. Melden Sie sich an und fordern Sie einen neuen Link an.",
+    "verifyInvalidTitle": "Ungültiger Link",
+    "verifyInvalidDesc": "Wir konnten diesen Link nicht überprüfen. Stellen Sie sicher, dass Sie ihn vollständig aus der E-Mail kopiert haben."
   },
   "admin": {
     "products": "Produkte",

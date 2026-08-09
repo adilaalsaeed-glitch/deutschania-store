@@ -23,6 +23,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(password, user.passwordHash);
         if (!valid) return null;
 
+        // Login page checks /api/register/status separately to show a specific
+        // "please verify your email" message rather than a generic failure here.
+        if (!user.emailVerified) return null;
+
         return {
           id: user.id,
           email: user.email,

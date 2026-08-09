@@ -151,7 +151,19 @@
     "confirmCreate": "Create account",
     "stepAccount": "Account",
     "stepAddress": "Address",
-    "stepReview": "Review"
+    "stepReview": "Review",
+    "checkEmailTitle": "Check your email",
+    "checkEmailDesc": "We sent a verification link to your email. Click it to activate your account, then log in.",
+    "goToLogin": "Go to login",
+    "emailNotVerified": "Your account isn't activated yet. Check your email, or resend the verification link.",
+    "resendVerification": "Resend verification link",
+    "resendSent": "Sent! Check your email.",
+    "verifySuccessTitle": "Account activated",
+    "verifySuccessDesc": "Your email has been verified. You can log in now.",
+    "verifyExpiredTitle": "Link expired",
+    "verifyExpiredDesc": "This verification link has expired or was already used. Log in and request a new one.",
+    "verifyInvalidTitle": "Invalid link",
+    "verifyInvalidDesc": "We couldn't verify this link. Make sure you copied it in full from the email."
   },
   "admin": {
     "products": "Products",

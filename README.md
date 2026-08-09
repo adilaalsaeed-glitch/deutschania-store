@@ -79,6 +79,7 @@ See [`.env.example`](.env.example) for the full list. Summary:
 | `PAYTABS_PROFILE_ID`, `PAYTABS_SERVER_KEY` | From your PayTabs dashboard → Developers → Key Management |
 | `PAYTABS_REGION` | One of `SAU`, `ARE`, `EGY`, `OMN`, `JOR`, `KWT`, `IRQ`, `MAR`, `QAT`, `GLOBAL` — determines which regional PayTabs endpoint is used (see `src/lib/paytabs.ts`) |
 | `SITE_USERNAME`, `SITE_PASSWORD` | Optional. When both are set, `src/proxy.ts` gates the entire site (except the PayTabs webhook) behind HTTP Basic Auth — a stand-in for Vercel's paid-plan-only Password Protection, meant to be removed at launch. |
+| `RESEND_API_KEY` | From [resend.com](https://resend.com) → API Keys. Sends the email-verification link on registration (see `src/lib/email.ts`). Requires the sending domain to be verified in Resend first (SPF/DKIM DNS records) — until then, registration still creates the account but the email send fails silently (logged server-side) and the user can request a fresh link from the login page. |
 
 Without PayTabs credentials, checkout will create the order in the database (status `PENDING`) but fail to redirect to a payment page — the error is surfaced on the checkout form rather than silently pretending payment succeeded.
 
@@ -91,6 +92,15 @@ npm run db:studio
 ```
 
 Open the `users` table, find your row, change `role` from `CUSTOMER` to `ADMIN`, save. You can now visit `/admin/products`.
+
+## Deployment
+
+Currently deployed on **Vercel**, database on **Supabase** Postgres, domain `deutschania.com` via Porkbun DNS, GitHub-connected for auto-deploy on push to `main`.
+
+Notes specific to this setup:
+- Vercel's build clones from GitHub, which doesn't include the gitignored generated Prisma client — `package.json`'s `postinstall: prisma generate` script regenerates it on every install. Don't remove this.
+- Supabase: use the **Session pooler** connection string (port 5432) for `prisma db push`/migrations from your machine — the **Direct connection** host is IPv6-only and commonly unreachable, and the **Transaction pooler** (port 6543) doesn't support the session-level operations Prisma needs for schema pushes (it'll hang). The Transaction pooler string is fine as the app's runtime `DATABASE_URL` on Vercel (serverless-friendly).
+- The site is currently behind the `SITE_USERNAME`/`SITE_PASSWORD` gate (see above) ahead of public launch — remove those two env vars in Vercel once ready to go live.
 
 ## Useful scripts
 
@@ -110,18 +120,22 @@ prisma/
   schema.prisma      # Product, Category, User, Address, CartItem, WishlistItem, Order, OrderItem
   seed.ts            # loads categories/products/subcategories/attributes from the original prototype
 src/
+  proxy.ts                     # optional pre-launch HTTP Basic Auth gate (Next.js 16 "Proxy", was Middleware)
   app/
     page.tsx                    # home (reads ?cat=/?q=/?wish= search params)
     product/[slug]/page.tsx     # product detail
     login/, register/           # auth pages (register is a 3-step wizard)
+    verify-email/                # lands here from the emailed verification link
     cart/, checkout/, checkout/return/
     admin/products/             # admin-only product editor (role check via NextAuth session)
-    api/                        # route handlers: auth, register, cart, wishlist, checkout,
-                                 # paytabs webhook, orders, products/compare, admin/products
+    api/                        # route handlers: auth, register (+ status, resend-verification),
+                                 # cart, wishlist, checkout, paytabs webhook, orders,
+                                 # products/compare, admin/products
   components/                   # Header, SideMenu, ShopSection, ProductCard, CartDrawer,
                                  # WishlistProvider/WishButton, CompareProvider/CompareModal, Hero, ...
   i18n/                         # ar.json / de.json / en.json + config.ts
-  lib/                          # db.ts (Prisma client), auth.ts, cart.ts, currency.ts, paytabs.ts
+  lib/                          # db.ts (Prisma client), auth.ts, cart.ts, currency.ts, paytabs.ts,
+                                 # email.ts (Resend), verification.ts (token issuing)
   data/subcategories.ts         # subcategory mega-menu data (ar/de/en)
 ```
 
@@ -129,7 +143,7 @@ src/
 
 Real and backend-verified:
 - Product catalog, categories and subcategories all come from Postgres, not hardcoded JS.
-- Login/registration with hashed passwords (bcrypt) and real sessions (NextAuth).
+- Login/registration with hashed passwords (bcrypt) and real sessions (NextAuth). Registration sends a real email-verification link (Resend); accounts can't log in until it's clicked (`src/lib/verification.ts`, `src/app/verify-email/`).
 - Cart persists server-side, for both logged-in users (by `userId`) and guests (by a signed cookie session id).
 - Wishlist persists server-side per logged-in user (guests are prompted to log in — there's no guest wishlist).
 - Compare is intentionally client-side only (localStorage, up to 4 products), since it's an ephemeral browsing aid rather than account data.
@@ -137,7 +151,7 @@ Real and backend-verified:
 - Admin panel lets an `ADMIN`-role user edit product price/brand for real, replacing the original prototype's in-page pencil-icon editing (which only ever wrote to that one browser's local storage).
 
 Still simplified relative to a full production build:
-- No order history page for customers, no email notifications on order status changes.
+- No order history page for customers, no email notifications beyond the registration verification link (e.g. nothing sent on order status changes).
 - Product images are placeholder SVG icons unless `Product.imageUrl` is set directly in the database — there's no image upload UI yet.
 - The admin panel only edits price/brand; there's no product create/delete UI, and descriptions/attributes/images must be edited via Prisma Studio.
 - No automated tests beyond manual Playwright smoke checks run during development.

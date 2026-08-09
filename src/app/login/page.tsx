@@ -8,26 +8,55 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import { useLocale } from "@/components/LocaleProvider";
 
 export default function LoginPage() {
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [unverified, setUnverified] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendDone, setResendDone] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setUnverified(false);
+    setResendDone(false);
     setSubmitting(true);
+
     const res = await signIn("credentials", { email, password, redirect: false });
-    setSubmitting(false);
+
     if (res?.error) {
-      setError(t.errors.INVALID_CREDENTIALS);
+      // authorize() rejects both "wrong password" and "unverified email" the same way
+      // (returns null), so check separately here to show the right message.
+      const statusRes = await fetch(`/api/register/status?email=${encodeURIComponent(email)}`);
+      const status = await statusRes.json().catch(() => null);
+      setSubmitting(false);
+      if (status?.exists && !status.verified) {
+        setUnverified(true);
+        setError(t.auth.emailNotVerified);
+      } else {
+        setError(t.errors.INVALID_CREDENTIALS);
+      }
       return;
     }
+
+    setSubmitting(false);
     router.push("/");
     router.refresh();
+  }
+
+  async function resendVerification() {
+    setResending(true);
+    await fetch("/api/register/resend-verification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, lang: locale }),
+    });
+    setResending(false);
+    setResendDone(true);
   }
 
   return (
@@ -59,6 +88,20 @@ export default function LoginPage() {
               </div>
             </div>
             {error && <p className="field-error">{error}</p>}
+            {unverified &&
+              (resendDone ? (
+                <p className="form-note">{t.auth.resendSent}</p>
+              ) : (
+                <button
+                  type="button"
+                  className="desc-edit-btn"
+                  onClick={resendVerification}
+                  disabled={resending}
+                  style={{ marginBottom: 14 }}
+                >
+                  {resending ? "…" : t.auth.resendVerification}
+                </button>
+              ))}
             <button className="btn btn-brass btn-block" type="submit" disabled={submitting}>
               {t.auth.submit}
             </button>

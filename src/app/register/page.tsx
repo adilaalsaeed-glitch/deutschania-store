@@ -2,8 +2,6 @@
 
 import { Fragment, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { useLocale } from "@/components/LocaleProvider";
 
@@ -78,9 +76,9 @@ function StepIndicator({ step }: { step: Step }) {
 }
 
 export default function RegisterPage() {
-  const { t } = useLocale();
-  const router = useRouter();
+  const { locale, t } = useLocale();
   const [step, setStep] = useState<Step>(1);
+  const [registered, setRegistered] = useState(false);
   const [account, setAccount] = useState<AccountFields>({
     firstName: "",
     lastName: "",
@@ -141,24 +139,21 @@ export default function RegisterPage() {
           postal: address.postal,
           mobile: address.mobile,
         },
+        lang: locale,
       }),
     });
+
+    setSubmitting(false);
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       setError(t.errors[data.error as keyof typeof t.errors] ?? t.errors.UNKNOWN);
-      setSubmitting(false);
       return;
     }
 
-    const signInRes = await signIn("credentials", { email: account.email, password: account.password, redirect: false });
-    setSubmitting(false);
-    if (signInRes?.error) {
-      router.push("/login");
-      return;
-    }
-    router.push("/");
-    router.refresh();
+    // Account is created but unverified - send them to check their email rather than
+    // logging in immediately, since login itself now requires a verified address.
+    setRegistered(true);
   }
 
   return (
@@ -168,8 +163,18 @@ export default function RegisterPage() {
           <nav className="pp-breadcrumb">
             <Link href="/">{t.nav.home}</Link>
           </nav>
-          <StepIndicator step={step} />
+          {!registered && <StepIndicator step={step} />}
 
+          {registered ? (
+            <div className="confirm-box">
+              <h1 className="auth-title">{t.auth.checkEmailTitle}</h1>
+              <p className="auth-sub">{t.auth.checkEmailDesc}</p>
+              <Link href="/login" className="btn btn-brass" style={{ display: "inline-flex", marginTop: 12 }}>
+                {t.auth.goToLogin}
+              </Link>
+            </div>
+          ) : (
+            <>
           {step === 1 && (
             <>
               <h1 className="auth-title">{t.auth.registerTitle}</h1>
@@ -291,10 +296,14 @@ export default function RegisterPage() {
               </div>
             </>
           )}
+            </>
+          )}
 
-          <Link href="/login" className="auth-switch-btn" style={{ display: "block", textAlign: "center" }}>
-            {t.auth.haveAccount}
-          </Link>
+          {!registered && (
+            <Link href="/login" className="auth-switch-btn" style={{ display: "block", textAlign: "center" }}>
+              {t.auth.haveAccount}
+            </Link>
+          )}
         </div>
       </section>
     </SiteChrome>

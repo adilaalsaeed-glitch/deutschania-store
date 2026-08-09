@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { createVerificationToken } from "@/lib/verification";
+import { sendVerificationEmail } from "@/lib/email";
 
 const addressSchema = z.object({
   street: z.string().min(1).max(200),
@@ -18,6 +20,7 @@ const registerSchema = z.object({
   password: z.string().min(8).max(72),
   dateOfBirth: z.string().optional(),
   address: addressSchema.optional(),
+  lang: z.enum(["ar", "de", "en"]).default("ar"),
 });
 
 export async function POST(request: Request) {
@@ -27,7 +30,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "VALIDATION_ERROR" }, { status: 400 });
   }
 
-  const { firstName, lastName, email, password, dateOfBirth, address } = parsed.data;
+  const { firstName, lastName, email, password, dateOfBirth, address, lang } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -59,8 +62,20 @@ export async function POST(request: Request) {
           }
         : {}),
     },
-    select: { id: true, email: true },
+    select: { id: true, email: true, firstName: true },
   });
+
+  const token = await createVerificationToken(user.id);
+  const origin = new URL(request.url).origin;
+  const verifyUrl = `${origin}/verify-email?token=${token}`;
+
+  try {
+    await sendVerificationEmail({ to: user.email, firstName: user.firstName, verifyUrl, lang });
+  } catch (err) {
+    // The account was created either way - don't fail registration over a flaky email send.
+    // The user can request a fresh link from the login page.
+    console.error("Failed to send verification email:", err);
+  }
 
   return NextResponse.json({ id: user.id, email: user.email }, { status: 201 });
 }
