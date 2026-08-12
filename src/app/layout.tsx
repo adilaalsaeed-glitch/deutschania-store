@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { SessionProvider } from "next-auth/react";
 import { LocaleProvider } from "@/components/LocaleProvider";
+import { FlyToCartProvider } from "@/components/FlyToCartProvider";
+import { FlyToCartOverlay } from "@/components/FlyToCartOverlay";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { WishlistProvider } from "@/components/wishlist/WishlistProvider";
 import { CompareProvider } from "@/components/compare/CompareProvider";
 import { CompareModal } from "@/components/compare/CompareModal";
+import { SignOutConfirmProvider } from "@/components/SignOutConfirmProvider";
+import { SignOutConfirmModal } from "@/components/SignOutConfirmModal";
 import { defaultLocale, dir, isLocale, type Locale } from "@/i18n/config";
 import "./globals.css";
 
@@ -32,14 +36,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={dir(locale) === "rtl" ? "rtl" : ""}>
         <SessionProvider>
           <LocaleProvider initialLocale={locale}>
-            <CartProvider>
-              <WishlistProvider>
-                <CompareProvider>
-                  {children}
-                  <CompareModal />
-                </CompareProvider>
-              </WishlistProvider>
-            </CartProvider>
+            <FlyToCartProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <CompareProvider>
+                    <SignOutConfirmProvider>
+                      {children}
+                      <CompareModal />
+                      <SignOutConfirmModal />
+                      <FlyToCartOverlay />
+                    </SignOutConfirmProvider>
+                  </CompareProvider>
+                </WishlistProvider>
+              </CartProvider>
+            </FlyToCartProvider>
           </LocaleProvider>
         </SessionProvider>
       </body>
