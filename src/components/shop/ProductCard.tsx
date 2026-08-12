@@ -8,6 +8,7 @@ import { formatPriceCents, type CurrencyCode } from "@/lib/currency";
 import { ProductIcon } from "@/components/shop/ProductIcon";
 import { WishButton } from "@/components/wishlist/WishButton";
 import { CompareCheck } from "@/components/compare/CompareCheck";
+import { LOW_STOCK_THRESHOLD } from "@/lib/constants";
 import type { ProductListItem } from "@/types/product";
 
 export function ProductCard({ product }: { product: ProductListItem }) {
@@ -18,6 +19,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
 
   const cartLine = items.find((i) => i.productId === product.id);
   const qty = cartLine?.quantity ?? 0;
+  const isLowStock = product.stockQuantity > 0 && product.stockQuantity <= LOW_STOCK_THRESHOLD;
 
   return (
     <div className="product-card">
@@ -28,6 +30,9 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           <ProductIcon icon={product.icon} color={product.category.color} />
         )}
         <span className="origin-flag">🇩🇪</span>
+        {isLowStock && (
+          <span className="scarcity-badge">{t.shop.scarcity.replace("{count}", String(product.stockQuantity))}</span>
+        )}
         <WishButton productId={product.id} className="wish-btn" />
       </Link>
       <button

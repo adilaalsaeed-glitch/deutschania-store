@@ -195,6 +195,7 @@ body.rtl .filter-panel{transform:translateX(-100%);}
 .origin-flag{position:absolute;top:9px;inset-inline-start:9px;font-size:0.64rem;background:rgba(27,40,54,.85);color:var(--cream-text);padding:3px 8px;border-radius:999px;font-weight:600;}
 .wish-btn{position:absolute;top:7px;inset-inline-end:7px;background:#fff;border:1px solid var(--line-dark);border-radius:6px;width:31px;height:31px;display:flex;align-items:center;justify-content:center;font-size:0.95rem;line-height:1;}
 .wish-btn.on{color:#D2544E;border-color:#D2544E;}
+.scarcity-badge{position:absolute;bottom:9px;inset-inline-start:9px;font-size:0.66rem;background:var(--bad);color:#fff;padding:3px 9px;border-radius:999px;font-weight:700;}
 .quick-add{position:absolute;bottom:9px;inset-inline-start:9px;width:36px;height:36px;border-radius:50%;background:var(--brass);border:none;color:var(--ink);font-size:1.3rem;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(27,40,54,.2);}
 .quick-add:hover{background:var(--brass-light);}
 .product-body{padding:13px;display:flex;flex-direction:column;gap:5px;flex:1;}
@@ -266,6 +267,22 @@ body.rtl .filter-panel{transform:translateX(-100%);}
 .step .idx{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--steel-light);margin-bottom:7px;display:block;}
 .step h4{font-size:1rem;margin:0 0 7px;}
 .step p{font-size:0.88rem;line-height:1.6;opacity:.8;margin:0;}
+
+/* TRUST BAR */
+.trust-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1240px;margin:0 auto;padding:26px 20px;border-bottom:1px solid var(--line-dark);}
+@media (max-width:720px){.trust-bar{grid-template-columns:1fr 1fr;}}
+.trust-bar-item{display:flex;align-items:center;gap:10px;justify-content:center;text-align:start;}
+.trust-bar-icon{font-size:1.4rem;line-height:1;flex-shrink:0;}
+.trust-bar-label{font-size:0.84rem;font-weight:600;color:var(--ink);}
+
+/* BRANDS CAROUSEL */
+.brands-carousel-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;}
+.brand-pill{flex:0 0 auto;background:var(--sand);border:1px solid var(--line-dark);border-radius:999px;padding:10px 22px;font-size:0.88rem;font-weight:600;color:var(--ink);white-space:nowrap;}
+
+/* PRODUCT CAROUSEL (Top Sellers / New Arrivals / Recommended) */
+.product-carousel-row{display:flex;gap:16px;overflow-x:auto;padding-bottom:10px;}
+.product-carousel-item{flex:0 0 230px;}
+.product-carousel-item .product-card{height:100%;}
 
 footer.site{background:var(--ink);color:var(--cream-text);padding:40px 20px 24px;}
 .footer-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;gap:26px;flex-wrap:wrap;}
@@ -462,6 +479,16 @@ body.rtl .drawer{transform:translateX(-100%);}
 .admin-form-section{background:#fff;border-radius:8px;border:1px solid var(--line-dark);padding:20px 22px;margin-bottom:18px;}
 .admin-form-section-title{font-size:1rem;margin:0 0 16px;color:var(--ink);font-family:'Fraunces',serif;}
 .admin-form-section .field:last-child{margin-bottom:0;}
+.analytics-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;}
+.analytics-stat-card{background:#fff;border:1px solid var(--line-dark);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:6px;}
+.analytics-stat-label{font-size:0.82rem;color:var(--steel);font-weight:600;}
+.analytics-stat-value{font-family:'Fraunces',serif;font-size:1.7rem;color:var(--ink);}
+.analytics-list{display:flex;flex-direction:column;gap:2px;}
+.analytics-list-row{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid var(--line-dark);color:inherit;}
+.analytics-list-row:last-child{border-bottom:none;}
+.analytics-list-row:hover{background:var(--sand);}
+.analytics-list-info{flex:1;min-width:0;}
+.analytics-list-metric{font-size:0.85rem;font-weight:700;color:var(--ink);white-space:nowrap;}
 .btn-danger-outline{background:none;border:1px solid var(--bad);color:var(--bad);}
 .btn-danger-outline:hover{background:var(--bad);color:#fff;}
 .admin-checkbox-label{display:flex;align-items:center;gap:8px;font-size:0.9rem;cursor:pointer;}

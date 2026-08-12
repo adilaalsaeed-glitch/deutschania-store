@@ -34,7 +34,27 @@
     "eyebrow": "منتجات ألمانية للعالم العربي",
     "title": "دليلك الموثوق للمنتجات الألمانية",
     "subtitle": "نختار لك منتجات ألمانية بعناية وتوصلها إلى الوطن العربي بأسعار منافسة.\nمكياج، عناية بالبشرة، مكملات، أغذية وغيرها — مصدرها مباشر.",
-    "cta1": "تسوّق المنتجات الألمانية"
+    "cta1": "استكشف التشكيلة"
+  },
+  "trustBar": {
+    "quality": "جودة ألمانية 100%",
+    "shipping": "شحن سريع",
+    "payment": "دفع آمن",
+    "returns": "إرجاع سهل"
+  },
+  "brandsCarousel": {
+    "eyebrow": "ماركاتنا",
+    "title": "ماركات ألمانية موثوقة"
+  },
+  "home": {
+    "topSellersEyebrow": "الأكثر مبيعًا",
+    "topSellersTitle": "الأكثر مبيعًا",
+    "newArrivalsEyebrow": "وصل حديثًا",
+    "newArrivalsTitle": "وصل حديثًا",
+    "recommendedEyebrow": "مختار لك",
+    "recommendedTitle": "موصى به لك",
+    "recentlyViewedEyebrow": "أكمل من حيث توقفت",
+    "recentlyViewedTitle": "شوهد مؤخرًا"
   },
   "promo": {
     "s1": "خصم على مستحضرات التجميل والعناية بالبشرة",
@@ -54,7 +74,8 @@
     "addToCompare": "قارن",
     "empty": "لا توجد منتجات تطابق الفلاتر المحددة.",
     "results": "منتج",
-    "descHeading": "وصف المنتج"
+    "descHeading": "وصف المنتج",
+    "scarcity": "باقي {count} قطع فقط!"
   },
   "compare": {
     "title": "قارن بين المنتجات",
@@ -210,7 +231,7 @@
     "categoryCol": "التصنيف",
     "searchPlaceholder": "ابحث بالاسم أو الوصف...",
     "allCategories": "كل التصنيفات",
-    "allBrands": "كل الماركات",
+    "allBrands": "الماركة",
     "allAvailability": "كل حالات التوفر",
     "availableStatus": "متوفر",
     "outOfStockStatus": "نفدت الكمية",
@@ -227,6 +248,14 @@
     "contentCouponPercentageLabel": "نسبة الخصم (%)",
     "contentCouponMinOrderLabel": "أقل قيمة طلب (يورو)",
     "contentSubmissions": "طلبات كوبون المحتوى",
+    "analytics": "التحليلات",
+    "totalRevenue": "إجمالي الإيرادات",
+    "totalOrders": "إجمالي الطلبات",
+    "topSellingProducts": "الأكثر مبيعًا",
+    "noSalesYet": "لا توجد مبيعات بعد.",
+    "unitsSold": "مباع",
+    "lowStockAlerts": "تنبيهات انخفاض المخزون",
+    "noLowStock": "لا توجد منتجات بمخزون منخفض.",
     "noSubmissions": "لا توجد طلبات حتى الآن.",
     "submissionUser": "العميل",
     "submissionProfile": "الحساب",

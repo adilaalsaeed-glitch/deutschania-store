@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
 import { Header } from "@/components/layout/Header";
 import { SideMenu } from "@/components/layout/SideMenu";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/Hero";
+import { TrustBar } from "@/components/TrustBar";
+import { BrandsCarousel } from "@/components/BrandsCarousel";
+import { ProductCarousel } from "@/components/shop/ProductCarousel";
 import { ShopSection } from "@/components/shop/ShopSection";
 import { ProcessSection } from "@/components/ProcessSection";
 import { MarketNotice } from "@/components/MarketNotice";
@@ -14,6 +18,12 @@ import { TestimonialsSnippet } from "@/components/testimonials/TestimonialsSnipp
 import type { ProductListItem } from "@/types/product";
 import type { Locale } from "@/i18n/config";
 import type { TestimonialItem } from "@/lib/testimonials";
+
+// localStorage isn't available during SSR, so this section only ever renders client-side
+// (same reasoning as the recently-viewed section on the account dashboard).
+const HomeRecentlyViewed = dynamic(() => import("@/components/HomeRecentlyViewed").then((m) => m.HomeRecentlyViewed), {
+  ssr: false,
+});
 
 type Category = { key: string; label: Record<Locale, string>; icon: string; color: string };
 
@@ -24,6 +34,10 @@ export function StorefrontClient({
   initialSearchQuery = "",
   initialWishOnly = false,
   testimonials = [],
+  newArrivals = [],
+  topSellers = [],
+  brands = [],
+  recommended = [],
 }: {
   products: ProductListItem[];
   categories: Category[];
@@ -31,6 +45,10 @@ export function StorefrontClient({
   initialSearchQuery?: string;
   initialWishOnly?: boolean;
   testimonials?: TestimonialItem[];
+  newArrivals?: ProductListItem[];
+  topSellers?: ProductListItem[];
+  brands?: string[];
+  recommended?: ProductListItem[];
 }) {
   const { t } = useLocale();
   const router = useRouter();
@@ -115,6 +133,12 @@ export function StorefrontClient({
         onGoHome={goHome}
       />
       <Hero onShop={scrollToShop} />
+      <TrustBar />
+      <BrandsCarousel brands={brands} />
+      <ProductCarousel eyebrow={t.home.topSellersEyebrow} title={t.home.topSellersTitle} products={topSellers} />
+      <ProductCarousel eyebrow={t.home.newArrivalsEyebrow} title={t.home.newArrivalsTitle} products={newArrivals} />
+      <HomeRecentlyViewed />
+      <ProductCarousel eyebrow={t.home.recommendedEyebrow} title={t.home.recommendedTitle} products={recommended} />
       <ShopSection
         key={resetToken}
         products={products}

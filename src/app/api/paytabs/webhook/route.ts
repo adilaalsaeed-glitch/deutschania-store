@@ -14,7 +14,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing cart_id" }, { status: 400 });
   }
 
-  const order = await prisma.order.findUnique({ where: { orderNumber: body.cart_id } });
+  const order = await prisma.order.findUnique({
+    where: { orderNumber: body.cart_id },
+    include: { items: { select: { productId: true, quantity: true } } },
+  });
   if (!order) {
     return NextResponse.json({ error: "Unknown order" }, { status: 404 });
   }
@@ -42,7 +45,17 @@ export async function POST(request: Request) {
       },
     });
 
-    if (!order.userId) return; // guest order — no account to credit/refund
+    if (isPaid) {
+      // Clamped at 0 via SQL (not a plain decrement) so a race between two paid orders for the
+      // same product - or an order that already exceeded what was in stock - can't push it negative.
+      // Runs for guest orders too (unlike the loyalty/referral logic below, which needs an account).
+      for (const item of order.items) {
+        if (!item.productId) continue;
+        await tx.$executeRaw`UPDATE products SET "stockQuantity" = GREATEST("stockQuantity" - ${item.quantity}, 0) WHERE id = ${item.productId}`;
+      }
+    }
+
+    if (!order.userId) return; // guest order — no account to credit/refund points to
 
     if (isPaid) {
       const earned = pointsEarnedForPaidCents(order.totalCents);

@@ -3,8 +3,11 @@ import { StorefrontClient } from "@/components/StorefrontClient";
 import type { ProductListItem } from "@/types/product";
 import { isTestimonialsEnabled } from "@/lib/settings";
 import { getApprovedTestimonials } from "@/lib/testimonials-data";
+import { getTopSellingProducts } from "@/lib/analytics";
 
 const HOMEPAGE_TESTIMONIALS_LIMIT = 6;
+const NEW_ARRIVALS_LIMIT = 10;
+const TOP_SELLERS_LIMIT = 10;
 
 export default async function Home({
   searchParams,
@@ -18,7 +21,7 @@ export default async function Home({
 
   const testimonialsEnabled = await isTestimonialsEnabled();
 
-  const [products, categories, testimonials] = await Promise.all([
+  const [productsRaw, categories, testimonials, topSellers] = await Promise.all([
     prisma.product.findMany({
       select: {
         id: true,
@@ -32,6 +35,8 @@ export default async function Home({
         origin: true,
         categoryKey: true,
         featured: true,
+        stockQuantity: true,
+        createdAt: true,
         category: { select: { key: true, label: true, icon: true, color: true } },
       },
       orderBy: { createdAt: "asc" },
@@ -41,7 +46,15 @@ export default async function Home({
       orderBy: { sortOrder: "asc" },
     }),
     testimonialsEnabled ? getApprovedTestimonials(HOMEPAGE_TESTIMONIALS_LIMIT) : Promise.resolve([]),
+    getTopSellingProducts(TOP_SELLERS_LIMIT),
   ]);
+
+  const products = productsRaw as unknown as ProductListItem[];
+  const newArrivals = [...productsRaw]
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, NEW_ARRIVALS_LIMIT) as unknown as ProductListItem[];
+  const brands = Array.from(new Set(products.map((p) => p.brand))).sort((a, b) => a.localeCompare(b));
+  const recommended = products.filter((p) => p.featured).slice(0, 10);
 
   return (
     <StorefrontClient
@@ -50,12 +63,16 @@ export default async function Home({
       // navigations (e.g. "/?cat=x" -> "/"), so state initialized from these params would
       // otherwise never reset on a plain client-side Link click back to "/".
       key={`${initialCategoryKey}:${initialSearchQuery}:${initialWishOnly}`}
-      products={products as unknown as ProductListItem[]}
+      products={products}
       categories={categories as unknown as { key: string; label: ProductListItem["name"]; icon: string; color: string }[]}
       initialCategoryKey={initialCategoryKey}
       initialSearchQuery={initialSearchQuery}
       initialWishOnly={initialWishOnly}
       testimonials={testimonials}
+      newArrivals={newArrivals}
+      topSellers={topSellers}
+      brands={brands}
+      recommended={recommended}
     />
   );
 }

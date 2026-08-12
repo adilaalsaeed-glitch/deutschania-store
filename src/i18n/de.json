@@ -34,7 +34,27 @@
     "eyebrow": "DEUTSCHE PRODUKTE FÜR DIE ARABISCHE WELT",
     "title": "Ihr verlässlicher Wegweiser zu deutschen Produkten.",
     "subtitle": "Wir wählen deutsche Produkte sorgfältig aus und liefern sie zu wettbewerbsfähigen Preisen in die arabische Welt.\nMake-up, Hautpflege, Nahrungsergänzung, Lebensmittel und mehr — direkt beschafft.",
-    "cta1": "Deutsche Produkte kaufen"
+    "cta1": "Kollektion entdecken"
+  },
+  "trustBar": {
+    "quality": "100% deutsche Qualität",
+    "shipping": "Schneller Versand",
+    "payment": "Sichere Zahlung",
+    "returns": "Einfache Rückgabe"
+  },
+  "brandsCarousel": {
+    "eyebrow": "UNSERE MARKEN",
+    "title": "Vertrauenswürdige deutsche Marken"
+  },
+  "home": {
+    "topSellersEyebrow": "BESTSELLER",
+    "topSellersTitle": "Meistverkauft",
+    "newArrivalsEyebrow": "NEU EINGETROFFEN",
+    "newArrivalsTitle": "Neuheiten",
+    "recommendedEyebrow": "FÜR SIE AUSGEWÄHLT",
+    "recommendedTitle": "Für Sie empfohlen",
+    "recentlyViewedEyebrow": "WEITERMACHEN, WO SIE AUFGEHÖRT HABEN",
+    "recentlyViewedTitle": "Zuletzt angesehen"
   },
   "promo": {
     "s1": "Rabatt auf Kosmetik & Hautpflege",
@@ -54,7 +74,8 @@
     "addToCompare": "Vergleichen",
     "empty": "Keine Produkte entsprechen Ihren Filtern.",
     "results": "Produkte",
-    "descHeading": "Produktbeschreibung"
+    "descHeading": "Produktbeschreibung",
+    "scarcity": "Nur noch {count} übrig!"
   },
   "compare": {
     "title": "Produkte vergleichen",
@@ -210,7 +231,7 @@
     "categoryCol": "Kategorie",
     "searchPlaceholder": "Nach Name oder Beschreibung suchen...",
     "allCategories": "Alle Kategorien",
-    "allBrands": "Alle Marken",
+    "allBrands": "Marke",
     "allAvailability": "Alle Verfügbarkeiten",
     "availableStatus": "Auf Lager",
     "outOfStockStatus": "Nicht auf Lager",
@@ -227,6 +248,14 @@
     "contentCouponPercentageLabel": "Rabattprozentsatz (%)",
     "contentCouponMinOrderLabel": "Mindestbestellwert (EUR)",
     "contentSubmissions": "Content-Gutschein-Anträge",
+    "analytics": "Analysen",
+    "totalRevenue": "Gesamtumsatz",
+    "totalOrders": "Gesamtbestellungen",
+    "topSellingProducts": "Meistverkaufte Produkte",
+    "noSalesYet": "Noch keine Verkäufe.",
+    "unitsSold": "verkauft",
+    "lowStockAlerts": "Warnungen bei niedrigem Lagerbestand",
+    "noLowStock": "Keine Produkte mit niedrigem Lagerbestand.",
     "noSubmissions": "Noch keine Anträge.",
     "submissionUser": "Kunde",
     "submissionProfile": "Profil",

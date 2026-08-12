@@ -13,6 +13,7 @@ export type ProductListItem = {
   origin: string;
   categoryKey: string;
   featured: boolean;
+  stockQuantity: number;
   category: {
     key: string;
     label: I18nText;

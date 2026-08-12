@@ -34,7 +34,27 @@
     "eyebrow": "GERMAN PRODUCTS FOR THE ARAB WORLD",
     "title": "Your trusted guide to German products.",
     "subtitle": "We carefully select German products and deliver them to the Arab world at competitive prices.\nMakeup, skincare, supplements, food and more — sourced directly.",
-    "cta1": "Shop German products"
+    "cta1": "Explore the collection"
+  },
+  "trustBar": {
+    "quality": "100% German Quality",
+    "shipping": "Fast Shipping",
+    "payment": "Secure Payment",
+    "returns": "Easy Returns"
+  },
+  "brandsCarousel": {
+    "eyebrow": "OUR BRANDS",
+    "title": "Trusted German Brands"
+  },
+  "home": {
+    "topSellersEyebrow": "BESTSELLERS",
+    "topSellersTitle": "Top Sellers",
+    "newArrivalsEyebrow": "JUST IN",
+    "newArrivalsTitle": "New Arrivals",
+    "recommendedEyebrow": "PICKED FOR YOU",
+    "recommendedTitle": "Recommended for You",
+    "recentlyViewedEyebrow": "PICK UP WHERE YOU LEFT OFF",
+    "recentlyViewedTitle": "Recently Viewed"
   },
   "promo": {
     "s1": "Off cosmetics & skincare",
@@ -54,7 +74,8 @@
     "addToCompare": "Compare",
     "empty": "No products match your filters.",
     "results": "products",
-    "descHeading": "Product description"
+    "descHeading": "Product description",
+    "scarcity": "Only {count} left!"
   },
   "compare": {
     "title": "Compare Products",
@@ -210,7 +231,7 @@
     "categoryCol": "Category",
     "searchPlaceholder": "Search by name or description...",
     "allCategories": "All categories",
-    "allBrands": "All brands",
+    "allBrands": "Brand",
     "allAvailability": "All availability",
     "availableStatus": "In stock",
     "outOfStockStatus": "Out of stock",
@@ -227,6 +248,14 @@
     "contentCouponPercentageLabel": "Discount percentage (%)",
     "contentCouponMinOrderLabel": "Minimum order (EUR)",
     "contentSubmissions": "Content Coupon Submissions",
+    "analytics": "Analytics",
+    "totalRevenue": "Total Revenue",
+    "totalOrders": "Total Orders",
+    "topSellingProducts": "Top Selling Products",
+    "noSalesYet": "No sales yet.",
+    "unitsSold": "sold",
+    "lowStockAlerts": "Low Stock Alerts",
+    "noLowStock": "No products are low on stock.",
     "noSubmissions": "No submissions yet.",
     "submissionUser": "Customer",
     "submissionProfile": "Profile",
