@@ -2,8 +2,10 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { getDictionary, defaultLocale, isLocale, type Locale } from "@/i18n/config";
 import { auth } from "@/lib/auth";
-import { isReferralsEnabled, isContentCouponEnabled } from "@/lib/settings";
+import { prisma } from "@/lib/db";
+import { isReferralsEnabled } from "@/lib/settings";
 import { referralUrl, siteOrigin } from "@/lib/referral";
+import { RewardsBonusCards } from "@/components/account/RewardsBonusCards";
 
 export default async function RewardsHubPage() {
   const jar = await cookies();
@@ -11,9 +13,20 @@ export default async function RewardsHubPage() {
   const locale: Locale = cookieLocale && isLocale(cookieLocale) ? cookieLocale : defaultLocale;
   const t = getDictionary(locale);
 
-  const [referralsEnabled, contentCouponEnabled] = await Promise.all([
+  const [referralsEnabled, featuredProduct] = await Promise.all([
     isReferralsEnabled(),
-    isContentCouponEnabled(),
+    prisma.product.findFirst({
+      where: { featured: true },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        slug: true,
+        name: true,
+        priceCents: true,
+        imageUrl: true,
+        icon: true,
+        category: { select: { color: true } },
+      },
+    }),
   ]);
   const session = referralsEnabled ? await auth() : null;
   const myReferralLink = session?.user?.id ? referralUrl(siteOrigin(), session.user.id) : null;
@@ -37,13 +50,6 @@ export default async function RewardsHubPage() {
               <Link href="/account/points" className="btn btn-brass" style={{ marginTop: 8, alignSelf: "flex-start" }}>
                 {t.rewards.goToPoints}
               </Link>
-            </div>
-
-            <div className="rewards-card disabled">
-              <span className="rewards-soon-badge">{t.rewards.comingSoon}</span>
-              <span className="rewards-card-icon">🎟️</span>
-              <h2 className="rewards-card-title">{t.rewards.couponsTitle}</h2>
-              <p className="rewards-card-desc">{t.rewards.couponsDesc}</p>
             </div>
 
             {referralsEnabled ? (
@@ -73,23 +79,20 @@ export default async function RewardsHubPage() {
               </div>
             )}
 
-            {contentCouponEnabled ? (
-              <div className="rewards-card">
-                <span className="rewards-card-icon">📣</span>
-                <h2 className="rewards-card-title">{t.rewards.contentCouponTitle}</h2>
-                <p className="rewards-card-desc">{t.rewards.contentCouponDesc}</p>
-                <Link href="/account/content-coupon" className="btn btn-brass" style={{ marginTop: 8, alignSelf: "flex-start" }}>
-                  {t.contentCoupon.goToContentCoupon}
-                </Link>
-              </div>
-            ) : (
-              <div className="rewards-card disabled">
-                <span className="rewards-soon-badge">{t.rewards.comingSoon}</span>
-                <span className="rewards-card-icon">📣</span>
-                <h2 className="rewards-card-title">{t.rewards.contentCouponTitle}</h2>
-                <p className="rewards-card-desc">{t.rewards.contentCouponDesc}</p>
-              </div>
-            )}
+            <RewardsBonusCards
+              featuredProduct={
+                featuredProduct
+                  ? {
+                      slug: featuredProduct.slug,
+                      name: featuredProduct.name as Record<Locale, string>,
+                      priceCents: featuredProduct.priceCents,
+                      imageUrl: featuredProduct.imageUrl,
+                      icon: featuredProduct.icon,
+                      categoryColor: featuredProduct.category.color,
+                    }
+                  : null
+              }
+            />
           </div>
         </div>
       </section>

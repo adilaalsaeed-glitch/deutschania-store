@@ -12,8 +12,6 @@ export function AccountSidebar() {
 
   const links = [
     { href: "/account/profile", label: t.account.sidebar.profile },
-    { href: "/account/coupons", label: t.account.couponsCard },
-    { href: "/account/points", label: t.account.pointsCard },
     { href: "/account/rewards", label: t.nav.rewardsPrograms },
     { href: "/account/address-book", label: t.account.sidebar.addressBook },
     { href: "/account/payment-methods", label: t.account.sidebar.paymentMethods },

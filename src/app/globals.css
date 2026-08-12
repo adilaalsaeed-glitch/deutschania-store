@@ -415,6 +415,12 @@ body.rtl .drawer{transform:translateX(-100%);}
 .rewards-card-list li{position:relative;padding-inline-start:16px;}
 .rewards-card-list li::before{content:"";position:absolute;inset-inline-start:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--brass);}
 .rewards-soon-badge{position:absolute;top:18px;inset-inline-end:18px;background:var(--sand);color:var(--steel);font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:999px;}
+.rewards-product-preview{display:flex;align-items:center;gap:12px;}
+.rewards-product-media{width:56px;height:56px;flex-shrink:0;border:1px solid var(--line-dark);border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--sand);}
+.rewards-product-media img{width:100%;height:100%;object-fit:cover;}
+.rewards-product-media svg{width:65%;height:65%;}
+.rewards-product-name{font-size:0.9rem;font-weight:600;color:var(--ink);}
+.rewards-product-price{font-size:0.85rem;opacity:.75;margin-top:2px;}
 
 /* REFERRALS */
 .referral-link-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
@@ -444,6 +450,18 @@ body.rtl .drawer{transform:translateX(-100%);}
 .admin-thumb img{width:100%;height:100%;object-fit:cover;}
 .admin-thumb svg{width:70%;height:70%;}
 .admin-row-actions{display:flex;gap:8px;justify-content:flex-end;}
+.admin-filter-bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+.admin-filter-bar select{padding:9px 11px;border:1px solid var(--line-dark);border-radius:4px;font-family:inherit;font-size:0.85rem;background:#fff;}
+.admin-filter-search{flex:1 1 220px;padding:9px 11px;border:1px solid var(--line-dark);border-radius:4px;font-family:inherit;font-size:0.85rem;}
+.admin-empty-note{background:#fff;border:1px solid var(--line-dark);border-radius:8px;padding:30px;text-align:center;opacity:.65;font-size:0.9rem;}
+.admin-product-name{font-weight:600;color:var(--ink);}
+.admin-product-brand{font-size:0.78rem;opacity:.65;margin-top:2px;}
+.admin-stock-badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:0.76rem;font-weight:700;white-space:nowrap;}
+.admin-stock-badge.in-stock{background:#e3f1e6;color:#2e7d32;}
+.admin-stock-badge.out-of-stock{background:#fbe6e6;color:var(--bad);}
+.admin-form-section{background:#fff;border-radius:8px;border:1px solid var(--line-dark);padding:20px 22px;margin-bottom:18px;}
+.admin-form-section-title{font-size:1rem;margin:0 0 16px;color:var(--ink);font-family:'Fraunces',serif;}
+.admin-form-section .field:last-child{margin-bottom:0;}
 .btn-danger-outline{background:none;border:1px solid var(--bad);color:var(--bad);}
 .btn-danger-outline:hover{background:var(--bad);color:#fff;}
 .admin-checkbox-label{display:flex;align-items:center;gap:8px;font-size:0.9rem;cursor:pointer;}

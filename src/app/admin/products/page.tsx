@@ -17,25 +17,35 @@ export default async function AdminProductsPage() {
     redirect("/login");
   }
 
-  const [products, referralsEnabled, contentCouponEnabled, contentCouponTerms, testimonialsEnabled] = await Promise.all([
-    prisma.product.findMany({
-      select: {
-        id: true,
-        slug: true,
-        brand: true,
-        name: true,
-        priceCents: true,
-        imageUrl: true,
-        icon: true,
-        _count: { select: { orderItems: true } },
-      },
-      orderBy: { brand: "asc" },
-    }),
-    isReferralsEnabled(),
-    isContentCouponEnabled(),
-    getContentCouponTerms(),
-    isTestimonialsEnabled(),
-  ]);
+  const [products, categories, referralsEnabled, contentCouponEnabled, contentCouponTerms, testimonialsEnabled] =
+    await Promise.all([
+      prisma.product.findMany({
+        select: {
+          id: true,
+          slug: true,
+          brand: true,
+          name: true,
+          description: true,
+          priceCents: true,
+          imageUrl: true,
+          icon: true,
+          origin: true,
+          categoryKey: true,
+          stockQuantity: true,
+          category: { select: { label: true } },
+          _count: { select: { orderItems: true } },
+        },
+        orderBy: { brand: "asc" },
+      }),
+      prisma.category.findMany({
+        select: { key: true, label: true },
+        orderBy: { sortOrder: "asc" },
+      }),
+      isReferralsEnabled(),
+      isContentCouponEnabled(),
+      getContentCouponTerms(),
+      isTestimonialsEnabled(),
+    ]);
 
   return (
     <div className="admin-page">
@@ -48,7 +58,7 @@ export default async function AdminProductsPage() {
           contentCouponMinOrderCents={contentCouponTerms.minOrderCents}
           testimonialsEnabled={testimonialsEnabled}
         />
-        <AdminProductsList products={products as never} />
+        <AdminProductsList products={products as never} categories={categories as never} />
       </div>
     </div>
   );

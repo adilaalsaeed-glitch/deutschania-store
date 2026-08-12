@@ -85,6 +85,7 @@ model Product {
   categoryKey String
   category    Category @relation(fields: [categoryKey], references: [key])
   featured    Boolean  @default(false)
+  stockQuantity Int    @default(0) // admin-managed inventory count; 0 means out of stock
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

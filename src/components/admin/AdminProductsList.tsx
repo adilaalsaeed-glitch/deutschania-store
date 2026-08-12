@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
@@ -8,22 +8,65 @@ import { formatPriceCents } from "@/lib/currency";
 import { ProductIcon } from "@/components/shop/ProductIcon";
 import type { Locale } from "@/i18n/config";
 
+type I18nText = Record<Locale, string>;
+
 type Row = {
   id: string;
   slug: string;
   brand: string;
-  name: Record<Locale, string>;
+  name: I18nText;
+  description: I18nText | null;
   priceCents: number;
   imageUrl: string | null;
   icon: string;
+  origin: "de" | "ar";
+  categoryKey: string;
+  stockQuantity: number;
+  category: { label: I18nText };
   _count: { orderItems: number };
 };
 
-export function AdminProductsList({ products }: { products: Row[] }) {
+type CategoryOption = { key: string; label: I18nText };
+
+type AvailabilityFilter = "all" | "available" | "out";
+type OriginFilter = "all" | "de" | "ar";
+
+export function AdminProductsList({ products, categories }: { products: Row[]; categories: CategoryOption[] }) {
   const { locale, t } = useLocale();
   const router = useRouter();
   const [rows, setRows] = useState(products);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [originFilter, setOriginFilter] = useState<OriginFilter>("all");
+  const [availabilityFilter, setAvailabilityFilter] = useState<AvailabilityFilter>("all");
+
+  const filteredRows = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return rows.filter((r) => {
+      if (categoryFilter !== "all" && r.categoryKey !== categoryFilter) return false;
+      if (originFilter !== "all" && r.origin !== originFilter) return false;
+      if (availabilityFilter === "available" && r.stockQuantity <= 0) return false;
+      if (availabilityFilter === "out" && r.stockQuantity > 0) return false;
+      if (q) {
+        const haystack = [
+          r.brand,
+          r.name.ar,
+          r.name.de,
+          r.name.en,
+          r.description?.ar,
+          r.description?.de,
+          r.description?.en,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [rows, search, categoryFilter, originFilter, availabilityFilter]);
 
   async function handleDelete(row: Row) {
     const message =
@@ -52,46 +95,88 @@ export function AdminProductsList({ products }: { products: Row[] }) {
           + {t.admin.addProduct}
         </Link>
       </div>
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>{t.admin.productCol}</th>
-            <th>{t.admin.brand}</th>
-            <th>{t.admin.price}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.id}>
-              <td>
-                <div className="admin-thumb">
-                  {r.imageUrl ? <img src={r.imageUrl} alt="" /> : <ProductIcon icon={r.icon} />}
-                </div>
-              </td>
-              <td>{r.name[locale]}</td>
-              <td>{r.brand}</td>
-              <td>{formatPriceCents(r.priceCents, "EUR")}</td>
-              <td>
-                <div className="admin-row-actions">
-                  <Link href={`/admin/products/${r.id}`} className="btn btn-ghost-outline">
-                    {t.admin.editProduct}
-                  </Link>
-                  <button
-                    type="button"
-                    className="btn btn-danger-outline"
-                    onClick={() => handleDelete(r)}
-                    disabled={deletingId === r.id}
-                  >
-                    {deletingId === r.id ? t.admin.deleting : t.admin.delete}
-                  </button>
-                </div>
-              </td>
-            </tr>
+
+      <div className="admin-filter-bar">
+        <input
+          type="text"
+          className="admin-filter-search"
+          placeholder={t.admin.searchPlaceholder}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+          <option value="all">{t.admin.allCategories}</option>
+          {categories.map((c) => (
+            <option key={c.key} value={c.key}>
+              {c.label[locale]}
+            </option>
           ))}
-        </tbody>
-      </table>
+        </select>
+        <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value as OriginFilter)}>
+          <option value="all">{t.admin.allOrigins}</option>
+          <option value="de">{t.admin.originDe}</option>
+          <option value="ar">{t.admin.originAr}</option>
+        </select>
+        <select value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as AvailabilityFilter)}>
+          <option value="all">{t.admin.allAvailability}</option>
+          <option value="available">{t.admin.availableStatus}</option>
+          <option value="out">{t.admin.outOfStockStatus}</option>
+        </select>
+      </div>
+
+      {filteredRows.length === 0 ? (
+        <p className="admin-empty-note">{t.admin.noResults}</p>
+      ) : (
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>{t.admin.productCol}</th>
+              <th>{t.admin.price}</th>
+              <th>{t.admin.categoryCol}</th>
+              <th>{t.admin.stockQuantity}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRows.map((r) => (
+              <tr key={r.id}>
+                <td>
+                  <div className="admin-thumb">
+                    {r.imageUrl ? <img src={r.imageUrl} alt="" /> : <ProductIcon icon={r.icon} />}
+                  </div>
+                </td>
+                <td>
+                  <div className="admin-product-name">{r.name[locale]}</div>
+                  <div className="admin-product-brand">{r.brand}</div>
+                </td>
+                <td>{formatPriceCents(r.priceCents, "EUR")}</td>
+                <td>{r.category.label[locale]}</td>
+                <td>
+                  <span className={`admin-stock-badge${r.stockQuantity > 0 ? " in-stock" : " out-of-stock"}`}>
+                    {r.stockQuantity > 0 ? `${t.admin.availableStatus} (${r.stockQuantity})` : t.admin.outOfStockStatus}
+                  </span>
+                </td>
+                <td>
+                  <div className="admin-row-actions">
+                    <Link href={`/admin/products/${r.id}`} className="btn btn-ghost-outline">
+                      {t.admin.editProduct}
+                    </Link>
+                    <button
+                      type="button"
+                      className="btn btn-danger-outline"
+                      onClick={() => handleDelete(r)}
+                      disabled={deletingId === r.id}
+                    >
+                      {deletingId === r.id ? t.admin.deleting : t.admin.delete}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </>
   );
 }

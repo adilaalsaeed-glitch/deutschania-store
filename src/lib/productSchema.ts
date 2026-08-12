@@ -19,6 +19,7 @@ export const productSchema = z.object({
   origin: z.enum(["de", "ar"]),
   categoryKey: z.string().min(1),
   featured: z.boolean().default(false),
+  stockQuantity: z.number().int().min(0).max(1_000_000).default(0),
   attributes: attributesByLocale.optional(),
 });
 
@@ -44,6 +45,7 @@ export function normalizeProductInput(data: ProductInput) {
     origin: data.origin,
     categoryKey: data.categoryKey,
     featured: data.featured,
+    stockQuantity: data.stockQuantity,
     attributes: isEmptyAttributes(data.attributes) ? Prisma.JsonNull : data.attributes,
   };
 }
