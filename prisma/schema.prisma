@@ -46,6 +46,17 @@ enum CouponStatus {
   EXPIRED
 }
 
+enum CouponDiscountType {
+  FIXED // valueCents is a flat discount (e.g. referral's €7)
+  PERCENTAGE // percentage off, e.g. content-coupon's 10%; may carry a minOrderCents floor
+}
+
+enum ContentSubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Category {
   key       String   @id // e.g. "cat_makeup"
   label     Json // {ar, de, en}
@@ -106,6 +117,7 @@ model User {
   coupons              Coupon[]
   referralsMade        Referral[] @relation("ReferralsMade")
   referredBy           Referral?  @relation("ReferralsReceived")
+  contentSubmissions   ContentSubmission[]
 
   @@map("users")
 }
@@ -127,24 +139,52 @@ model Referral {
   @@map("referrals")
 }
 
-// Minimal fixed-value, single-use, per-user discount coupon. Not the general promo-code engine
-// (no admin-created codes, no checkout redemption yet) — just enough to back referral rewards.
+// Minimal single-use, per-user discount coupon. Not the general promo-code engine (no
+// admin-created public codes, no checkout redemption yet) — just enough to back referral and
+// content-coupon rewards. FIXED coupons use valueCents; PERCENTAGE coupons use percentage
+// (+ optional minOrderCents floor) and ignore valueCents.
 model Coupon {
-  id         String       @id @default(cuid())
-  code       String       @unique
-  userId     String
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  valueCents Int
-  source     String // "REFERRAL" for now; room for other sources later
-  status     CouponStatus @default(ACTIVE)
-  expiresAt  DateTime
-  redeemedAt DateTime?
-  orderId    String?
-  order      Order?       @relation(fields: [orderId], references: [id])
-  createdAt  DateTime     @default(now())
+  id           String              @id @default(cuid())
+  code         String              @unique
+  userId       String
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discountType CouponDiscountType  @default(FIXED)
+  valueCents   Int                 @default(0)
+  percentage   Int? // 1-100, only set when discountType is PERCENTAGE
+  minOrderCents Int? // order subtotal must be at least this much to use the coupon
+  source       String // "REFERRAL" | "CONTENT"
+  status       CouponStatus        @default(ACTIVE)
+  expiresAt    DateTime
+  redeemedAt   DateTime?
+  orderId      String?
+  order        Order?              @relation(fields: [orderId], references: [id])
+  createdAt    DateTime            @default(now())
+
+  contentSubmission ContentSubmission?
 
   @@index([userId])
   @@map("coupons")
+}
+
+// A customer's request for a content/influencer coupon: they post a video about our products
+// and, if approved, get a percentage coupon. Reviewed manually by an admin (follower count and
+// video content aren't verified programmatically).
+model ContentSubmission {
+  id                String                   @id @default(cuid())
+  userId            String
+  user              User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileUrl        String
+  videoUrl          String
+  consentAcceptedAt DateTime
+  status            ContentSubmissionStatus  @default(PENDING)
+  reviewedBy        String?
+  reviewedAt        DateTime?
+  couponId          String?                  @unique
+  coupon            Coupon?                  @relation(fields: [couponId], references: [id])
+  createdAt         DateTime                 @default(now())
+
+  @@index([userId])
+  @@map("content_submissions")
 }
 
 // Generic key-value flags/config, e.g. "referrals_enabled" -> "true". Toggled from /admin so

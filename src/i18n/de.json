@@ -179,7 +179,22 @@
     "saving": "Wird gespeichert...",
     "productCol": "Produkt",
     "settings": "Einstellungen",
-    "referralsEnabled": "Empfehlungsprogramm aktivieren"
+    "referralsEnabled": "Empfehlungsprogramm aktivieren",
+    "contentCouponEnabled": "Content-Gutschein aktivieren",
+    "contentCouponPercentageLabel": "Rabattprozentsatz (%)",
+    "contentCouponMinOrderLabel": "Mindestbestellwert (EUR)",
+    "contentSubmissions": "Content-Gutschein-Anträge",
+    "noSubmissions": "Noch keine Anträge.",
+    "submissionUser": "Kunde",
+    "submissionProfile": "Profil",
+    "submissionVideo": "Video",
+    "submissionStatus": "Status",
+    "openLink": "Link öffnen",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "statusPending": "In Prüfung",
+    "statusApproved": "Genehmigt",
+    "statusRejected": "Abgelehnt"
   },
   "referral": {
     "subtitle": "Teilen Sie Ihren Link mit Freunden. Wenn sie sich registrieren und ihre erste echte Bestellung abschließen, erhalten Sie beide einen 7-€-Rabattgutschein.",
@@ -213,6 +228,20 @@
     "clear": "Zurücksetzen",
     "earnEstimate": "Sie sammeln mit dieser Bestellung etwa {points} Punkte."
   },
+  "contentCoupon": {
+    "subtitle": "Teilen Sie ein Video über Ihre Erfahrung mit unseren Produkten auf Instagram oder TikTok und erhalten Sie nach Genehmigung einen Rabattgutschein.",
+    "profileUrlLabel": "Link zu Ihrem Social-Media-Profil",
+    "videoUrlLabel": "Link zum veröffentlichten Video",
+    "consentText": "Ich stimme zu, dass deutschania dieses Video für Marketingzwecke auf der Website oder den eigenen Social-Media-Konten des Unternehmens verwenden darf.",
+    "submit": "Antrag senden",
+    "pendingNotice": "Ihr Antrag wird derzeit geprüft. Wir informieren Sie, sobald eine Entscheidung getroffen wurde.",
+    "rejectedNotice": "Ihr vorheriger Antrag wurde leider nicht genehmigt. Sie können einen neuen Antrag stellen.",
+    "couponsTitle": "Meine Gutscheine aus diesem Programm",
+    "noCoupons": "Sie haben noch keine Gutscheine aus diesem Programm.",
+    "discountValue": "{percentage}% Rabatt (Mindestbestellwert {minOrder})",
+    "notAvailable": "Dieses Programm ist noch nicht verfügbar.",
+    "goToContentCoupon": "Jetzt Video einreichen"
+  },
   "rewards": {
     "title": "Prämienprogramme",
     "subtitle": "Alle Wege, Prämien und Rabatte zu sammeln, an einem Ort.",
@@ -244,6 +273,8 @@
     "POINTS_INSUFFICIENT_BALANCE": "Ihr Punktestand reicht nicht aus.",
     "POINTS_EXCEEDS_CAP": "Punkte können höchstens 5 % des Bestellwerts abdecken.",
     "POINTS_LOGIN_REQUIRED": "Melden Sie sich an, um Ihre Punkte zu nutzen.",
-    "COUNTRY_NOT_SUPPORTED": "Leider sind wir derzeit nur in Saudi-Arabien, den VAE und Katar verfügbar."
+    "COUNTRY_NOT_SUPPORTED": "Leider sind wir derzeit nur in Saudi-Arabien, den VAE und Katar verfügbar.",
+    "FEATURE_DISABLED": "Diese Funktion ist derzeit nicht verfügbar.",
+    "SUBMISSION_ALREADY_PENDING": "Sie haben bereits einen Antrag in Prüfung."
   }
 }

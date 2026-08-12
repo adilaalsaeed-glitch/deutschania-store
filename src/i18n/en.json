@@ -179,7 +179,22 @@
     "saving": "Saving...",
     "productCol": "Product",
     "settings": "Settings",
-    "referralsEnabled": "Enable Referral Program"
+    "referralsEnabled": "Enable Referral Program",
+    "contentCouponEnabled": "Enable Content Coupon",
+    "contentCouponPercentageLabel": "Discount percentage (%)",
+    "contentCouponMinOrderLabel": "Minimum order (EUR)",
+    "contentSubmissions": "Content Coupon Submissions",
+    "noSubmissions": "No submissions yet.",
+    "submissionUser": "Customer",
+    "submissionProfile": "Profile",
+    "submissionVideo": "Video",
+    "submissionStatus": "Status",
+    "openLink": "Open link",
+    "approve": "Approve",
+    "reject": "Reject",
+    "statusPending": "Pending",
+    "statusApproved": "Approved",
+    "statusRejected": "Rejected"
   },
   "referral": {
     "subtitle": "Share your link with friends. When they register and complete their first real order, you both get a €7 discount coupon.",
@@ -213,6 +228,20 @@
     "clear": "Clear",
     "earnEstimate": "You'll earn about {points} points from this order."
   },
+  "contentCoupon": {
+    "subtitle": "Share a video about your experience with our products on Instagram or TikTok, and get a discount coupon once approved.",
+    "profileUrlLabel": "Your social media profile link",
+    "videoUrlLabel": "Link to the published video",
+    "consentText": "I agree that deutschania may use this video for marketing on the site or the company's own social media accounts.",
+    "submit": "Submit application",
+    "pendingNotice": "Your application is currently under review. We'll let you know once a decision is made.",
+    "rejectedNotice": "Unfortunately your previous application wasn't approved. You can submit a new one.",
+    "couponsTitle": "My coupons from this program",
+    "noCoupons": "You don't have any coupons from this program yet.",
+    "discountValue": "{percentage}% off (minimum order {minOrder})",
+    "notAvailable": "This program isn't available yet.",
+    "goToContentCoupon": "Submit a video now"
+  },
   "rewards": {
     "title": "Rewards Programs",
     "subtitle": "Every way to earn rewards and discounts, in one place.",
@@ -244,6 +273,8 @@
     "POINTS_INSUFFICIENT_BALANCE": "You don't have enough points.",
     "POINTS_EXCEEDS_CAP": "Points can cover at most 5% of the order value.",
     "POINTS_LOGIN_REQUIRED": "Log in to use your points.",
-    "COUNTRY_NOT_SUPPORTED": "Sorry, we currently only serve Saudi Arabia, the UAE and Qatar."
+    "COUNTRY_NOT_SUPPORTED": "Sorry, we currently only serve Saudi Arabia, the UAE and Qatar.",
+    "FEATURE_DISABLED": "This feature isn't available right now.",
+    "SUBMISSION_ALREADY_PENDING": "You already have an application under review."
   }
 }

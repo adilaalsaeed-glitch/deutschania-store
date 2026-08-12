@@ -179,7 +179,22 @@
     "saving": "جارِ الحفظ...",
     "productCol": "المنتج",
     "settings": "الإعدادات",
-    "referralsEnabled": "تفعيل برنامج الإحالة"
+    "referralsEnabled": "تفعيل برنامج الإحالة",
+    "contentCouponEnabled": "تفعيل كوبون المحتوى",
+    "contentCouponPercentageLabel": "نسبة الخصم (%)",
+    "contentCouponMinOrderLabel": "أقل قيمة طلب (يورو)",
+    "contentSubmissions": "طلبات كوبون المحتوى",
+    "noSubmissions": "لا توجد طلبات حتى الآن.",
+    "submissionUser": "العميل",
+    "submissionProfile": "الحساب",
+    "submissionVideo": "الفيديو",
+    "submissionStatus": "الحالة",
+    "openLink": "فتح الرابط",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "statusPending": "قيد المراجعة",
+    "statusApproved": "تمت الموافقة",
+    "statusRejected": "مرفوض"
   },
   "referral": {
     "subtitle": "شارك رابطك مع أصدقائك. لما يسجّلون ويكملون أول طلب فعلي، تحصلون كلكم على كوبون خصم 7 يورو.",
@@ -213,6 +228,20 @@
     "clear": "إلغاء",
     "earnEstimate": "ستكسب تقريبًا {points} نقطة من هذا الطلب."
   },
+  "contentCoupon": {
+    "subtitle": "شارك فيديو عن تجربتك مع منتجاتنا على إنستقرام أو تيك توك، واحصل على كوبون خصم بعد موافقة الفريق.",
+    "profileUrlLabel": "رابط حسابك بمنصة التواصل",
+    "videoUrlLabel": "رابط الفيديو المنشور",
+    "consentText": "أوافق على أن تستخدم deutschania هذا الفيديو في التسويق عبر الموقع أو حسابات التواصل الاجتماعي الخاصة بالشركة.",
+    "submit": "إرسال الطلب",
+    "pendingNotice": "طلبك قيد المراجعة حاليًا. سنعلمك بمجرد اتخاذ القرار.",
+    "rejectedNotice": "للأسف لم تتم الموافقة على طلبك السابق. تقدر تقدّم طلبًا جديدًا.",
+    "couponsTitle": "كوبوناتي من هذا البرنامج",
+    "noCoupons": "ما عندك كوبونات من هذا البرنامج بعد.",
+    "discountValue": "خصم {percentage}% (بحد أدنى طلب {minOrder})",
+    "notAvailable": "هذا البرنامج غير متاح حاليًا.",
+    "goToContentCoupon": "قدّم فيديو الآن"
+  },
   "rewards": {
     "title": "برامج المكافآت",
     "subtitle": "كل طرق كسب المكافآت والخصومات في مكان واحد.",
@@ -244,6 +273,8 @@
     "POINTS_INSUFFICIENT_BALANCE": "رصيد نقاطك غير كافٍ.",
     "POINTS_EXCEEDS_CAP": "لا يمكن أن تغطي النقاط أكثر من 5% من قيمة الطلب.",
     "POINTS_LOGIN_REQUIRED": "سجّل الدخول لاستخدام نقاطك.",
-    "COUNTRY_NOT_SUPPORTED": "نأسف، خدمتنا متاحة حاليًا فقط في السعودية والإمارات وقطر."
+    "COUNTRY_NOT_SUPPORTED": "نأسف، خدمتنا متاحة حاليًا فقط في السعودية والإمارات وقطر.",
+    "FEATURE_DISABLED": "هذه الميزة غير متاحة حاليًا.",
+    "SUBMISSION_ALREADY_PENDING": "لديك طلب قيد المراجعة بالفعل."
   }
 }

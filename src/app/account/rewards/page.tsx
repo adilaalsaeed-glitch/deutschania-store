@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { getDictionary, defaultLocale, isLocale, type Locale } from "@/i18n/config";
 import { auth } from "@/lib/auth";
-import { isReferralsEnabled } from "@/lib/settings";
+import { isReferralsEnabled, isContentCouponEnabled } from "@/lib/settings";
 import { referralUrl, siteOrigin } from "@/lib/referral";
 
 export default async function RewardsHubPage() {
@@ -12,7 +12,10 @@ export default async function RewardsHubPage() {
   const locale: Locale = cookieLocale && isLocale(cookieLocale) ? cookieLocale : defaultLocale;
   const t = getDictionary(locale);
 
-  const referralsEnabled = await isReferralsEnabled();
+  const [referralsEnabled, contentCouponEnabled] = await Promise.all([
+    isReferralsEnabled(),
+    isContentCouponEnabled(),
+  ]);
   const session = referralsEnabled ? await auth() : null;
   const myReferralLink = session?.user?.id ? referralUrl(siteOrigin(), session.user.id) : null;
 
@@ -72,12 +75,23 @@ export default async function RewardsHubPage() {
               </div>
             )}
 
-            <div className="rewards-card disabled">
-              <span className="rewards-soon-badge">{t.rewards.comingSoon}</span>
-              <span className="rewards-card-icon">📣</span>
-              <h2 className="rewards-card-title">{t.rewards.contentCouponTitle}</h2>
-              <p className="rewards-card-desc">{t.rewards.contentCouponDesc}</p>
-            </div>
+            {contentCouponEnabled ? (
+              <div className="rewards-card">
+                <span className="rewards-card-icon">📣</span>
+                <h2 className="rewards-card-title">{t.rewards.contentCouponTitle}</h2>
+                <p className="rewards-card-desc">{t.rewards.contentCouponDesc}</p>
+                <Link href="/account/content-coupon" className="btn btn-brass" style={{ marginTop: 8, alignSelf: "flex-start" }}>
+                  {t.contentCoupon.goToContentCoupon}
+                </Link>
+              </div>
+            ) : (
+              <div className="rewards-card disabled">
+                <span className="rewards-soon-badge">{t.rewards.comingSoon}</span>
+                <span className="rewards-card-icon">📣</span>
+                <h2 className="rewards-card-title">{t.rewards.contentCouponTitle}</h2>
+                <p className="rewards-card-desc">{t.rewards.contentCouponDesc}</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

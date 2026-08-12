@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { pointsEarnedForPaidCents } from "@/lib/loyalty";
 import { isReferralsEnabled } from "@/lib/settings";
-import { REFERRAL_COUPON_VALUE_CENTS, couponExpiryDate, generateCouponCode } from "@/lib/referral";
+import { REFERRAL_COUPON_VALUE_CENTS } from "@/lib/referral";
+import { couponExpiryDate, generateCouponCode } from "@/lib/coupons";
 
 // PayTabs calls this server-to-server once a payment finishes (independent of whether the
 // customer's browser makes it back to the return URL). See:
@@ -63,8 +64,9 @@ export async function POST(request: Request) {
           const expiresAt = couponExpiryDate();
           await tx.coupon.create({
             data: {
-              code: generateCouponCode(),
+              code: generateCouponCode("REF"),
               userId: referral.referrerId,
+              discountType: "FIXED",
               valueCents: REFERRAL_COUPON_VALUE_CENTS,
               source: "REFERRAL",
               expiresAt,
@@ -72,8 +74,9 @@ export async function POST(request: Request) {
           });
           await tx.coupon.create({
             data: {
-              code: generateCouponCode(),
+              code: generateCouponCode("REF"),
               userId: referral.referredId,
+              discountType: "FIXED",
               valueCents: REFERRAL_COUPON_VALUE_CENTS,
               source: "REFERRAL",
               expiresAt,
