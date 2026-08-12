@@ -118,6 +118,9 @@ export function SideMenu({
           </div>
         </div>
         <div className="sm-foot">
+          <Link href="/account/rewards" className="sm-link" style={{ border: "none", padding: "10px 0" }} onClick={close}>
+            🎁 {t.nav.rewardsPrograms}
+          </Link>
           <Link href="/login" className="sm-link" style={{ border: "none", padding: "10px 0" }} onClick={close}>
             {t.nav.login}
           </Link>

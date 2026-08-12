@@ -15,6 +15,7 @@
     "help": "Hilfe",
     "myPoints": "Meine Punkte",
     "signOut": "Abmelden",
+    "rewardsPrograms": "Prämienprogramme",
     "groupDe": "Ihr Wegweiser zu deutschen Produkten",
     "groupAr": "Produkte für Deutschland"
   },
@@ -190,6 +191,23 @@
     "useMax": "Maximum nutzen",
     "clear": "Zurücksetzen",
     "earnEstimate": "Sie sammeln mit dieser Bestellung etwa {points} Punkte."
+  },
+  "rewards": {
+    "title": "Prämienprogramme",
+    "subtitle": "Alle Wege, Prämien und Rabatte zu sammeln, an einem Ort.",
+    "pointsTitle": "Meine Punkte",
+    "pointsDesc": "Sammeln Sie bei jedem Einkauf Punkte und lösen Sie sie gegen Rabatte ein.",
+    "pointsEarnRule": "Sie sammeln 1 Punkt für jeden Euro, den Sie tatsächlich bezahlen (nach Abzug etwaiger Rabatte).",
+    "pointsNoExpiry": "Ihre Punkte verfallen nie.",
+    "pointsCap": "Ihre Punkte können bis zu 5 % des Bestellwerts abdecken.",
+    "goToPoints": "Zu Meine Punkte",
+    "comingSoon": "Demnächst",
+    "couponsTitle": "Gutscheine",
+    "couponsDesc": "Rabattcodes, die Sie an der Kasse einlösen können.",
+    "referralTitle": "Empfehlungsprogramm",
+    "referralDesc": "Sammeln Sie Prämien, wenn Sie Freunde zu deutschania einladen.",
+    "contentCouponTitle": "Content-Gutschein",
+    "contentCouponDesc": "Spezielle Gutscheine über Inhalte und Partnerschaften."
   },
   "errors": {
     "INVALID_CREDENTIALS": "E-Mail oder Passwort ist falsch.",

@@ -15,6 +15,7 @@
     "help": "Help",
     "myPoints": "My Points",
     "signOut": "Sign out",
+    "rewardsPrograms": "Rewards Programs",
     "groupDe": "Your guide to German products",
     "groupAr": "Products headed to Germany"
   },
@@ -190,6 +191,23 @@
     "useMax": "Use max",
     "clear": "Clear",
     "earnEstimate": "You'll earn about {points} points from this order."
+  },
+  "rewards": {
+    "title": "Rewards Programs",
+    "subtitle": "Every way to earn rewards and discounts, in one place.",
+    "pointsTitle": "My Points",
+    "pointsDesc": "Earn points on every purchase and redeem them for discounts.",
+    "pointsEarnRule": "You earn 1 point for every euro you actually pay (after any discount).",
+    "pointsNoExpiry": "Your points never expire.",
+    "pointsCap": "Your points can cover up to 5% of any order's value.",
+    "goToPoints": "Go to My Points",
+    "comingSoon": "Coming soon",
+    "couponsTitle": "Coupons",
+    "couponsDesc": "Discount codes you can redeem at checkout.",
+    "referralTitle": "Referral Program",
+    "referralDesc": "Earn rewards when you invite friends to shop at deutschania.",
+    "contentCouponTitle": "Content Coupon",
+    "contentCouponDesc": "Special coupons through content and partnerships."
   },
   "errors": {
     "INVALID_CREDENTIALS": "Invalid email or password.",

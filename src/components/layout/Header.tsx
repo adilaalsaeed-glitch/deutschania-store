@@ -89,6 +89,9 @@ export function Header({
                 👤
               </button>
               <div className={`lang-menu${accountOpen ? " open" : ""}`}>
+                <Link href="/account/rewards" onClick={() => setAccountOpen(false)}>
+                  {t.nav.rewardsPrograms}
+                </Link>
                 <Link href="/account/points" onClick={() => setAccountOpen(false)}>
                   {t.nav.myPoints}
                 </Link>
