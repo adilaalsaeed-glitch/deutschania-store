@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { z } from "zod";
+import { isValidPhoneNumber } from "libphonenumber-js";
 import { prisma } from "@/lib/db";
 import { createVerificationToken } from "@/lib/verification";
 import { sendVerificationEmail } from "@/lib/email";
@@ -10,7 +11,11 @@ const addressSchema = z.object({
   buildingNo: z.string().max(50).optional(),
   city: z.string().min(1).max(100),
   postal: z.string().min(1).max(20),
-  mobile: z.string().min(1).max(30),
+  mobile: z.string().refine(isValidPhoneNumber, { error: "INVALID_PHONE" }),
+  landline: z
+    .string()
+    .optional()
+    .refine((v) => !v || isValidPhoneNumber(v), { error: "INVALID_PHONE" }),
 });
 
 const registerSchema = z.object({
@@ -27,7 +32,8 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const parsed = registerSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "VALIDATION_ERROR" }, { status: 400 });
+    const customCode = parsed.error.issues.find((i) => i.code === "custom")?.message;
+    return NextResponse.json({ error: customCode ?? "VALIDATION_ERROR" }, { status: 400 });
   }
 
   const { firstName, lastName, email, password, dateOfBirth, address, lang } = parsed.data;
@@ -56,13 +62,14 @@ export async function POST(request: Request) {
                 postalCode: address.postal,
                 country: "",
                 phone: address.mobile,
+                landline: address.landline,
                 isDefault: true,
               },
             },
           }
         : {}),
     },
-    select: { id: true, email: true, firstName: true },
+    select: { id: true, email: true },
   });
 
   const token = await createVerificationToken(user.id);
@@ -70,7 +77,7 @@ export async function POST(request: Request) {
   const verifyUrl = `${origin}/verify-email?token=${token}`;
 
   try {
-    await sendVerificationEmail({ to: user.email, firstName: user.firstName, verifyUrl, lang });
+    await sendVerificationEmail({ to: user.email, verifyUrl, lang });
   } catch (err) {
     // The account was created either way - don't fail registration over a flaky email send.
     // The user can request a fresh link from the login page.

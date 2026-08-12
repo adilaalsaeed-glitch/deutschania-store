@@ -4,6 +4,7 @@ import { Fragment, useState } from "react";
 import Link from "next/link";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { useLocale } from "@/components/LocaleProvider";
+import { PhoneInput } from "@/components/PhoneInput";
 
 type Step = 1 | 2 | 3;
 
@@ -22,6 +23,7 @@ type AddressFields = {
   city: string;
   postal: string;
   mobile: string;
+  landline: string;
 };
 
 function PasswordField({
@@ -93,6 +95,7 @@ export default function RegisterPage() {
     city: "",
     postal: "",
     mobile: "",
+    landline: "",
   });
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -138,6 +141,7 @@ export default function RegisterPage() {
           city: address.city,
           postal: address.postal,
           mobile: address.mobile,
+          landline: address.landline || undefined,
         },
         lang: locale,
       }),
@@ -231,16 +235,22 @@ export default function RegisterPage() {
                     <input required value={address.city} onChange={(e) => setAddressField("city", e.target.value)} />
                   </div>
                 </div>
-                <div className="field-row">
-                  <div className="field">
-                    <label>{t.auth.postal}</label>
-                    <input required value={address.postal} onChange={(e) => setAddressField("postal", e.target.value)} />
-                  </div>
-                  <div className="field">
-                    <label>{t.auth.mobile}</label>
-                    <input required type="tel" value={address.mobile} onChange={(e) => setAddressField("mobile", e.target.value)} />
-                  </div>
+                <div className="field">
+                  <label>{t.auth.postal}</label>
+                  <input required value={address.postal} onChange={(e) => setAddressField("postal", e.target.value)} />
                 </div>
+                <PhoneInput
+                  label={t.auth.mobile}
+                  required
+                  value={address.mobile}
+                  onChange={(v) => setAddressField("mobile", v)}
+                />
+                <PhoneInput
+                  label={t.auth.landline}
+                  value={address.landline}
+                  onChange={(v) => setAddressField("landline", v)}
+                  placeholder={t.auth.landlinePlaceholder}
+                />
                 <div className="reg-nav">
                   <button type="button" className="btn btn-ghost-outline" onClick={() => setStep(1)}>
                     {t.auth.back}
@@ -280,8 +290,14 @@ export default function RegisterPage() {
                     </tr>
                     <tr>
                       <td>{t.auth.mobile}</td>
-                      <td>{address.mobile}</td>
+                      <td dir="ltr">{address.mobile}</td>
                     </tr>
+                    {address.landline && (
+                      <tr>
+                        <td>{t.auth.landline}</td>
+                        <td dir="ltr">{address.landline}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
                 {error && <p className="field-error">{error}</p>}
