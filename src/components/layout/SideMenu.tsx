@@ -122,14 +122,16 @@ export function SideMenu({
           </div>
         </div>
         <div className="sm-foot">
-          <Link href="/account/rewards" className="sm-link" style={{ border: "none", padding: "10px 0" }} onClick={close}>
-            🎁 {t.nav.rewardsPrograms}
-          </Link>
           {session?.user ? (
             <>
               <Link href="/account" className="sm-link" style={{ border: "none", padding: "10px 0" }} onClick={close}>
                 {t.account.dashboardTitle}
               </Link>
+              {session.user.role === "ADMIN" && (
+                <Link href="/admin/products" className="sm-link" style={{ border: "none", padding: "10px 0" }} onClick={close}>
+                  🛠️ {t.nav.adminDashboard}
+                </Link>
+              )}
               <button
                 type="button"
                 className="sm-link"

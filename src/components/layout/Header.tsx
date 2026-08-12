@@ -105,6 +105,9 @@ export function Header({
                 <Link href="/account/points">{t.account.menu.points}</Link>
                 <Link href="/account/rewards">{t.nav.rewardsPrograms}</Link>
                 <Link href="/account#recently-viewed">{t.account.menu.recentlyViewed}</Link>
+                {session?.user?.role === "ADMIN" && (
+                  <Link href="/admin/products">{t.nav.adminDashboard}</Link>
+                )}
                 {session?.user && (
                   <>
                     <div className="account-dropdown-sep" />
