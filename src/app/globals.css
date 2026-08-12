@@ -46,8 +46,8 @@ body.rtl .brand-suffix{font-family:'IBM Plex Sans Arabic';}
 .lang-btn-label{font-size:0.82rem;font-weight:600;color:var(--cream-text);white-space:nowrap;}
 .lang-menu{position:absolute;top:calc(100% + 8px);inset-inline-end:0;background:#fff;border-radius:6px;box-shadow:0 12px 30px rgba(26,29,30,.2);padding:6px;display:none;flex-direction:column;min-width:130px;z-index:150;}
 .lang-menu.open{display:flex;}
-.lang-menu button{background:none;border:none;padding:9px 12px;border-radius:4px;font-size:0.9rem;color:var(--dark-text);text-align:start;}
-.lang-menu button:hover{background:var(--sand);}
+.lang-menu button,.lang-menu a{background:none;border:none;padding:9px 12px;border-radius:4px;font-size:0.9rem;color:var(--dark-text);text-align:start;text-decoration:none;display:block;white-space:nowrap;}
+.lang-menu button:hover,.lang-menu a:hover{background:var(--sand);}
 .lang-menu button.active{color:var(--steel);font-weight:700;}
 @media (max-width:760px){ .search-bar{order:5;flex-basis:100%;} .topbar{flex-wrap:wrap;} }
 
@@ -344,6 +344,19 @@ body.rtl .drawer{transform:translateX(-100%);}
 .checkout-steps{font-size:0.8rem;color:var(--steel);font-weight:600;margin:2px 0 16px;}
 .confirm-box{text-align:center;padding:18px 0;}
 .confirm-box .order-num{font-family:'IBM Plex Mono',monospace;font-size:1.25rem;color:var(--brass);font-weight:700;margin:11px 0;}
+
+/* LOYALTY POINTS */
+.points-balance-label{font-size:0.85rem;opacity:.7;}
+.points-balance-value{font-family:'Fraunces',serif;font-size:2.4rem;color:var(--brass);font-weight:700;line-height:1.2;}
+.points-balance-hint{font-size:0.8rem;opacity:.6;margin-top:4px;}
+.points-history-row{justify-content:space-between;}
+.points-delta{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:0.95rem;flex-shrink:0;}
+.points-delta.positive{color:#2e7d32;}
+.points-delta.negative{color:#b3261e;}
+.points-redeem-box{background:var(--sand);border-radius:5px;padding:15px;margin:16px 0;font-size:0.87rem;}
+.points-redeem-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;}
+.points-redeem-row input[type="number"]{width:110px;padding:8px 10px;border:1px solid var(--line-dark);border-radius:5px;font-size:0.9rem;}
+.points-redeem-row button{flex-shrink:0;}
 
 /* ADMIN */
 .admin-page{background:var(--sand);min-height:70vh;padding:28px 20px 60px;}

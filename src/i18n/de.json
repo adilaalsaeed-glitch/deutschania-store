@@ -13,6 +13,8 @@
     "helpSettings": "Hilfe & Einstellungen",
     "yourAccount": "Ihr Konto",
     "help": "Hilfe",
+    "myPoints": "Meine Punkte",
+    "signOut": "Abmelden",
     "groupDe": "Ihr Wegweiser zu deutschen Produkten",
     "groupAr": "Produkte für Deutschland"
   },
@@ -173,6 +175,22 @@
     "saving": "Wird gespeichert...",
     "productCol": "Produkt"
   },
+  "loyalty": {
+    "title": "Meine Punkte",
+    "subtitle": "Sammeln Sie einen Punkt für jeden bezahlten Euro und lösen Sie ihn gegen Rabatte bei künftigen Bestellungen ein.",
+    "balanceLabel": "Aktueller Punktestand",
+    "balanceHint": "100 Punkte = 1 € Rabatt. Punkte verfallen nicht.",
+    "empty": "Noch keine Punktaktivität.",
+    "earned": "Punkte gesammelt",
+    "redeemed": "Punkte eingelöst",
+    "refunded": "Punkte erstattet",
+    "order": "Bestellung",
+    "discountLine": "Punkte-Rabatt",
+    "redeemAtCheckout": "Sie haben {balance} Punkte. Für diese Bestellung können Sie bis zu {max} Punkte einlösen.",
+    "useMax": "Maximum nutzen",
+    "clear": "Zurücksetzen",
+    "earnEstimate": "Sie sammeln mit dieser Bestellung etwa {points} Punkte."
+  },
   "errors": {
     "INVALID_CREDENTIALS": "E-Mail oder Passwort ist falsch.",
     "EMAIL_EXISTS": "Für diese E-Mail-Adresse besteht bereits ein Konto.",
@@ -182,6 +200,10 @@
     "FORBIDDEN": "Sie sind nicht berechtigt, diese Aktion auszuführen.",
     "PAYMENT_FAILED": "Zahlung konnte nicht gestartet werden. Bitte erneut versuchen.",
     "UNAUTHORIZED": "Bitte melden Sie sich zuerst an.",
-    "UNKNOWN": "Ein unerwarteter Fehler ist aufgetreten. Bitte erneut versuchen."
+    "UNKNOWN": "Ein unerwarteter Fehler ist aufgetreten. Bitte erneut versuchen.",
+    "POINTS_BELOW_MINIMUM": "Mindestens 100 Punkte können eingelöst werden.",
+    "POINTS_INSUFFICIENT_BALANCE": "Ihr Punktestand reicht nicht aus.",
+    "POINTS_EXCEEDS_CAP": "Punkte können höchstens 5 % des Bestellwerts abdecken.",
+    "POINTS_LOGIN_REQUIRED": "Melden Sie sich an, um Ihre Punkte zu nutzen."
   }
 }

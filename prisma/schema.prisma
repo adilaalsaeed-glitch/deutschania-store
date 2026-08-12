@@ -29,6 +29,12 @@ enum Origin {
   ar // products sourced from the Arab world, sold into Germany
 }
 
+enum LoyaltyTransactionType {
+  EARN // credited when an order is confirmed PAID (1 point per 1 EUR actually paid, post-discount)
+  REDEEM // debited when points are applied as a checkout discount (held at order creation)
+  REFUND // reverses a REDEEM if the order that held those points later fails
+}
+
 model Category {
   key       String   @id // e.g. "cat_makeup"
   label     Json // {ar, de, en}
@@ -77,15 +83,33 @@ model User {
   dateOfBirth   DateTime?
   role          Role      @default(CUSTOMER)
   emailVerified DateTime? // null until the emailed verification link is clicked
+  loyaltyPoints Int       @default(0) // cached AVAILABLE balance (points on hold for an in-flight redemption are already subtracted)
   createdAt     DateTime  @default(now())
 
-  addresses           Address[]
-  cartItems           CartItem[]
-  wishlist            WishlistItem[]
-  orders              Order[]
-  verificationTokens  EmailVerificationToken[]
+  addresses            Address[]
+  cartItems            CartItem[]
+  wishlist             WishlistItem[]
+  orders               Order[]
+  verificationTokens   EmailVerificationToken[]
+  loyaltyTransactions  LoyaltyTransaction[]
 
   @@map("users")
+}
+
+// Append-only ledger; User.loyaltyPoints is a cached sum kept in sync at write time.
+// points is positive for EARN/REFUND, negative for REDEEM.
+model LoyaltyTransaction {
+  id        String                 @id @default(cuid())
+  userId    String
+  user      User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      LoyaltyTransactionType
+  points    Int
+  orderId   String?
+  order     Order?                 @relation(fields: [orderId], references: [id])
+  createdAt DateTime               @default(now())
+
+  @@index([userId])
+  @@map("loyalty_transactions")
 }
 
 model EmailVerificationToken {
@@ -150,17 +174,20 @@ model Order {
   user            User?       @relation(fields: [userId], references: [id])
   email           String
   shippingAddress Json // snapshot at time of order
-  subtotalCents   Int
-  totalCents      Int
-  currency        String      @default("EUR")
-  status          OrderStatus @default(PENDING)
-  paymentProvider String      @default("paytabs")
-  paytabsTranRef  String? // PayTabs tran_ref, set once the hosted payment page is created
-  paidAt          DateTime?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  subtotalCents       Int
+  pointsRedeemed      Int         @default(0) // points held against this order at creation time (1 point = 1 cent discount)
+  pointsDiscountCents Int         @default(0) // == pointsRedeemed; kept as its own field for readability at call sites
+  totalCents          Int // subtotalCents - pointsDiscountCents; what's actually charged via PayTabs
+  currency            String      @default("EUR")
+  status              OrderStatus @default(PENDING)
+  paymentProvider     String      @default("paytabs")
+  paytabsTranRef      String? // PayTabs tran_ref, set once the hosted payment page is created
+  paidAt              DateTime?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
 
-  items OrderItem[]
+  items               OrderItem[]
+  loyaltyTransactions LoyaltyTransaction[]
 
   @@map("orders")
 }

@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { useLocale } from "@/components/LocaleProvider";
 import { useCart } from "@/components/cart/CartProvider";
 import { formatPriceCents } from "@/lib/currency";
+import { maxRedeemablePoints, pointsEarnedForPaidCents, MIN_REDEEM_POINTS } from "@/lib/loyalty";
 
 export default function CheckoutPage() {
   const { locale, t } = useLocale();
   const { items } = useCart();
+  const { status: sessionStatus } = useSession();
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -21,8 +24,27 @@ export default function CheckoutPage() {
   });
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [pointsBalance, setPointsBalance] = useState(0);
+  const [pointsToRedeem, setPointsToRedeem] = useState(0);
 
   const subtotalCents = items.reduce((sum, i) => sum + i.product.priceCents * i.quantity, 0);
+  const maxRedeemable = maxRedeemablePoints(subtotalCents, pointsBalance);
+  const discountCents = Math.min(pointsToRedeem, maxRedeemable);
+  const totalCents = subtotalCents - discountCents;
+
+  useEffect(() => {
+    if (sessionStatus !== "authenticated") return;
+    let cancelled = false;
+    fetch("/api/loyalty")
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        setPointsBalance(data.balance ?? 0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionStatus]);
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -30,13 +52,17 @@ export default function CheckoutPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (pointsToRedeem > 0 && pointsToRedeem < MIN_REDEEM_POINTS) {
+      setError(t.errors.POINTS_BELOW_MINIMUM);
+      return;
+    }
     setError(null);
     setSubmitting(true);
 
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, lang: locale }),
+      body: JSON.stringify({ ...form, lang: locale, pointsToRedeem: discountCents }),
     });
     const data = await res.json();
 
@@ -83,11 +109,54 @@ export default function CheckoutPage() {
                 <span>{formatPriceCents(i.product.priceCents * i.quantity, "EUR")}</span>
               </div>
             ))}
+            {discountCents > 0 && (
+              <div className="line" style={{ color: "#2e7d32" }}>
+                <span>{t.loyalty.discountLine}</span>
+                <span>-{formatPriceCents(discountCents, "EUR")}</span>
+              </div>
+            )}
             <div className="line" style={{ fontWeight: 700, borderTop: "1px solid var(--line-dark)", marginTop: 6, paddingTop: 10 }}>
               <span>{t.checkout.total}</span>
-              <span>{formatPriceCents(subtotalCents, "EUR")}</span>
+              <span>{formatPriceCents(totalCents, "EUR")}</span>
             </div>
           </div>
+
+          {sessionStatus === "authenticated" && maxRedeemable > 0 && (
+            <div className="points-redeem-box">
+              <div>{t.loyalty.redeemAtCheckout.replace("{balance}", String(pointsBalance)).replace("{max}", String(maxRedeemable))}</div>
+              <div className="points-redeem-row">
+                <input
+                  type="number"
+                  min={0}
+                  max={maxRedeemable}
+                  step={1}
+                  value={pointsToRedeem}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setPointsToRedeem(Number.isFinite(v) ? Math.max(0, Math.min(v, maxRedeemable)) : 0);
+                  }}
+                  placeholder={String(MIN_REDEEM_POINTS)}
+                />
+                <button type="button" className="btn btn-ghost-outline" onClick={() => setPointsToRedeem(maxRedeemable)}>
+                  {t.loyalty.useMax}
+                </button>
+                {pointsToRedeem > 0 && (
+                  <button type="button" className="btn btn-ghost-outline" onClick={() => setPointsToRedeem(0)}>
+                    {t.loyalty.clear}
+                  </button>
+                )}
+              </div>
+              {pointsToRedeem > 0 && pointsToRedeem < MIN_REDEEM_POINTS && (
+                <p className="field-error">{t.errors.POINTS_BELOW_MINIMUM}</p>
+              )}
+            </div>
+          )}
+
+          {totalCents > 0 && (
+            <p style={{ fontSize: "0.82rem", opacity: 0.65, marginTop: -8, marginBottom: 16 }}>
+              {t.loyalty.earnEstimate.replace("{points}", String(pointsEarnedForPaidCents(totalCents)))}
+            </p>
+          )}
 
           <form className="auth-form" onSubmit={onSubmit}>
             <div className="field">

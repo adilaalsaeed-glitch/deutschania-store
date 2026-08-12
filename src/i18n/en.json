@@ -13,6 +13,8 @@
     "helpSettings": "Help & Settings",
     "yourAccount": "Your Account",
     "help": "Help",
+    "myPoints": "My Points",
+    "signOut": "Sign out",
     "groupDe": "Your guide to German products",
     "groupAr": "Products headed to Germany"
   },
@@ -173,6 +175,22 @@
     "saving": "Saving...",
     "productCol": "Product"
   },
+  "loyalty": {
+    "title": "My Points",
+    "subtitle": "Earn 1 point for every euro you pay, and redeem them for discounts on future orders.",
+    "balanceLabel": "Current balance",
+    "balanceHint": "100 points = €1 discount. Points never expire.",
+    "empty": "No points activity yet.",
+    "earned": "Points earned",
+    "redeemed": "Points redeemed",
+    "refunded": "Points refunded",
+    "order": "Order",
+    "discountLine": "Points discount",
+    "redeemAtCheckout": "You have {balance} points. You can use up to {max} points on this order.",
+    "useMax": "Use max",
+    "clear": "Clear",
+    "earnEstimate": "You'll earn about {points} points from this order."
+  },
   "errors": {
     "INVALID_CREDENTIALS": "Invalid email or password.",
     "EMAIL_EXISTS": "An account with this email already exists.",
@@ -182,6 +200,10 @@
     "FORBIDDEN": "You don't have permission to do that.",
     "PAYMENT_FAILED": "Could not start payment. Please try again.",
     "UNAUTHORIZED": "Please log in first.",
-    "UNKNOWN": "Something went wrong. Please try again."
+    "UNKNOWN": "Something went wrong. Please try again.",
+    "POINTS_BELOW_MINIMUM": "The minimum redemption is 100 points.",
+    "POINTS_INSUFFICIENT_BALANCE": "You don't have enough points.",
+    "POINTS_EXCEEDS_CAP": "Points can cover at most 5% of the order value.",
+    "POINTS_LOGIN_REQUIRED": "Log in to use your points."
   }
 }

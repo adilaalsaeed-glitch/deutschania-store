@@ -51,6 +51,7 @@ export function Header({
   const { ids: compareIds, openModal: openCompareModal } = useCompare();
   const { data: session } = useSession();
   const [langOpen, setLangOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
 
   return (
     <header className="site">
@@ -78,9 +79,29 @@ export function Header({
 
         <div className="nav-right">
           {session?.user ? (
-            <button className="icon-circle" aria-label="Account" onClick={() => signOut()} title={session.user.name ?? ""}>
-              👤
-            </button>
+            <div className="lang-menu-wrap">
+              <button
+                className="icon-circle"
+                aria-label="Account"
+                onClick={() => setAccountOpen((v) => !v)}
+                title={session.user.name ?? ""}
+              >
+                👤
+              </button>
+              <div className={`lang-menu${accountOpen ? " open" : ""}`}>
+                <Link href="/account/points" onClick={() => setAccountOpen(false)}>
+                  {t.nav.myPoints}
+                </Link>
+                <button
+                  onClick={() => {
+                    setAccountOpen(false);
+                    signOut();
+                  }}
+                >
+                  {t.nav.signOut}
+                </button>
+              </div>
+            </div>
           ) : (
             <Link href="/login" className="icon-circle" aria-label="Account">
               👤
