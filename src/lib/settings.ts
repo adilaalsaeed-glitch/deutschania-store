@@ -4,6 +4,7 @@ const REFERRALS_ENABLED_KEY = "referrals_enabled";
 const CONTENT_COUPON_ENABLED_KEY = "content_coupon_enabled";
 const CONTENT_COUPON_PERCENTAGE_KEY = "content_coupon_percentage";
 const CONTENT_COUPON_MIN_ORDER_CENTS_KEY = "content_coupon_min_order_cents";
+const TESTIMONIALS_ENABLED_KEY = "testimonials_enabled";
 
 const CONTENT_COUPON_PERCENTAGE_DEFAULT = 10;
 const CONTENT_COUPON_MIN_ORDER_CENTS_DEFAULT = 5000; // €50
@@ -63,4 +64,13 @@ export async function setContentCouponTerms(terms: { percentage: number; minOrde
   ]);
 }
 
-export { REFERRALS_ENABLED_KEY, CONTENT_COUPON_ENABLED_KEY };
+export async function isTestimonialsEnabled(): Promise<boolean> {
+  const value = await getSetting(TESTIMONIALS_ENABLED_KEY);
+  return value === "true";
+}
+
+export async function setTestimonialsEnabled(enabled: boolean): Promise<void> {
+  await setSetting(TESTIMONIALS_ENABLED_KEY, enabled ? "true" : "false");
+}
+
+export { REFERRALS_ENABLED_KEY, CONTENT_COUPON_ENABLED_KEY, TESTIMONIALS_ENABLED_KEY };

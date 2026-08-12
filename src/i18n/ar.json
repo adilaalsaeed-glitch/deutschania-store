@@ -194,7 +194,11 @@
     "reject": "رفض",
     "statusPending": "قيد المراجعة",
     "statusApproved": "تمت الموافقة",
-    "statusRejected": "مرفوض"
+    "statusRejected": "مرفوض",
+    "testimonialsEnabled": "تفعيل معرض تجارب العملاء",
+    "submissionThumbnail": "الصورة المصغّرة",
+    "thumbnailAuto": "تُجلب تلقائيًا (تيك توك)",
+    "thumbnailManualPlaceholder": "رابط صورة (اختياري)"
   },
   "referral": {
     "subtitle": "شارك رابطك مع أصدقائك. لما يسجّلون ويكملون أول طلب فعلي، تحصلون كلكم على كوبون خصم 7 يورو.",
@@ -241,6 +245,17 @@
     "discountValue": "خصم {percentage}% (بحد أدنى طلب {minOrder})",
     "notAvailable": "هذا البرنامج غير متاح حاليًا.",
     "goToContentCoupon": "قدّم فيديو الآن"
+  },
+  "testimonials": {
+    "title": "تجارب عملائنا",
+    "subtitle": "شاهد تجارب حقيقية من عملائنا مع منتجاتنا.",
+    "seeMore": "شاهد المزيد",
+    "empty": "لا توجد فيديوهات معتمدة حتى الآن.",
+    "notAvailable": "هذا القسم غير متاح حاليًا.",
+    "fullscreen": "ملء الشاشة",
+    "unavailable": "تعذّر عرض الفيديو هنا حاليًا.",
+    "viewExternal": "مشاهدة على المنصة الأصلية",
+    "byCustomer": "من {name}"
   },
   "rewards": {
     "title": "برامج المكافآت",

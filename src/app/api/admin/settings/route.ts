@@ -8,6 +8,8 @@ import {
   setContentCouponEnabled,
   getContentCouponTerms,
   setContentCouponTerms,
+  isTestimonialsEnabled,
+  setTestimonialsEnabled,
 } from "@/lib/settings";
 
 const updateSchema = z.object({
@@ -15,19 +17,22 @@ const updateSchema = z.object({
   contentCouponEnabled: z.boolean().optional(),
   contentCouponPercentage: z.number().int().min(1).max(100).optional(),
   contentCouponMinOrderCents: z.number().int().min(0).optional(),
+  testimonialsEnabled: z.boolean().optional(),
 });
 
 async function currentSettings() {
-  const [referralsEnabled, contentCouponEnabled, terms] = await Promise.all([
+  const [referralsEnabled, contentCouponEnabled, terms, testimonialsEnabled] = await Promise.all([
     isReferralsEnabled(),
     isContentCouponEnabled(),
     getContentCouponTerms(),
+    isTestimonialsEnabled(),
   ]);
   return {
     referralsEnabled,
     contentCouponEnabled,
     contentCouponPercentage: terms.percentage,
     contentCouponMinOrderCents: terms.minOrderCents,
+    testimonialsEnabled,
   };
 }
 
@@ -65,6 +70,9 @@ export async function PATCH(request: Request) {
       percentage: data.contentCouponPercentage ?? current.percentage,
       minOrderCents: data.contentCouponMinOrderCents ?? current.minOrderCents,
     });
+  }
+  if (data.testimonialsEnabled !== undefined) {
+    await setTestimonialsEnabled(data.testimonialsEnabled);
   }
 
   return NextResponse.json(await currentSettings());

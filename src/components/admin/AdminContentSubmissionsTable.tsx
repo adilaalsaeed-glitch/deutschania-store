@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
+import { detectPlatform } from "@/lib/testimonials";
 
 type Row = {
   id: string;
@@ -15,14 +16,16 @@ type Row = {
 export function AdminContentSubmissionsTable({ submissions }: { submissions: Row[] }) {
   const { t } = useLocale();
   const [rows, setRows] = useState(submissions);
+  const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const [actingId, setActingId] = useState<string | null>(null);
 
   async function decide(id: string, action: "approve" | "reject") {
     setActingId(id);
+    const thumbnailUrl = thumbnails[id]?.trim();
     const res = await fetch(`/api/admin/content-submissions/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action }),
+      body: JSON.stringify({ action, ...(action === "approve" && thumbnailUrl ? { thumbnailUrl } : {}) }),
     });
     setActingId(null);
     if (res.ok) {
@@ -50,6 +53,7 @@ export function AdminContentSubmissionsTable({ submissions }: { submissions: Row
               <th>{t.admin.submissionProfile}</th>
               <th>{t.admin.submissionVideo}</th>
               <th>{t.admin.submissionStatus}</th>
+              <th>{t.admin.submissionThumbnail}</th>
               <th></th>
             </tr>
           </thead>
@@ -72,6 +76,19 @@ export function AdminContentSubmissionsTable({ submissions }: { submissions: Row
                   </a>
                 </td>
                 <td>{statusLabel[r.status]}</td>
+                <td>
+                  {r.status === "PENDING" &&
+                    (detectPlatform(r.videoUrl) === "tiktok" ? (
+                      <span style={{ fontSize: "0.78rem", opacity: 0.6 }}>{t.admin.thumbnailAuto}</span>
+                    ) : (
+                      <input
+                        placeholder={t.admin.thumbnailManualPlaceholder}
+                        value={thumbnails[r.id] ?? ""}
+                        onChange={(e) => setThumbnails((prev) => ({ ...prev, [r.id]: e.target.value }))}
+                        style={{ minWidth: 160 }}
+                      />
+                    ))}
+                </td>
                 <td>
                   {r.status === "PENDING" && (
                     <div style={{ display: "flex", gap: 6 }}>

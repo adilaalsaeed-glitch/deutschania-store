@@ -194,7 +194,11 @@
     "reject": "Ablehnen",
     "statusPending": "In Prüfung",
     "statusApproved": "Genehmigt",
-    "statusRejected": "Abgelehnt"
+    "statusRejected": "Abgelehnt",
+    "testimonialsEnabled": "Kundenerfahrungen-Galerie aktivieren",
+    "submissionThumbnail": "Vorschaubild",
+    "thumbnailAuto": "Wird automatisch abgerufen (TikTok)",
+    "thumbnailManualPlaceholder": "Bild-URL (optional)"
   },
   "referral": {
     "subtitle": "Teilen Sie Ihren Link mit Freunden. Wenn sie sich registrieren und ihre erste echte Bestellung abschließen, erhalten Sie beide einen 7-€-Rabattgutschein.",
@@ -241,6 +245,17 @@
     "discountValue": "{percentage}% Rabatt (Mindestbestellwert {minOrder})",
     "notAvailable": "Dieses Programm ist noch nicht verfügbar.",
     "goToContentCoupon": "Jetzt Video einreichen"
+  },
+  "testimonials": {
+    "title": "Kundenerfahrungen",
+    "subtitle": "Echte Erfahrungen unserer Kunden mit unseren Produkten.",
+    "seeMore": "Mehr ansehen",
+    "empty": "Noch keine genehmigten Videos.",
+    "notAvailable": "Dieser Bereich ist noch nicht verfügbar.",
+    "fullscreen": "Vollbild",
+    "unavailable": "Dieses Video konnte hier gerade nicht angezeigt werden.",
+    "viewExternal": "Auf der Originalplattform ansehen",
+    "byCustomer": "Von {name}"
   },
   "rewards": {
     "title": "Prämienprogramme",

@@ -223,6 +223,26 @@ body.rtl .filter-panel{transform:translateX(-100%);}
 .compare-remove{position:absolute;top:6px;inset-inline-end:6px;}
 .compare-add{margin-top:8px;}
 
+/* TESTIMONIALS */
+.testimonials-section{background:var(--sand);padding:48px 20px;}
+.testimonials-section-inner{max-width:1240px;margin:0 auto;}
+.testimonials-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:22px;}
+.testimonials-head h2{font-family:'Fraunces',serif;font-size:1.6rem;color:var(--ink);margin:0;}
+.testimonials-head a{font-size:0.88rem;color:var(--steel);text-decoration:underline;white-space:nowrap;}
+.testimonials-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;}
+.testimonial-card{background:#fff;border:none;border-radius:8px;overflow:hidden;cursor:pointer;padding:0;text-align:start;display:flex;flex-direction:column;}
+.testimonial-card-media{position:relative;aspect-ratio:9/16;background:var(--ink-soft);display:flex;align-items:center;justify-content:center;}
+.testimonial-card-media img{width:100%;height:100%;object-fit:cover;}
+.testimonial-card-placeholder{font-size:2rem;opacity:.7;}
+.testimonial-play-badge{position:absolute;inset:0;margin:auto;width:38px;height:38px;border-radius:50%;background:rgba(27,40,54,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+.testimonial-card-name{padding:8px 10px;font-size:0.82rem;color:var(--dark-text);}
+
+.testimonial-modal{max-width:420px;padding:16px;}
+.testimonial-modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px;padding-inline-end:26px;font-size:0.9rem;font-weight:600;}
+.testimonial-fullscreen-btn{padding:6px 12px;font-size:0.78rem;}
+.testimonial-embed-container{min-height:200px;background:var(--sand);border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.testimonial-fallback{padding:30px 16px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;}
+
 /* PROCESS */
 .process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
 @media (max-width:900px){.process-grid{grid-template-columns:1fr 1fr;}}

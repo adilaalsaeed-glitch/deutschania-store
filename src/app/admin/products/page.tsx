@@ -4,7 +4,12 @@ import { prisma } from "@/lib/db";
 import { AdminProductsTable } from "@/components/admin/AdminProductsTable";
 import { AdminSettingsPanel } from "@/components/admin/AdminSettingsPanel";
 import { AdminNav } from "@/components/admin/AdminNav";
-import { isReferralsEnabled, isContentCouponEnabled, getContentCouponTerms } from "@/lib/settings";
+import {
+  isReferralsEnabled,
+  isContentCouponEnabled,
+  getContentCouponTerms,
+  isTestimonialsEnabled,
+} from "@/lib/settings";
 
 export default async function AdminProductsPage() {
   const session = await auth();
@@ -12,7 +17,7 @@ export default async function AdminProductsPage() {
     redirect("/login");
   }
 
-  const [products, referralsEnabled, contentCouponEnabled, contentCouponTerms] = await Promise.all([
+  const [products, referralsEnabled, contentCouponEnabled, contentCouponTerms, testimonialsEnabled] = await Promise.all([
     prisma.product.findMany({
       select: { id: true, slug: true, brand: true, name: true, priceCents: true },
       orderBy: { brand: "asc" },
@@ -20,6 +25,7 @@ export default async function AdminProductsPage() {
     isReferralsEnabled(),
     isContentCouponEnabled(),
     getContentCouponTerms(),
+    isTestimonialsEnabled(),
   ]);
 
   return (
@@ -31,6 +37,7 @@ export default async function AdminProductsPage() {
           contentCouponEnabled={contentCouponEnabled}
           contentCouponPercentage={contentCouponTerms.percentage}
           contentCouponMinOrderCents={contentCouponTerms.minOrderCents}
+          testimonialsEnabled={testimonialsEnabled}
         />
         <AdminProductsTable products={products as never} />
       </div>

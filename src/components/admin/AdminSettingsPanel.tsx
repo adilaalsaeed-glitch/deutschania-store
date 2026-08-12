@@ -8,17 +8,20 @@ export function AdminSettingsPanel({
   contentCouponEnabled,
   contentCouponPercentage,
   contentCouponMinOrderCents,
+  testimonialsEnabled,
 }: {
   referralsEnabled: boolean;
   contentCouponEnabled: boolean;
   contentCouponPercentage: number;
   contentCouponMinOrderCents: number;
+  testimonialsEnabled: boolean;
 }) {
   const { t } = useLocale();
   const [referrals, setReferrals] = useState(referralsEnabled);
   const [contentCoupon, setContentCoupon] = useState(contentCouponEnabled);
   const [percentage, setPercentage] = useState(contentCouponPercentage);
   const [minOrderEuros, setMinOrderEuros] = useState(contentCouponMinOrderCents / 100);
+  const [testimonials, setTestimonials] = useState(testimonialsEnabled);
   const [saving, setSaving] = useState(false);
 
   async function patch(body: Record<string, unknown>) {
@@ -47,6 +50,11 @@ export function AdminSettingsPanel({
       contentCouponPercentage: percentage,
       contentCouponMinOrderCents: Math.round(minOrderEuros * 100),
     });
+  }
+
+  async function toggleTestimonials() {
+    const next = !testimonials;
+    if (await patch({ testimonialsEnabled: next })) setTestimonials(next);
   }
 
   return (
@@ -86,6 +94,10 @@ export function AdminSettingsPanel({
           />
         </div>
       </div>
+      <label className="admin-toggle-row" style={{ marginTop: 14 }}>
+        <input type="checkbox" checked={testimonials} disabled={saving} onChange={toggleTestimonials} />
+        <span>{t.admin.testimonialsEnabled}</span>
+      </label>
     </div>
   );
 }

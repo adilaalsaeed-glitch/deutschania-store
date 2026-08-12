@@ -175,6 +175,7 @@ model ContentSubmission {
   user              User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   profileUrl        String
   videoUrl          String
+  thumbnailUrl      String? // set at approval time: auto-fetched for TikTok (public oEmbed), manual for Instagram (no public oEmbed access)
   consentAcceptedAt DateTime
   status            ContentSubmissionStatus  @default(PENDING)
   reviewedBy        String?

@@ -10,8 +10,10 @@ import { ShopSection } from "@/components/shop/ShopSection";
 import { ProcessSection } from "@/components/ProcessSection";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { MarketNotice } from "@/components/MarketNotice";
+import { TestimonialsSnippet } from "@/components/testimonials/TestimonialsSnippet";
 import type { ProductListItem } from "@/types/product";
 import type { Locale } from "@/i18n/config";
+import type { TestimonialItem } from "@/lib/testimonials";
 
 type Category = { key: string; label: Record<Locale, string>; icon: string; color: string };
 
@@ -21,12 +23,14 @@ export function StorefrontClient({
   initialCategoryKey = "all",
   initialSearchQuery = "",
   initialWishOnly = false,
+  testimonials = [],
 }: {
   products: ProductListItem[];
   categories: Category[];
   initialCategoryKey?: string;
   initialSearchQuery?: string;
   initialWishOnly?: boolean;
+  testimonials?: TestimonialItem[];
 }) {
   const { t } = useLocale();
   // Initialized directly from server-read searchParams (via props), not window.location:
@@ -122,6 +126,7 @@ export function StorefrontClient({
         onCategoryChange={setCategoryKey}
         wishOnly={wishOnly}
       />
+      <TestimonialsSnippet items={testimonials} />
       <ProcessSection />
       <Footer />
     </>

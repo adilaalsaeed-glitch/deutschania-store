@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/db";
 import { StorefrontClient } from "@/components/StorefrontClient";
 import type { ProductListItem } from "@/types/product";
+import { isTestimonialsEnabled } from "@/lib/settings";
+import { getApprovedTestimonials } from "@/lib/testimonials-data";
+
+const HOMEPAGE_TESTIMONIALS_LIMIT = 6;
 
 export default async function Home({
   searchParams,
@@ -12,7 +16,9 @@ export default async function Home({
   const initialSearchQuery = params.q ?? "";
   const initialWishOnly = params.wish === "1";
 
-  const [products, categories] = await Promise.all([
+  const testimonialsEnabled = await isTestimonialsEnabled();
+
+  const [products, categories, testimonials] = await Promise.all([
     prisma.product.findMany({
       select: {
         id: true,
@@ -34,6 +40,7 @@ export default async function Home({
       select: { key: true, label: true, icon: true, color: true },
       orderBy: { sortOrder: "asc" },
     }),
+    testimonialsEnabled ? getApprovedTestimonials(HOMEPAGE_TESTIMONIALS_LIMIT) : Promise.resolve([]),
   ]);
 
   return (
@@ -48,6 +55,7 @@ export default async function Home({
       initialCategoryKey={initialCategoryKey}
       initialSearchQuery={initialSearchQuery}
       initialWishOnly={initialWishOnly}
+      testimonials={testimonials}
     />
   );
 }

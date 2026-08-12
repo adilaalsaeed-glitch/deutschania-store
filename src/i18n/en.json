@@ -194,7 +194,11 @@
     "reject": "Reject",
     "statusPending": "Pending",
     "statusApproved": "Approved",
-    "statusRejected": "Rejected"
+    "statusRejected": "Rejected",
+    "testimonialsEnabled": "Enable Customer Testimonials Gallery",
+    "submissionThumbnail": "Thumbnail",
+    "thumbnailAuto": "Fetched automatically (TikTok)",
+    "thumbnailManualPlaceholder": "Image URL (optional)"
   },
   "referral": {
     "subtitle": "Share your link with friends. When they register and complete their first real order, you both get a €7 discount coupon.",
@@ -241,6 +245,17 @@
     "discountValue": "{percentage}% off (minimum order {minOrder})",
     "notAvailable": "This program isn't available yet.",
     "goToContentCoupon": "Submit a video now"
+  },
+  "testimonials": {
+    "title": "Customer Experiences",
+    "subtitle": "Real experiences from our customers with our products.",
+    "seeMore": "See more",
+    "empty": "No approved videos yet.",
+    "notAvailable": "This section isn't available yet.",
+    "fullscreen": "Fullscreen",
+    "unavailable": "This video couldn't be displayed here right now.",
+    "viewExternal": "View on the original platform",
+    "byCustomer": "By {name}"
   },
   "rewards": {
     "title": "Rewards Programs",
