@@ -5,6 +5,9 @@ import { prisma } from "@/lib/db";
 import { getCartWithProducts } from "@/lib/cart";
 import { createHostedPaymentPage } from "@/lib/paytabs";
 import { validateRedemption } from "@/lib/loyalty";
+import { SUPPORTED_COUNTRIES, type CountryCode } from "@/data/countries";
+
+const countryCodes = SUPPORTED_COUNTRIES.map((c) => c.code) as [CountryCode, ...CountryCode[]];
 
 const checkoutSchema = z.object({
   fullName: z.string().min(1).max(120),
@@ -12,7 +15,7 @@ const checkoutSchema = z.object({
   address: z.string().min(1).max(200),
   city: z.string().min(1).max(100),
   postal: z.string().min(1).max(20),
-  country: z.string().min(1).max(100),
+  country: z.enum(countryCodes),
   phone: z.string().min(1).max(30),
   lang: z.enum(["ar", "de", "en"]).default("en"),
   pointsToRedeem: z.number().int().nonnegative().optional().default(0),
@@ -26,7 +29,8 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const parsed = checkoutSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "VALIDATION_ERROR" }, { status: 400 });
+    const countryIssue = parsed.error.issues.some((i) => i.path.includes("country"));
+    return NextResponse.json({ error: countryIssue ? "COUNTRY_NOT_SUPPORTED" : "VALIDATION_ERROR" }, { status: 400 });
   }
 
   const { identity, items } = await getCartWithProducts();

@@ -1,5 +1,6 @@
 {
   "announce": "German quality... in your hands.",
+  "marketNotice": "🇸🇦 We currently ship only to Saudi Arabia, the UAE and Qatar",
   "nav": {
     "cart": "Cart",
     "compare": "Compare",
@@ -147,6 +148,8 @@
     "buildingNo": "Building number",
     "city": "City",
     "postal": "Postal code",
+    "country": "Country",
+    "selectCountry": "Select country",
     "mobile": "Mobile number",
     "reviewTitle": "Review your details",
     "reviewSubtitle": "Make sure everything is correct before creating your account.",
@@ -240,6 +243,7 @@
     "POINTS_BELOW_MINIMUM": "The minimum redemption is 100 points.",
     "POINTS_INSUFFICIENT_BALANCE": "You don't have enough points.",
     "POINTS_EXCEEDS_CAP": "Points can cover at most 5% of the order value.",
-    "POINTS_LOGIN_REQUIRED": "Log in to use your points."
+    "POINTS_LOGIN_REQUIRED": "Log in to use your points.",
+    "COUNTRY_NOT_SUPPORTED": "Sorry, we currently only serve Saudi Arabia, the UAE and Qatar."
   }
 }

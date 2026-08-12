@@ -9,6 +9,7 @@ import { Hero } from "@/components/Hero";
 import { ShopSection } from "@/components/shop/ShopSection";
 import { ProcessSection } from "@/components/ProcessSection";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { MarketNotice } from "@/components/MarketNotice";
 import type { ProductListItem } from "@/types/product";
 import type { Locale } from "@/i18n/config";
 
@@ -86,6 +87,7 @@ export function StorefrontClient({
       <div className="announce">
         <span>{t.announce}</span>
       </div>
+      <MarketNotice />
       <Header
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}

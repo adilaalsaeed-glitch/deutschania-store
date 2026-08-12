@@ -1,5 +1,6 @@
 {
   "announce": "Deutsche Qualität... in Ihren Händen.",
+  "marketNotice": "🇸🇦 Wir liefern derzeit nur nach Saudi-Arabien, in die VAE und nach Katar",
   "nav": {
     "cart": "Warenkorb",
     "compare": "Vergleichen",
@@ -147,6 +148,8 @@
     "buildingNo": "Hausnummer",
     "city": "Stadt",
     "postal": "Postleitzahl",
+    "country": "Land",
+    "selectCountry": "Land auswählen",
     "mobile": "Mobilnummer",
     "reviewTitle": "Angaben prüfen",
     "reviewSubtitle": "Bitte prüfen Sie alles, bevor Sie das Konto erstellen.",
@@ -240,6 +243,7 @@
     "POINTS_BELOW_MINIMUM": "Mindestens 100 Punkte können eingelöst werden.",
     "POINTS_INSUFFICIENT_BALANCE": "Ihr Punktestand reicht nicht aus.",
     "POINTS_EXCEEDS_CAP": "Punkte können höchstens 5 % des Bestellwerts abdecken.",
-    "POINTS_LOGIN_REQUIRED": "Melden Sie sich an, um Ihre Punkte zu nutzen."
+    "POINTS_LOGIN_REQUIRED": "Melden Sie sich an, um Ihre Punkte zu nutzen.",
+    "COUNTRY_NOT_SUPPORTED": "Leider sind wir derzeit nur in Saudi-Arabien, den VAE und Katar verfügbar."
   }
 }

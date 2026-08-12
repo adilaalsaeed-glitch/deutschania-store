@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { useLocale } from "@/components/LocaleProvider";
+import { CountrySelect, PhoneField } from "@/components/CountryPhoneField";
+import { combinePhone, countryName, type CountryCode } from "@/data/countries";
 
 type Step = 1 | 2 | 3;
 
@@ -21,6 +23,7 @@ type AddressFields = {
   street: string;
   buildingNo: string;
   city: string;
+  country: CountryCode | "";
   postal: string;
   mobile: string;
 };
@@ -94,6 +97,7 @@ function RegisterPageContent() {
     street: "",
     buildingNo: "",
     city: "",
+    country: "",
     postal: "",
     mobile: "",
   });
@@ -139,8 +143,9 @@ function RegisterPageContent() {
           street: address.street,
           buildingNo: address.buildingNo || undefined,
           city: address.city,
+          country: address.country,
           postal: address.postal,
-          mobile: address.mobile,
+          mobile: combinePhone(address.country, address.mobile),
         },
         lang: locale,
         ref,
@@ -241,9 +246,18 @@ function RegisterPageContent() {
                     <input required value={address.postal} onChange={(e) => setAddressField("postal", e.target.value)} />
                   </div>
                   <div className="field">
-                    <label>{t.auth.mobile}</label>
-                    <input required type="tel" value={address.mobile} onChange={(e) => setAddressField("mobile", e.target.value)} />
+                    <label>{t.auth.country}</label>
+                    <CountrySelect required value={address.country} onChange={(v) => setAddressField("country", v)} />
                   </div>
+                </div>
+                <div className="field">
+                  <label>{t.auth.mobile}</label>
+                  <PhoneField
+                    required
+                    country={address.country}
+                    localNumber={address.mobile}
+                    onLocalNumberChange={(v) => setAddressField("mobile", v)}
+                  />
                 </div>
                 <div className="reg-nav">
                   <button type="button" className="btn btn-ghost-outline" onClick={() => setStep(1)}>
@@ -279,12 +293,15 @@ function RegisterPageContent() {
                     <tr>
                       <td>{t.auth.addressTitle}</td>
                       <td>
-                        {address.street} {address.buildingNo}, {address.city} {address.postal}
+                        {address.street} {address.buildingNo}, {address.city} {address.postal},{" "}
+                        {address.country && countryName(address.country, locale)}
                       </td>
                     </tr>
                     <tr>
                       <td>{t.auth.mobile}</td>
-                      <td>{address.mobile}</td>
+                      <td dir="ltr" style={{ textAlign: "start" }}>
+                        {combinePhone(address.country, address.mobile)}
+                      </td>
                     </tr>
                   </tbody>
                 </table>

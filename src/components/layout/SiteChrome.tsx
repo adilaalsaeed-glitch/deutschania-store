@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { SideMenu } from "@/components/layout/SideMenu";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Footer } from "@/components/layout/Footer";
+import { MarketNotice } from "@/components/MarketNotice";
 import { useLocale } from "@/components/LocaleProvider";
 import type { Locale } from "@/i18n/config";
 
@@ -30,6 +31,7 @@ export function SiteChrome({
       <div className="announce">
         <span>{t.announce}</span>
       </div>
+      <MarketNotice />
       <Header
         searchQuery={searchQuery}
         onSearchChange={(q) => {

@@ -5,11 +5,15 @@ import { prisma } from "@/lib/db";
 import { createVerificationToken } from "@/lib/verification";
 import { sendVerificationEmail } from "@/lib/email";
 import { isReferralsEnabled } from "@/lib/settings";
+import { SUPPORTED_COUNTRIES, type CountryCode } from "@/data/countries";
+
+const countryCodes = SUPPORTED_COUNTRIES.map((c) => c.code) as [CountryCode, ...CountryCode[]];
 
 const addressSchema = z.object({
   street: z.string().min(1).max(200),
   buildingNo: z.string().max(50).optional(),
   city: z.string().min(1).max(100),
+  country: z.enum(countryCodes),
   postal: z.string().min(1).max(20),
   mobile: z.string().min(1).max(30),
 });
@@ -29,7 +33,8 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const parsed = registerSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "VALIDATION_ERROR" }, { status: 400 });
+    const countryIssue = parsed.error.issues.some((i) => i.path.includes("country"));
+    return NextResponse.json({ error: countryIssue ? "COUNTRY_NOT_SUPPORTED" : "VALIDATION_ERROR" }, { status: 400 });
   }
 
   const { firstName, lastName, email, password, dateOfBirth, address, lang, ref } = parsed.data;
@@ -65,7 +70,7 @@ export async function POST(request: Request) {
                   buildingNo: address.buildingNo,
                   city: address.city,
                   postalCode: address.postal,
-                  country: "",
+                  country: address.country,
                   phone: address.mobile,
                   isDefault: true,
                 },

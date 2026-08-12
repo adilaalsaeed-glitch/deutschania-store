@@ -20,6 +20,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
 /* ANNOUNCEMENT */
 .announce{background:var(--cream-yellow);color:var(--ink);text-align:center;padding:9px 16px;font-size:0.86rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;}
+.market-notice{background:var(--ink-soft);color:var(--cream-text);text-align:center;padding:5px 16px;font-size:0.74rem;font-weight:500;}
 
 /* HEADER */
 header.site{position:sticky;top:0;z-index:100;background:var(--ink);color:var(--cream-text);}
@@ -311,6 +312,9 @@ body.rtl .drawer{transform:translateX(-100%);}
 .form-note{font-size:0.79rem;opacity:.6;margin-top:8px;}
 .pw-wrap{position:relative;}
 .pw-wrap input{width:100%;padding-inline-end:42px;}
+.phone-field-row{display:flex;direction:ltr;}
+.phone-field-row .phone-dial-code{display:flex;align-items:center;padding:0 12px;border:1px solid var(--line-dark);border-inline-end:none;border-radius:4px 0 0 4px;background:var(--sand);font-size:0.9rem;color:var(--dark-text);white-space:nowrap;}
+.phone-field-row input{border-radius:0 4px 4px 0;text-align:start;}
 .pw-toggle{position:absolute;top:0;inset-inline-end:0;height:100%;width:38px;background:none;border:none;font-size:1rem;opacity:.6;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .pw-toggle:hover{opacity:1;}
 .reg-steps{display:flex;align-items:center;margin-bottom:26px;}

@@ -8,12 +8,24 @@ import { useLocale } from "@/components/LocaleProvider";
 import { useCart } from "@/components/cart/CartProvider";
 import { formatPriceCents } from "@/lib/currency";
 import { maxRedeemablePoints, pointsEarnedForPaidCents, MIN_REDEEM_POINTS } from "@/lib/loyalty";
+import { CountrySelect, PhoneField } from "@/components/CountryPhoneField";
+import { combinePhone, type CountryCode } from "@/data/countries";
+
+type CheckoutForm = {
+  fullName: string;
+  email: string;
+  address: string;
+  city: string;
+  postal: string;
+  country: CountryCode | "";
+  phone: string;
+};
 
 export default function CheckoutPage() {
   const { locale, t } = useLocale();
   const { items } = useCart();
   const { status: sessionStatus } = useSession();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<CheckoutForm>({
     fullName: "",
     email: "",
     address: "",
@@ -46,7 +58,7 @@ export default function CheckoutPage() {
     };
   }, [sessionStatus]);
 
-  function set<K extends keyof typeof form>(key: K, value: string) {
+  function set<K extends keyof CheckoutForm>(key: K, value: CheckoutForm[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
@@ -62,7 +74,12 @@ export default function CheckoutPage() {
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, lang: locale, pointsToRedeem: discountCents }),
+      body: JSON.stringify({
+        ...form,
+        phone: combinePhone(form.country, form.phone),
+        lang: locale,
+        pointsToRedeem: discountCents,
+      }),
     });
     const data = await res.json();
 
@@ -184,11 +201,16 @@ export default function CheckoutPage() {
             <div className="field-row">
               <div className="field">
                 <label>{t.checkout.country}</label>
-                <input required value={form.country} onChange={(e) => set("country", e.target.value)} />
+                <CountrySelect required value={form.country} onChange={(v) => set("country", v)} />
               </div>
               <div className="field">
                 <label>{t.checkout.phone}</label>
-                <input required value={form.phone} onChange={(e) => set("phone", e.target.value)} />
+                <PhoneField
+                  required
+                  country={form.country}
+                  localNumber={form.phone}
+                  onLocalNumberChange={(v) => set("phone", v)}
+                />
               </div>
             </div>
             {error && <p className="field-error">{error}</p>}
