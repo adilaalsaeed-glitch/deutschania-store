@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { SiteChrome } from "@/components/layout/SiteChrome";
 import { useLocale } from "@/components/LocaleProvider";
 import { formatPriceCents } from "@/lib/currency";
 
@@ -50,15 +49,12 @@ export default function ReferralsPage() {
 
   if (sessionStatus === "loading") {
     return (
-      <SiteChrome>
         <section className="cart-page" />
-      </SiteChrome>
     );
   }
 
   if (sessionStatus !== "authenticated") {
     return (
-      <SiteChrome>
         <section className="cart-page">
           <div className="cart-page-inner confirm-box">
             <h1 className="auth-title">{t.rewards.referralTitle}</h1>
@@ -68,21 +64,17 @@ export default function ReferralsPage() {
             </Link>
           </div>
         </section>
-      </SiteChrome>
     );
   }
 
   if (!data) {
     return (
-      <SiteChrome>
         <section className="cart-page" />
-      </SiteChrome>
     );
   }
 
   if (!data.enabled) {
     return (
-      <SiteChrome>
         <section className="cart-page">
           <div className="cart-page-inner confirm-box">
             <h1 className="auth-title">{t.rewards.referralTitle}</h1>
@@ -92,7 +84,6 @@ export default function ReferralsPage() {
             </Link>
           </div>
         </section>
-      </SiteChrome>
     );
   }
 
@@ -103,7 +94,6 @@ export default function ReferralsPage() {
   };
 
   return (
-    <SiteChrome>
       <section className="cart-page">
         <div className="cart-page-inner">
           <h1 className="auth-title">{t.rewards.referralTitle}</h1>
@@ -148,6 +138,5 @@ export default function ReferralsPage() {
           </div>
         </div>
       </section>
-    </SiteChrome>
   );
 }

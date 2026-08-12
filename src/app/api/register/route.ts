@@ -16,6 +16,7 @@ const addressSchema = z.object({
   country: z.enum(countryCodes),
   postal: z.string().min(1).max(20),
   mobile: z.string().min(1).max(30),
+  landline: z.string().max(30).optional(),
 });
 
 const registerSchema = z.object({
@@ -72,13 +73,14 @@ export async function POST(request: Request) {
                   postalCode: address.postal,
                   country: address.country,
                   phone: address.mobile,
+                  landline: address.landline,
                   isDefault: true,
                 },
               },
             }
           : {}),
       },
-      select: { id: true, email: true, firstName: true },
+      select: { id: true, email: true },
     });
 
     if (referrerId) {
@@ -93,7 +95,7 @@ export async function POST(request: Request) {
   const verifyUrl = `${origin}/verify-email?token=${token}`;
 
   try {
-    await sendVerificationEmail({ to: user.email, firstName: user.firstName, verifyUrl, lang });
+    await sendVerificationEmail({ to: user.email, verifyUrl, lang });
   } catch (err) {
     // The account was created either way - don't fail registration over a flaky email send.
     // The user can request a fresh link from the login page.

@@ -26,6 +26,7 @@ type AddressFields = {
   country: CountryCode | "";
   postal: string;
   mobile: string;
+  landline: string;
 };
 
 function PasswordField({
@@ -100,6 +101,7 @@ function RegisterPageContent() {
     country: "",
     postal: "",
     mobile: "",
+    landline: "",
   });
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -146,6 +148,7 @@ function RegisterPageContent() {
           country: address.country,
           postal: address.postal,
           mobile: combinePhone(address.country, address.mobile),
+          landline: address.landline ? combinePhone(address.country, address.landline) : undefined,
         },
         lang: locale,
         ref,
@@ -259,6 +262,14 @@ function RegisterPageContent() {
                     onLocalNumberChange={(v) => setAddressField("mobile", v)}
                   />
                 </div>
+                <div className="field">
+                  <label>{t.auth.landline}</label>
+                  <PhoneField
+                    country={address.country}
+                    localNumber={address.landline}
+                    onLocalNumberChange={(v) => setAddressField("landline", v)}
+                  />
+                </div>
                 <div className="reg-nav">
                   <button type="button" className="btn btn-ghost-outline" onClick={() => setStep(1)}>
                     {t.auth.back}
@@ -303,6 +314,14 @@ function RegisterPageContent() {
                         {combinePhone(address.country, address.mobile)}
                       </td>
                     </tr>
+                    {address.landline && (
+                      <tr>
+                        <td>{t.auth.landline}</td>
+                        <td dir="ltr" style={{ textAlign: "start" }}>
+                          {combinePhone(address.country, address.landline)}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
                 {error && <p className="field-error">{error}</p>}

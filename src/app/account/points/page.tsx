@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { SiteChrome } from "@/components/layout/SiteChrome";
 import { useLocale } from "@/components/LocaleProvider";
 
 type Transaction = {
@@ -37,15 +36,12 @@ export default function PointsPage() {
 
   if (status === "loading") {
     return (
-      <SiteChrome>
         <section className="cart-page" />
-      </SiteChrome>
     );
   }
 
   if (status !== "authenticated") {
     return (
-      <SiteChrome>
         <section className="cart-page">
           <div className="cart-page-inner confirm-box">
             <h1 className="auth-title">{t.loyalty.title}</h1>
@@ -55,7 +51,6 @@ export default function PointsPage() {
             </Link>
           </div>
         </section>
-      </SiteChrome>
     );
   }
 
@@ -66,7 +61,6 @@ export default function PointsPage() {
   };
 
   return (
-    <SiteChrome>
       <section className="cart-page">
         <div className="cart-page-inner">
           <h1 className="auth-title">{t.loyalty.title}</h1>
@@ -101,6 +95,5 @@ export default function PointsPage() {
           </div>
         </div>
       </section>
-    </SiteChrome>
   );
 }

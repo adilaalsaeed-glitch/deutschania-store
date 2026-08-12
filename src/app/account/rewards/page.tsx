@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { SiteChrome } from "@/components/layout/SiteChrome";
 import { getDictionary, defaultLocale, isLocale, type Locale } from "@/i18n/config";
 import { auth } from "@/lib/auth";
 import { isReferralsEnabled, isContentCouponEnabled } from "@/lib/settings";
@@ -20,7 +19,6 @@ export default async function RewardsHubPage() {
   const myReferralLink = session?.user?.id ? referralUrl(siteOrigin(), session.user.id) : null;
 
   return (
-    <SiteChrome>
       <section className="cart-page">
         <div className="cart-page-inner">
           <h1 className="auth-title">{t.rewards.title}</h1>
@@ -95,6 +93,5 @@ export default async function RewardsHubPage() {
           </div>
         </div>
       </section>
-    </SiteChrome>
   );
 }

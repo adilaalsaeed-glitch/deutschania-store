@@ -30,3 +30,14 @@ export function combinePhone(code: CountryCode | "", localNumber: string): strin
   const digits = localNumber.replace(/\D/g, "").replace(/^0+/, "");
   return code ? `${dialCodeFor(code)}${digits}` : digits;
 }
+
+// Inverse of combinePhone, for pre-filling an edit form from a value stored as
+// dial-code + local number (e.g. "+966501234567" -> { country: "SA", localNumber: "501234567" }).
+export function splitPhone(value: string): { country: CountryCode | ""; localNumber: string } {
+  for (const c of SUPPORTED_COUNTRIES) {
+    if (value.startsWith(c.dialCode)) {
+      return { country: c.code, localNumber: value.slice(c.dialCode.length) };
+    }
+  }
+  return { country: "", localNumber: value };
+}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLocale } from "@/components/LocaleProvider";
 import { useCart } from "@/components/cart/CartProvider";
+import { useFlyToCart } from "@/components/FlyToCartProvider";
 import { formatPriceCents, type CurrencyCode } from "@/lib/currency";
 import { ProductIcon } from "@/components/shop/ProductIcon";
 import { WishButton } from "@/components/wishlist/WishButton";
@@ -12,6 +13,7 @@ import type { ProductListItem } from "@/types/product";
 export function ProductCard({ product }: { product: ProductListItem }) {
   const { locale, t } = useLocale();
   const { items, add, setQuantity } = useCart();
+  const { fly } = useFlyToCart();
   const currency: CurrencyCode = "EUR";
 
   const cartLine = items.find((i) => i.productId === product.id);
@@ -33,6 +35,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         aria-label={t.shop.addToCart}
         onClick={(e) => {
           e.preventDefault();
+          fly(e.currentTarget, product.imageUrl, product.icon);
           add(product.id);
         }}
       >

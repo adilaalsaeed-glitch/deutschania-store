@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useLocale } from "@/components/LocaleProvider";
 import { useCart } from "@/components/cart/CartProvider";
 import { useWishlist } from "@/components/wishlist/WishlistProvider";
 import { useCompare } from "@/components/compare/CompareProvider";
+import { useSignOutConfirm } from "@/components/SignOutConfirmProvider";
+import { useFlyToCart } from "@/components/FlyToCartProvider";
 import { subCategories } from "@/data/subcategories";
 import type { locales, Locale } from "@/i18n/config";
 
@@ -50,8 +52,9 @@ export function Header({
   const { items: wishItems } = useWishlist();
   const { ids: compareIds, openModal: openCompareModal } = useCompare();
   const { data: session } = useSession();
+  const { requestSignOut } = useSignOutConfirm();
+  const { registerCartIcon } = useFlyToCart();
   const [langOpen, setLangOpen] = useState(false);
-  const [accountOpen, setAccountOpen] = useState(false);
 
   return (
     <header className="site">
@@ -78,39 +81,42 @@ export function Header({
         </div>
 
         <div className="nav-right">
-          {session?.user ? (
-            <div className="lang-menu-wrap">
-              <button
-                className="icon-circle"
-                aria-label="Account"
-                onClick={() => setAccountOpen((v) => !v)}
-                title={session.user.name ?? ""}
-              >
-                👤
-              </button>
-              <div className={`lang-menu${accountOpen ? " open" : ""}`}>
-                <Link href="/account/rewards" onClick={() => setAccountOpen(false)}>
-                  {t.nav.rewardsPrograms}
-                </Link>
-                <Link href="/account/points" onClick={() => setAccountOpen(false)}>
-                  {t.nav.myPoints}
-                </Link>
-                <button
-                  onClick={() => {
-                    setAccountOpen(false);
-                    signOut();
-                  }}
-                >
-                  {t.nav.signOut}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <Link href="/login" className="icon-circle" aria-label="Account">
+          <div className="account-menu">
+            <Link
+              href={session?.user ? "/account" : "/login"}
+              className="icon-circle"
+              aria-label="Account"
+              title={session?.user?.name ?? ""}
+            >
               👤
             </Link>
-          )}
-          <button className="icon-circle" aria-label="Cart" onClick={onOpenCart}>
+            <div className="account-dropdown">
+              <div className="account-dropdown-panel">
+                {session?.user ? (
+                  <Link href="/account/profile">{t.account.menu.profile}</Link>
+                ) : (
+                  <Link href="/login">{t.account.menu.accountOrLogin}</Link>
+                )}
+                {/* /account/* routes redirect anonymous visitors to /login on their own
+                    (see src/app/account/layout.tsx), so these links work either way -
+                    logged-out visitors can preview these exist and get prompted to log in. */}
+                <Link href="/account">{t.account.menu.orders}</Link>
+                <Link href="/account/coupons">{t.account.menu.coupons}</Link>
+                <Link href="/account/points">{t.account.menu.points}</Link>
+                <Link href="/account/rewards">{t.nav.rewardsPrograms}</Link>
+                <Link href="/account#recently-viewed">{t.account.menu.recentlyViewed}</Link>
+                {session?.user && (
+                  <>
+                    <div className="account-dropdown-sep" />
+                    <button type="button" onClick={requestSignOut}>
+                      {t.account.menu.logout}
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+          <button className="icon-circle" aria-label="Cart" onClick={onOpenCart} ref={registerCartIcon}>
             🛒{count > 0 && <span className="icon-badge">{count}</span>}
           </button>
           <button

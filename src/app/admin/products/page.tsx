@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { AdminProductsTable } from "@/components/admin/AdminProductsTable";
+import { AdminProductsList } from "@/components/admin/AdminProductsList";
 import { AdminSettingsPanel } from "@/components/admin/AdminSettingsPanel";
 import { AdminNav } from "@/components/admin/AdminNav";
 import {
@@ -19,7 +19,16 @@ export default async function AdminProductsPage() {
 
   const [products, referralsEnabled, contentCouponEnabled, contentCouponTerms, testimonialsEnabled] = await Promise.all([
     prisma.product.findMany({
-      select: { id: true, slug: true, brand: true, name: true, priceCents: true },
+      select: {
+        id: true,
+        slug: true,
+        brand: true,
+        name: true,
+        priceCents: true,
+        imageUrl: true,
+        icon: true,
+        _count: { select: { orderItems: true } },
+      },
       orderBy: { brand: "asc" },
     }),
     isReferralsEnabled(),
@@ -39,7 +48,7 @@ export default async function AdminProductsPage() {
           contentCouponMinOrderCents={contentCouponTerms.minOrderCents}
           testimonialsEnabled={testimonialsEnabled}
         />
-        <AdminProductsTable products={products as never} />
+        <AdminProductsList products={products as never} />
       </div>
     </div>
   );

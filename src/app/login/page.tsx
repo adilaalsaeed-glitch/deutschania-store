@@ -86,6 +86,9 @@ export default function LoginPage() {
                   👁
                 </button>
               </div>
+              <Link href="/forgot-password" className="forgot-link">
+                {t.auth.forgotPassword}
+              </Link>
             </div>
             {error && <p className="field-error">{error}</p>}
             {unverified &&

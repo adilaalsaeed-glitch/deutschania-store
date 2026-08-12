@@ -58,6 +58,29 @@ export default function CheckoutPage() {
     };
   }, [sessionStatus]);
 
+  // Prefill the shipping form from the user's saved default address, if they have one.
+  useEffect(() => {
+    if (sessionStatus !== "authenticated") return;
+    let cancelled = false;
+    fetch("/api/account/profile")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        setForm((f) => ({
+          fullName: f.fullName || data.fullName || "",
+          email: f.email || data.email || "",
+          address: f.address || data.address || "",
+          city: f.city || data.city || "",
+          postal: f.postal || data.postal || "",
+          country: f.country || data.country || "",
+          phone: f.phone || data.phone || "",
+        }));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionStatus]);
+
   function set<K extends keyof CheckoutForm>(key: K, value: CheckoutForm[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }

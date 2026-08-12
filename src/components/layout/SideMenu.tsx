@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useLocale } from "@/components/LocaleProvider";
+import { useSignOutConfirm } from "@/components/SignOutConfirmProvider";
 import { subCategories } from "@/data/subcategories";
 import type { Locale } from "@/i18n/config";
 
@@ -24,6 +26,8 @@ export function SideMenu({
   onGoHome?: () => void;
 }) {
   const { locale, t } = useLocale();
+  const { data: session } = useSession();
+  const { requestSignOut } = useSignOutConfirm();
   const [flyoutCat, setFlyoutCat] = useState<string | null>(null);
 
   function close() {
@@ -121,9 +125,28 @@ export function SideMenu({
           <Link href="/account/rewards" className="sm-link" style={{ border: "none", padding: "10px 0" }} onClick={close}>
             🎁 {t.nav.rewardsPrograms}
           </Link>
-          <Link href="/login" className="sm-link" style={{ border: "none", padding: "10px 0" }} onClick={close}>
-            {t.nav.login}
-          </Link>
+          {session?.user ? (
+            <>
+              <Link href="/account" className="sm-link" style={{ border: "none", padding: "10px 0" }} onClick={close}>
+                {t.account.dashboardTitle}
+              </Link>
+              <button
+                type="button"
+                className="sm-link"
+                style={{ border: "none", padding: "10px 0", width: "100%", textAlign: "start", background: "none" }}
+                onClick={() => {
+                  close();
+                  requestSignOut();
+                }}
+              >
+                {t.account.menu.logout}
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="sm-link" style={{ border: "none", padding: "10px 0" }} onClick={close}>
+              {t.nav.login}
+            </Link>
+          )}
         </div>
       </aside>
     </>

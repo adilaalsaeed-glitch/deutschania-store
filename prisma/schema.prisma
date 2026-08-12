@@ -21,6 +21,7 @@ enum OrderStatus {
   PAID
   FAILED
   SHIPPED
+  DELIVERED
   CANCELLED
 }
 
@@ -113,6 +114,7 @@ model User {
   wishlist             WishlistItem[]
   orders               Order[]
   verificationTokens   EmailVerificationToken[]
+  passwordResetTokens  PasswordResetToken[]
   loyaltyTransactions  LoyaltyTransaction[]
   coupons              Coupon[]
   referralsMade        Referral[] @relation("ReferralsMade")
@@ -219,11 +221,32 @@ model EmailVerificationToken {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   token     String   @unique
+  // Set only for an in-progress email change - the account keeps using its current,
+  // already-verified email until this new one is confirmed via the link. Null for the
+  // plain post-registration verification case.
+  newEmail  String?
   expiresAt DateTime
   createdAt DateTime @default(now())
 
   @@index([userId])
   @@map("email_verification_tokens")
+}
+
+// Kept separate from EmailVerificationToken on purpose: that table is consumed
+// immediately on GET (opening the link = done). A reset link must stay valid when
+// merely opened - it's only consumed once the new password is actually submitted -
+// otherwise email-security scanners that pre-fetch links would burn it before the
+// real user ever clicks.
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 model Address {
@@ -236,6 +259,7 @@ model Address {
   postalCode String
   country    String
   phone      String
+  landline   String?
   isDefault  Boolean @default(false)
 
   @@map("addresses")
