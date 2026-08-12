@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 import { useCart } from "@/components/cart/CartProvider";
+import { useFlyToCart } from "@/components/FlyToCartProvider";
 import { useCompare } from "@/components/compare/CompareProvider";
 import { formatPriceCents } from "@/lib/currency";
 import { ProductIcon } from "@/components/shop/ProductIcon";
@@ -12,6 +13,7 @@ export function CompareModal() {
   const { locale, t } = useLocale();
   const { ids, open, closeModal, remove } = useCompare();
   const { add } = useCart();
+  const { fly } = useFlyToCart();
   const [products, setProducts] = useState<ProductListItem[]>([]);
 
   useEffect(() => {
@@ -51,8 +53,14 @@ export function CompareModal() {
                 <div className="product-name">{p.name[locale]}</div>
                 <div className="product-price">{formatPriceCents(p.priceCents, "EUR")}</div>
                 <div className="compare-cat">{p.category.label[locale]}</div>
-                <button className="btn btn-brass compare-add" onClick={() => add(p.id)}>
-                  {t.shop.addToCart}
+                <button
+                  className="btn btn-brass compare-add"
+                  onClick={(e) => {
+                    fly(e.currentTarget, p.imageUrl, p.icon);
+                    add(p.id);
+                  }}
+                >
+                  <span aria-hidden="true">🛒</span> {t.shop.addToCart}
                 </button>
               </div>
             ))}

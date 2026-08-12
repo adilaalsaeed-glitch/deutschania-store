@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
 import { Header } from "@/components/layout/Header";
 import { SideMenu } from "@/components/layout/SideMenu";
@@ -8,7 +9,6 @@ import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/Hero";
 import { ShopSection } from "@/components/shop/ShopSection";
 import { ProcessSection } from "@/components/ProcessSection";
-import { CartDrawer } from "@/components/cart/CartDrawer";
 import type { ProductListItem } from "@/types/product";
 import type { Locale } from "@/i18n/config";
 
@@ -28,6 +28,7 @@ export function StorefrontClient({
   initialWishOnly?: boolean;
 }) {
   const { t } = useLocale();
+  const router = useRouter();
   // Initialized directly from server-read searchParams (via props), not window.location:
   // the parent page.tsx keys this component on those params, so a fresh instance (and thus
   // fresh initial state here) is guaranteed whenever ?cat=/?q= actually change - including a
@@ -35,7 +36,6 @@ export function StorefrontClient({
   // that reuses this component instance and leaves stale local state behind.
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
   const [categoryKey, setCategoryKey] = useState(initialCategoryKey);
   const [wishOnly, setWishOnly] = useState(initialWishOnly);
   // Bumped only by goHome() below - remounts ShopSection so its own uncontrolled filters
@@ -90,7 +90,7 @@ export function StorefrontClient({
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onOpenMenu={() => setMenuOpen(true)}
-        onOpenCart={() => setCartOpen(true)}
+        onOpenCart={() => router.push("/cart")}
         onOpenFilters={scrollToShop}
         categories={categories}
         activeCategory={categoryKey}
@@ -108,8 +108,6 @@ export function StorefrontClient({
         onSelectSubcategory={selectSubcategory}
         onGoHome={goHome}
       />
-      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
-
       <Hero onShop={scrollToShop} />
       <ShopSection
         key={resetToken}

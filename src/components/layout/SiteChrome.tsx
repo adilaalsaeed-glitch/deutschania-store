@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { SideMenu } from "@/components/layout/SideMenu";
-import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Footer } from "@/components/layout/Footer";
 import { useLocale } from "@/components/LocaleProvider";
 import type { Locale } from "@/i18n/config";
@@ -22,7 +21,6 @@ export function SiteChrome({
   const router = useRouter();
   const { t } = useLocale();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
@@ -37,7 +35,7 @@ export function SiteChrome({
           if (q) router.push(`/?q=${encodeURIComponent(q)}#shop`);
         }}
         onOpenMenu={() => setMenuOpen(true)}
-        onOpenCart={() => setCartOpen(true)}
+        onOpenCart={() => router.push("/cart")}
         onOpenFilters={() => router.push("/#shop")}
         categories={categories}
         onSelectCategory={(key) => router.push(`/?cat=${key}#shop`)}
@@ -51,7 +49,6 @@ export function SiteChrome({
         onSelectCategory={(key) => router.push(`/?cat=${key}#shop`)}
         onSelectSubcategory={(key) => router.push(`/?cat=${key}#shop`)}
       />
-      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
       {children}
       <Footer />
     </>

@@ -46,8 +46,8 @@ export default function CartPage() {
                           <span>{item.quantity}</span>
                           <button onClick={() => setQuantity(item.productId, item.quantity + 1)}>+</button>
                         </div>
-                        <button className="remove-link" onClick={() => remove(item.productId)}>
-                          ✕
+                        <button className="cart-remove-btn" onClick={() => remove(item.productId)}>
+                          {t.cart.remove}
                         </button>
                       </div>
                     </div>

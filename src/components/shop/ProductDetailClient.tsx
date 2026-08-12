@@ -1,20 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 import { useCart } from "@/components/cart/CartProvider";
+import { useFlyToCart } from "@/components/FlyToCartProvider";
 import { formatPriceCents } from "@/lib/currency";
 import { ProductIcon } from "@/components/shop/ProductIcon";
 import { WishButton } from "@/components/wishlist/WishButton";
+import { recordProductView } from "@/lib/recentlyViewed";
 import type { ProductDetail } from "@/types/product";
 import type { Locale } from "@/i18n/config";
 
 export function ProductDetailClient({ product }: { product: ProductDetail }) {
   const { locale, t } = useLocale();
   const { items, add, setQuantity } = useCart();
+  const { fly } = useFlyToCart();
   const [infoOpen, setInfoOpen] = useState(true);
   const [descOpen, setDescOpen] = useState(false);
+
+  useEffect(() => {
+    recordProductView({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      priceCents: product.priceCents,
+      imageUrl: product.imageUrl,
+      icon: product.icon,
+      categoryColor: product.category.color,
+    });
+  }, [product]);
 
   const cartLine = items.find((i) => i.productId === product.id);
   const qty = cartLine?.quantity ?? 0;
@@ -55,8 +70,14 @@ export function ProductDetailClient({ product }: { product: ProductDetail }) {
               )}
               <div className="qv-actions">
                 <WishButton productId={product.id} className="pp-wish-btn" />
-                <button className="btn btn-brass qv-addbtn" onClick={() => add(product.id)}>
-                  {t.shop.addToCart}
+                <button
+                  className="btn btn-brass qv-addbtn"
+                  onClick={(e) => {
+                    fly(e.currentTarget, product.imageUrl, product.icon);
+                    add(product.id);
+                  }}
+                >
+                  <span aria-hidden="true">🛒</span> {t.shop.addToCart}
                 </button>
                 {qty > 0 && (
                   <div className="qty-stepper qv-qty">
