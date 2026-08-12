@@ -123,7 +123,11 @@
   },
   "footer": {
     "about": "deutschania is a Germany-based company bringing authentic German products to buyers across the Arab world.",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "impressum": "Impressum",
+    "agb": "AGB",
+    "datenschutz": "Datenschutz",
+    "dateneinstellungen": "Dateneinstellungen"
   },
   "auth": {
     "loginTitle": "Login",

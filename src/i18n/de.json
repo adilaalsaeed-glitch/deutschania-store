@@ -123,7 +123,11 @@
   },
   "footer": {
     "about": "deutschania ist ein Unternehmen mit Sitz in Deutschland, das authentische deutsche Produkte in die arabische Welt bringt.",
-    "rights": "Alle Rechte vorbehalten."
+    "rights": "Alle Rechte vorbehalten.",
+    "impressum": "Impressum",
+    "agb": "AGB",
+    "datenschutz": "Datenschutz",
+    "dateneinstellungen": "Dateneinstellungen"
   },
   "auth": {
     "loginTitle": "Anmelden",

@@ -123,7 +123,11 @@
   },
   "footer": {
     "about": "deutschania شركة مقرها ألمانيا، تجلب لك منتجات ألمانية أصلية في كل الوطن العربي.",
-    "rights": "جميع الحقوق محفوظة."
+    "rights": "جميع الحقوق محفوظة.",
+    "impressum": "Impressum",
+    "agb": "AGB",
+    "datenschutz": "Datenschutz",
+    "dateneinstellungen": "Dateneinstellungen"
   },
   "auth": {
     "loginTitle": "تسجيل الدخول",
