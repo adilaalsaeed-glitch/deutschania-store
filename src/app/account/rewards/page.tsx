@@ -2,12 +2,19 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { getDictionary, defaultLocale, isLocale, type Locale } from "@/i18n/config";
+import { auth } from "@/lib/auth";
+import { isReferralsEnabled } from "@/lib/settings";
+import { referralUrl, siteOrigin } from "@/lib/referral";
 
 export default async function RewardsHubPage() {
   const jar = await cookies();
   const cookieLocale = jar.get("locale")?.value;
   const locale: Locale = cookieLocale && isLocale(cookieLocale) ? cookieLocale : defaultLocale;
   const t = getDictionary(locale);
+
+  const referralsEnabled = await isReferralsEnabled();
+  const session = referralsEnabled ? await auth() : null;
+  const myReferralLink = session?.user?.id ? referralUrl(siteOrigin(), session.user.id) : null;
 
   return (
     <SiteChrome>
@@ -38,12 +45,32 @@ export default async function RewardsHubPage() {
               <p className="rewards-card-desc">{t.rewards.couponsDesc}</p>
             </div>
 
-            <div className="rewards-card disabled">
-              <span className="rewards-soon-badge">{t.rewards.comingSoon}</span>
-              <span className="rewards-card-icon">🤝</span>
-              <h2 className="rewards-card-title">{t.rewards.referralTitle}</h2>
-              <p className="rewards-card-desc">{t.rewards.referralDesc}</p>
-            </div>
+            {referralsEnabled ? (
+              <div className="rewards-card">
+                <span className="rewards-card-icon">🤝</span>
+                <h2 className="rewards-card-title">{t.rewards.referralTitle}</h2>
+                <p className="rewards-card-desc">{t.rewards.referralDesc}</p>
+                {myReferralLink ? (
+                  <>
+                    <p className="referral-hub-link">{myReferralLink}</p>
+                    <Link href="/account/referrals" className="btn btn-brass" style={{ marginTop: 8, alignSelf: "flex-start" }}>
+                      {t.referral.goToReferrals}
+                    </Link>
+                  </>
+                ) : (
+                  <Link href="/login" className="btn btn-brass" style={{ marginTop: 8, alignSelf: "flex-start" }}>
+                    {t.nav.login}
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="rewards-card disabled">
+                <span className="rewards-soon-badge">{t.rewards.comingSoon}</span>
+                <span className="rewards-card-icon">🤝</span>
+                <h2 className="rewards-card-title">{t.rewards.referralTitle}</h2>
+                <p className="rewards-card-desc">{t.rewards.referralDesc}</p>
+              </div>
+            )}
 
             <div className="rewards-card disabled">
               <span className="rewards-soon-badge">{t.rewards.comingSoon}</span>

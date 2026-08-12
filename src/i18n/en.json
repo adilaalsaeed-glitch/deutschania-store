@@ -174,7 +174,25 @@
     "price": "Price (EUR)",
     "save": "Save",
     "saving": "Saving...",
-    "productCol": "Product"
+    "productCol": "Product",
+    "settings": "Settings",
+    "referralsEnabled": "Enable Referral Program"
+  },
+  "referral": {
+    "subtitle": "Share your link with friends. When they register and complete their first real order, you both get a €7 discount coupon.",
+    "yourLink": "Your referral link",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "shareHint": "Share this link with friends via WhatsApp or any way you like.",
+    "successfulCount": "Successful referrals",
+    "couponsTitle": "My referral coupons",
+    "noCoupons": "You don't have any referral coupons yet.",
+    "couponActive": "Active",
+    "couponRedeemed": "Redeemed",
+    "couponExpired": "Expired",
+    "expiresOn": "Expires on",
+    "notAvailable": "The referral program isn't available yet.",
+    "goToReferrals": "Go to referrals"
   },
   "loyalty": {
     "title": "My Points",

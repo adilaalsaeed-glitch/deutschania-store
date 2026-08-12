@@ -1,7 +1,8 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, Suspense, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { useLocale } from "@/components/LocaleProvider";
 
@@ -75,8 +76,10 @@ function StepIndicator({ step }: { step: Step }) {
   );
 }
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const { locale, t } = useLocale();
+  const searchParams = useSearchParams();
+  const ref = searchParams.get("ref") ?? undefined;
   const [step, setStep] = useState<Step>(1);
   const [registered, setRegistered] = useState(false);
   const [account, setAccount] = useState<AccountFields>({
@@ -140,6 +143,7 @@ export default function RegisterPage() {
           mobile: address.mobile,
         },
         lang: locale,
+        ref,
       }),
     });
 
@@ -307,5 +311,13 @@ export default function RegisterPage() {
         </div>
       </section>
     </SiteChrome>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<SiteChrome><section className="auth-page" /></SiteChrome>}>
+      <RegisterPageContent />
+    </Suspense>
   );
 }

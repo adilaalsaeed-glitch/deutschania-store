@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { createVerificationToken } from "@/lib/verification";
 import { sendVerificationEmail } from "@/lib/email";
+import { isReferralsEnabled } from "@/lib/settings";
 
 const addressSchema = z.object({
   street: z.string().min(1).max(200),
@@ -21,6 +22,7 @@ const registerSchema = z.object({
   dateOfBirth: z.string().optional(),
   address: addressSchema.optional(),
   lang: z.enum(["ar", "de", "en"]).default("ar"),
+  ref: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -30,39 +32,55 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "VALIDATION_ERROR" }, { status: 400 });
   }
 
-  const { firstName, lastName, email, password, dateOfBirth, address, lang } = parsed.data;
+  const { firstName, lastName, email, password, dateOfBirth, address, lang, ref } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
     return NextResponse.json({ error: "EMAIL_EXISTS" }, { status: 409 });
   }
 
+  // The referral system is gated end-to-end behind the flag (not just its UI): while disabled,
+  // ?ref= links are inert and don't create any tracking record.
+  let referrerId: string | undefined;
+  if (ref && (await isReferralsEnabled())) {
+    const referrer = await prisma.user.findUnique({ where: { id: ref }, select: { id: true } });
+    if (referrer) referrerId = referrer.id;
+  }
+
   const passwordHash = await bcrypt.hash(password, 12);
-  const user = await prisma.user.create({
-    data: {
-      firstName,
-      lastName,
-      email,
-      passwordHash,
-      dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
-      phone: address?.mobile,
-      ...(address
-        ? {
-            addresses: {
-              create: {
-                street: address.street,
-                buildingNo: address.buildingNo,
-                city: address.city,
-                postalCode: address.postal,
-                country: "",
-                phone: address.mobile,
-                isDefault: true,
+  const user = await prisma.$transaction(async (tx) => {
+    const created = await tx.user.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        passwordHash,
+        dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+        phone: address?.mobile,
+        ...(address
+          ? {
+              addresses: {
+                create: {
+                  street: address.street,
+                  buildingNo: address.buildingNo,
+                  city: address.city,
+                  postalCode: address.postal,
+                  country: "",
+                  phone: address.mobile,
+                  isDefault: true,
+                },
               },
-            },
-          }
-        : {}),
-    },
-    select: { id: true, email: true, firstName: true },
+            }
+          : {}),
+      },
+      select: { id: true, email: true, firstName: true },
+    });
+
+    if (referrerId) {
+      await tx.referral.create({ data: { referrerId, referredId: created.id } });
+    }
+
+    return created;
   });
 
   const token = await createVerificationToken(user.id);

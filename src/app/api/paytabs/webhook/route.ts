@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { pointsEarnedForPaidCents } from "@/lib/loyalty";
+import { isReferralsEnabled } from "@/lib/settings";
+import { REFERRAL_COUPON_VALUE_CENTS, couponExpiryDate, generateCouponCode } from "@/lib/referral";
 
 // PayTabs calls this server-to-server once a payment finishes (independent of whether the
 // customer's browser makes it back to the return URL). See:
@@ -27,6 +29,8 @@ export async function POST(request: Request) {
   const status = body.payment_result?.response_status;
   const isPaid = status === "A";
 
+  const referralsEnabled = isPaid && order.userId ? await isReferralsEnabled() : false;
+
   await prisma.$transaction(async (tx) => {
     await tx.order.update({
       where: { id: order.id },
@@ -46,6 +50,36 @@ export async function POST(request: Request) {
         await tx.loyaltyTransaction.create({
           data: { userId: order.userId, type: "EARN", points: earned, orderId: order.id },
         });
+      }
+
+      // Referral reward: this order is the referred user's first to reach PAID (the Referral
+      // row only stays PENDING up to that point — see /api/register), so this is exactly the
+      // "completed their first real order" condition. Gated so nothing is granted while the
+      // feature flag is off, even if a PENDING referral exists from before it was disabled.
+      if (referralsEnabled) {
+        const referral = await tx.referral.findUnique({ where: { referredId: order.userId } });
+        if (referral && referral.status === "PENDING") {
+          await tx.referral.update({ where: { id: referral.id }, data: { status: "COMPLETED", completedAt: new Date() } });
+          const expiresAt = couponExpiryDate();
+          await tx.coupon.create({
+            data: {
+              code: generateCouponCode(),
+              userId: referral.referrerId,
+              valueCents: REFERRAL_COUPON_VALUE_CENTS,
+              source: "REFERRAL",
+              expiresAt,
+            },
+          });
+          await tx.coupon.create({
+            data: {
+              code: generateCouponCode(),
+              userId: referral.referredId,
+              valueCents: REFERRAL_COUPON_VALUE_CENTS,
+              source: "REFERRAL",
+              expiresAt,
+            },
+          });
+        }
       }
     } else if (order.pointsRedeemed > 0) {
       await tx.user.update({ where: { id: order.userId }, data: { loyaltyPoints: { increment: order.pointsRedeemed } } });

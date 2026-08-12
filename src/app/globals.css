@@ -370,6 +370,13 @@ body.rtl .drawer{transform:translateX(-100%);}
 .rewards-card-list li::before{content:"";position:absolute;inset-inline-start:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--brass);}
 .rewards-soon-badge{position:absolute;top:18px;inset-inline-end:18px;background:var(--sand);color:var(--steel);font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:999px;}
 
+/* REFERRALS */
+.referral-link-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.referral-link-row input{flex:1;min-width:180px;padding:9px 12px;border:1px solid var(--line-dark);border-radius:5px;font-size:0.85rem;background:#fff;color:var(--dark-text);direction:ltr;text-align:start;}
+.referral-link-row button{flex-shrink:0;}
+.referral-coupon-code{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;opacity:.7;direction:ltr;}
+.referral-hub-link{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;background:var(--sand);border-radius:5px;padding:8px 10px;word-break:break-all;direction:ltr;text-align:start;margin:0;}
+
 /* ADMIN */
 .admin-page{background:var(--sand);min-height:70vh;padding:28px 20px 60px;}
 .admin-inner{max-width:1000px;margin:0 auto;}
@@ -377,6 +384,9 @@ body.rtl .drawer{transform:translateX(-100%);}
 .admin-table th{text-align:start;font-size:0.78rem;color:var(--steel);padding:10px 14px;border-bottom:1px solid var(--line-dark);}
 .admin-table td{padding:10px 14px;border-bottom:1px solid var(--line-dark);font-size:0.88rem;}
 .admin-table input{width:100%;padding:7px 9px;border:1px solid var(--line-dark);border-radius:4px;font-family:inherit;font-size:0.85rem;}
+.admin-settings-panel{background:#fff;border-radius:8px;border:1px solid var(--line-dark);padding:18px 20px;margin-bottom:24px;}
+.admin-toggle-row{display:flex;align-items:center;gap:10px;font-size:0.9rem;cursor:pointer;}
+.admin-toggle-row input{width:auto;}
 
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line-dark);display:none;z-index:150;}

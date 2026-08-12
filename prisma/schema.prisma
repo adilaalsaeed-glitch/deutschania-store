@@ -35,6 +35,17 @@ enum LoyaltyTransactionType {
   REFUND // reverses a REDEEM if the order that held those points later fails
 }
 
+enum ReferralStatus {
+  PENDING // referred user registered via the link; reward not yet earned
+  COMPLETED // referred user's first order reached PAID; both coupons issued
+}
+
+enum CouponStatus {
+  ACTIVE
+  REDEEMED
+  EXPIRED
+}
+
 model Category {
   key       String   @id // e.g. "cat_makeup"
   label     Json // {ar, de, en}
@@ -92,8 +103,58 @@ model User {
   orders               Order[]
   verificationTokens   EmailVerificationToken[]
   loyaltyTransactions  LoyaltyTransaction[]
+  coupons              Coupon[]
+  referralsMade        Referral[] @relation("ReferralsMade")
+  referredBy           Referral?  @relation("ReferralsReceived")
 
   @@map("users")
+}
+
+// One row per referred user (referredId is unique — first referrer wins). Created at
+// registration when a valid ?ref= link was used; flips PENDING -> COMPLETED the moment the
+// referred user's first order reaches PAID (see the PayTabs webhook).
+model Referral {
+  id          String         @id @default(cuid())
+  referrerId  String
+  referrer    User           @relation("ReferralsMade", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredId  String         @unique
+  referred    User           @relation("ReferralsReceived", fields: [referredId], references: [id], onDelete: Cascade)
+  status      ReferralStatus @default(PENDING)
+  completedAt DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@index([referrerId])
+  @@map("referrals")
+}
+
+// Minimal fixed-value, single-use, per-user discount coupon. Not the general promo-code engine
+// (no admin-created codes, no checkout redemption yet) — just enough to back referral rewards.
+model Coupon {
+  id         String       @id @default(cuid())
+  code       String       @unique
+  userId     String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  valueCents Int
+  source     String // "REFERRAL" for now; room for other sources later
+  status     CouponStatus @default(ACTIVE)
+  expiresAt  DateTime
+  redeemedAt DateTime?
+  orderId    String?
+  order      Order?       @relation(fields: [orderId], references: [id])
+  createdAt  DateTime     @default(now())
+
+  @@index([userId])
+  @@map("coupons")
+}
+
+// Generic key-value flags/config, e.g. "referrals_enabled" -> "true". Toggled from /admin so
+// launch-timing decisions don't need a deploy.
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
 }
 
 // Append-only ledger; User.loyaltyPoints is a cached sum kept in sync at write time.
@@ -188,6 +249,7 @@ model Order {
 
   items               OrderItem[]
   loyaltyTransactions LoyaltyTransaction[]
+  coupons             Coupon[]
 
   @@map("orders")
 }

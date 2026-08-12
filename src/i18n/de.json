@@ -174,7 +174,25 @@
     "price": "Preis (EUR)",
     "save": "Speichern",
     "saving": "Wird gespeichert...",
-    "productCol": "Produkt"
+    "productCol": "Produkt",
+    "settings": "Einstellungen",
+    "referralsEnabled": "Empfehlungsprogramm aktivieren"
+  },
+  "referral": {
+    "subtitle": "Teilen Sie Ihren Link mit Freunden. Wenn sie sich registrieren und ihre erste echte Bestellung abschließen, erhalten Sie beide einen 7-€-Rabattgutschein.",
+    "yourLink": "Ihr Empfehlungslink",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "shareHint": "Teilen Sie diesen Link per WhatsApp oder auf beliebige Weise mit Freunden.",
+    "successfulCount": "Erfolgreiche Empfehlungen",
+    "couponsTitle": "Meine Empfehlungsgutscheine",
+    "noCoupons": "Sie haben noch keine Empfehlungsgutscheine.",
+    "couponActive": "Aktiv",
+    "couponRedeemed": "Eingelöst",
+    "couponExpired": "Abgelaufen",
+    "expiresOn": "Gültig bis",
+    "notAvailable": "Das Empfehlungsprogramm ist noch nicht verfügbar.",
+    "goToReferrals": "Zu Empfehlungen"
   },
   "loyalty": {
     "title": "Meine Punkte",
