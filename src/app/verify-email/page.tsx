@@ -15,6 +15,24 @@ async function verify(token: string | undefined) {
     return "expired" as const;
   }
 
+  if (record.newEmail) {
+    // Someone else may have registered/changed into this address while the link sat unused.
+    const taken = await prisma.user.findUnique({ where: { email: record.newEmail } });
+    if (taken && taken.id !== record.userId) {
+      await prisma.emailVerificationToken.delete({ where: { id: record.id } });
+      return "emailTaken" as const;
+    }
+
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: record.userId },
+        data: { email: record.newEmail, emailVerified: new Date() },
+      }),
+      prisma.emailVerificationToken.deleteMany({ where: { userId: record.userId } }),
+    ]);
+    return "emailChanged" as const;
+  }
+
   await prisma.$transaction([
     prisma.user.update({ where: { id: record.userId }, data: { emailVerified: new Date() } }),
     prisma.emailVerificationToken.deleteMany({ where: { userId: record.userId } }),
@@ -40,6 +58,8 @@ export default async function VerifyEmailPage({
     success: { title: t.auth.verifySuccessTitle, desc: t.auth.verifySuccessDesc },
     expired: { title: t.auth.verifyExpiredTitle, desc: t.auth.verifyExpiredDesc },
     invalid: { title: t.auth.verifyInvalidTitle, desc: t.auth.verifyInvalidDesc },
+    emailChanged: { title: t.account.emailChangeSuccessTitle, desc: t.account.emailChangeSuccessDesc },
+    emailTaken: { title: t.account.emailChangeTakenTitle, desc: t.account.emailChangeTakenDesc },
   }[result];
 
   return (

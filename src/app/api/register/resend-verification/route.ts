@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
   const user = await prisma.user.findUnique({
     where: { email: parsed.data.email },
-    select: { id: true, email: true, firstName: true, emailVerified: true },
+    select: { id: true, email: true, emailVerified: true },
   });
 
   // Always return ok - don't reveal whether the email is registered, or leak that it's
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   const verifyUrl = `${origin}/verify-email?token=${token}`;
 
   try {
-    await sendVerificationEmail({ to: user.email, firstName: user.firstName, verifyUrl, lang: parsed.data.lang });
+    await sendVerificationEmail({ to: user.email, verifyUrl, lang: parsed.data.lang });
   } catch (err) {
     console.error("Failed to resend verification email:", err);
     return NextResponse.json({ error: "UNKNOWN" }, { status: 502 });
