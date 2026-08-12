@@ -29,7 +29,6 @@ export default async function AdminProductsPage() {
           priceCents: true,
           imageUrl: true,
           icon: true,
-          origin: true,
           categoryKey: true,
           stockQuantity: true,
           category: { select: { label: true } },

@@ -19,7 +19,6 @@ type Row = {
   priceCents: number;
   imageUrl: string | null;
   icon: string;
-  origin: "de" | "ar";
   categoryKey: string;
   stockQuantity: number;
   category: { label: I18nText };
@@ -29,7 +28,6 @@ type Row = {
 type CategoryOption = { key: string; label: I18nText };
 
 type AvailabilityFilter = "all" | "available" | "out";
-type OriginFilter = "all" | "de" | "ar";
 
 export function AdminProductsList({ products, categories }: { products: Row[]; categories: CategoryOption[] }) {
   const { locale, t } = useLocale();
@@ -39,14 +37,19 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
 
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [originFilter, setOriginFilter] = useState<OriginFilter>("all");
+  const [brandFilter, setBrandFilter] = useState("all");
   const [availabilityFilter, setAvailabilityFilter] = useState<AvailabilityFilter>("all");
+
+  const brandOptions = useMemo(
+    () => Array.from(new Set(rows.map((r) => r.brand))).sort((a, b) => a.localeCompare(b)),
+    [rows]
+  );
 
   const filteredRows = useMemo(() => {
     const q = search.trim().toLowerCase();
     return rows.filter((r) => {
       if (categoryFilter !== "all" && r.categoryKey !== categoryFilter) return false;
-      if (originFilter !== "all" && r.origin !== originFilter) return false;
+      if (brandFilter !== "all" && r.brand !== brandFilter) return false;
       if (availabilityFilter === "available" && r.stockQuantity <= 0) return false;
       if (availabilityFilter === "out" && r.stockQuantity > 0) return false;
       if (q) {
@@ -66,7 +69,7 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
       }
       return true;
     });
-  }, [rows, search, categoryFilter, originFilter, availabilityFilter]);
+  }, [rows, search, categoryFilter, brandFilter, availabilityFilter]);
 
   async function handleDelete(row: Row) {
     const message =
@@ -112,10 +115,13 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
             </option>
           ))}
         </select>
-        <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value as OriginFilter)}>
-          <option value="all">{t.admin.allOrigins}</option>
-          <option value="de">{t.admin.originDe}</option>
-          <option value="ar">{t.admin.originAr}</option>
+        <select value={brandFilter} onChange={(e) => setBrandFilter(e.target.value)}>
+          <option value="all">{t.admin.allBrands}</option>
+          {brandOptions.map((b) => (
+            <option key={b} value={b}>
+              {b}
+            </option>
+          ))}
         </select>
         <select value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as AvailabilityFilter)}>
           <option value="all">{t.admin.allAvailability}</option>
