@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { AdminProductsTable } from "@/components/admin/AdminProductsTable";
+import { AdminProductsList } from "@/components/admin/AdminProductsList";
 
 export default async function AdminProductsPage() {
   const session = await auth();
@@ -10,14 +10,23 @@ export default async function AdminProductsPage() {
   }
 
   const products = await prisma.product.findMany({
-    select: { id: true, slug: true, brand: true, name: true, priceCents: true },
+    select: {
+      id: true,
+      slug: true,
+      brand: true,
+      name: true,
+      priceCents: true,
+      imageUrl: true,
+      icon: true,
+      _count: { select: { orderItems: true } },
+    },
     orderBy: { brand: "asc" },
   });
 
   return (
     <div className="admin-page">
       <div className="admin-inner">
-        <AdminProductsTable products={products as never} />
+        <AdminProductsList products={products as never} />
       </div>
     </div>
   );
