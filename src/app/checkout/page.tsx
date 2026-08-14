@@ -24,7 +24,7 @@ type CheckoutForm = {
 
 export default function CheckoutPage() {
   const { locale, t } = useLocale();
-  const { items } = useCart();
+  const { items, loading: cartLoading } = useCart();
   const { data: session, status: sessionStatus } = useSession();
   const isAdminTestMode = session?.user?.role === "ADMIN";
   const [form, setForm] = useState<CheckoutForm>({
@@ -130,6 +130,18 @@ export default function CheckoutPage() {
     }
 
     window.location.href = data.redirectUrl;
+  }
+
+  // Must wait for the cart's initial fetch to resolve before deciding it's empty - items
+  // starts as [] until then, so checking length alone (without loading) flashes the empty
+  // state - and briefly shows it as final - on every fresh mount of CartProvider (e.g. a hard
+  // reload of this page), even when the account's cart genuinely has items.
+  if (cartLoading) {
+    return (
+      <SiteChrome>
+        <section className="cart-page" />
+      </SiteChrome>
+    );
   }
 
   if (items.length === 0) {

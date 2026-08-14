@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { useLocale } from "@/components/LocaleProvider";
+import { useCart } from "@/components/cart/CartProvider";
 
 export default function LoginPage() {
   const { locale, t } = useLocale();
   const router = useRouter();
+  const { refresh: refreshCart } = useCart();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -42,6 +44,15 @@ export default function LoginPage() {
       }
       return;
     }
+
+    // Migrate anything added to the cart before login (a guest-session cart) into this
+    // account's cart - resolveCartIdentity() only ever looks at the guest cookie while logged
+    // out, so without this step those items become invisible the moment login succeeds.
+    // Then re-fetch the cart context itself - the merge happens server-side, but the header
+    // badge and any other cart UI already mounted are holding pre-login client state and won't
+    // see the merged items until this runs.
+    await fetch("/api/cart/merge", { method: "POST" }).catch(() => {});
+    await refreshCart();
 
     setSubmitting(false);
     router.push("/");
