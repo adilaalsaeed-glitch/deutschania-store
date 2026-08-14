@@ -373,6 +373,7 @@ body.rtl .drawer{transform:translateX(-100%);}
 @media (max-width:480px){.field-row{grid-template-columns:1fr;}}
 .field-error{color:var(--bad);font-size:0.8rem;margin:5px 0 0;}
 .form-note{font-size:0.79rem;opacity:.6;margin-top:8px;}
+.admin-test-mode-note{background:#fff7e0;border:1px solid #e8c96b;border-radius:6px;padding:10px 14px;font-size:0.82rem;color:#6b5410;margin-bottom:14px;}
 .pw-wrap{position:relative;}
 .pw-wrap input{width:100%;padding-inline-end:42px;}
 .phone-field-row{display:flex;direction:ltr;}

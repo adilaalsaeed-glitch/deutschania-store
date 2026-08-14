@@ -131,7 +131,10 @@
     "paymentMethod": "Zahlungsmethode",
     "payCard": "Kredit-/Debitkarte",
     "paymentFailedTitle": "Zahlung fehlgeschlagen",
-    "processing": "Wird verarbeitet..."
+    "processing": "Wird verarbeitet...",
+    "postalInvalid": "Diese Postleitzahl entspricht nicht dem offiziellen Format der saudischen Post.",
+    "postalOptionalNote": "Für dieses Land gibt es kein offizielles Postleitzahlensystem - dieses Feld ist optional.",
+    "adminTestModeNote": "Admin-Testmodus: Die Länderbeschränkung wurde umgangen, damit Sie den Checkout mit Ihrer echten Adresse testen können."
   },
   "process": {
     "eyebrow": "SO FUNKTIONIERT ES",

@@ -131,7 +131,10 @@
     "paymentMethod": "Payment method",
     "payCard": "Credit / debit card",
     "paymentFailedTitle": "Payment failed",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "postalInvalid": "This postal code doesn't match Saudi Post's official regional format.",
+    "postalOptionalNote": "This country has no official postal code system - this field is optional.",
+    "adminTestModeNote": "Admin test mode: the country restriction is bypassed so you can test checkout with your real address."
   },
   "process": {
     "eyebrow": "HOW IT WORKS",

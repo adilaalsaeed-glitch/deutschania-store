@@ -2,20 +2,23 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { getCartWithProducts } from "@/lib/cart";
 import { createHostedPaymentPage } from "@/lib/paytabs";
 import { validateRedemption } from "@/lib/loyalty";
-import { SUPPORTED_COUNTRIES, type CountryCode } from "@/data/countries";
+import { isSupportedCountry } from "@/data/countries";
+import { isValidSaudiPostalCode } from "@/data/postalCodes";
 
-const countryCodes = SUPPORTED_COUNTRIES.map((c) => c.code) as [CountryCode, ...CountryCode[]];
-
+// country/postal are checked by hand below rather than via z.enum/refine - the rules depend on
+// isAdmin (the store owner's own account bypasses the SA/AE/QA restriction entirely, to test
+// checkout with their real address; see the admin-test-mode note on the checkout page).
 const checkoutSchema = z.object({
   fullName: z.string().min(1).max(120),
   email: z.email(),
   address: z.string().min(1).max(200),
   city: z.string().min(1).max(100),
-  postal: z.string().min(1).max(20),
-  country: z.enum(countryCodes),
+  postal: z.string().max(20).optional().default(""),
+  country: z.string().min(1).max(100),
   phone: z.string().min(1).max(30),
   lang: z.enum(["ar", "de", "en"]).default("en"),
   pointsToRedeem: z.number().int().nonnegative().optional().default(0),
@@ -29,8 +32,19 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const parsed = checkoutSchema.safeParse(body);
   if (!parsed.success) {
-    const countryIssue = parsed.error.issues.some((i) => i.path.includes("country"));
-    return NextResponse.json({ error: countryIssue ? "COUNTRY_NOT_SUPPORTED" : "VALIDATION_ERROR" }, { status: 400 });
+    return NextResponse.json({ error: "VALIDATION_ERROR" }, { status: 400 });
+  }
+
+  const session = await auth();
+  const isAdmin = session?.user?.role === "ADMIN";
+
+  if (!isAdmin) {
+    if (!isSupportedCountry(parsed.data.country)) {
+      return NextResponse.json({ error: "COUNTRY_NOT_SUPPORTED" }, { status: 400 });
+    }
+    if (parsed.data.country === "SA" && !isValidSaudiPostalCode(parsed.data.postal)) {
+      return NextResponse.json({ error: "VALIDATION_ERROR" }, { status: 400 });
+    }
   }
 
   const { identity, items } = await getCartWithProducts();

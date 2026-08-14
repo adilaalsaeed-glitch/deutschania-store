@@ -9,7 +9,8 @@ import { useCart } from "@/components/cart/CartProvider";
 import { formatPriceCents } from "@/lib/currency";
 import { maxRedeemablePoints, pointsEarnedForPaidCents, MIN_REDEEM_POINTS } from "@/lib/loyalty";
 import { CountrySelect, PhoneField } from "@/components/CountryPhoneField";
-import { combinePhone, type CountryCode } from "@/data/countries";
+import { combinePhone, isSupportedCountry } from "@/data/countries";
+import { isValidSaudiPostalCode } from "@/data/postalCodes";
 
 type CheckoutForm = {
   fullName: string;
@@ -17,14 +18,15 @@ type CheckoutForm = {
   address: string;
   city: string;
   postal: string;
-  country: CountryCode | "";
+  country: string;
   phone: string;
 };
 
 export default function CheckoutPage() {
   const { locale, t } = useLocale();
   const { items } = useCart();
-  const { status: sessionStatus } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
+  const isAdminTestMode = session?.user?.role === "ADMIN";
   const [form, setForm] = useState<CheckoutForm>({
     fullName: "",
     email: "",
@@ -43,6 +45,15 @@ export default function CheckoutPage() {
   const maxRedeemable = maxRedeemablePoints(subtotalCents, pointsBalance);
   const discountCents = Math.min(pointsToRedeem, maxRedeemable);
   const totalCents = subtotalCents - discountCents;
+
+  // Real regional-prefix validation against Saudi Post's actual structure - the UAE and Qatar
+  // have no postal code system at all (P.O. Box-only mail delivery), so there's nothing to
+  // validate there; the field is simply optional for them. Skipped entirely in admin test mode,
+  // where the country field itself isn't restricted to SA/AE/QA in the first place.
+  const postalRequired = !isAdminTestMode && form.country === "SA";
+  const postalValid = isAdminTestMode || form.country !== "SA" || isValidSaudiPostalCode(form.postal);
+  const submitBlockedByPostal = postalRequired && form.postal.trim().length > 0 && !postalValid;
+  const submitDisabled = submitting || (postalRequired && !postalValid);
 
   useEffect(() => {
     if (sessionStatus !== "authenticated") return;
@@ -94,12 +105,17 @@ export default function CheckoutPage() {
     setError(null);
     setSubmitting(true);
 
+    // In admin test mode the phone is typed as a full free-text number (no fixed dial-code
+    // country to prefix it with), so it's sent as-is rather than through combinePhone.
+    const phone =
+      !isAdminTestMode && isSupportedCountry(form.country) ? combinePhone(form.country, form.phone) : form.phone;
+
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
-        phone: combinePhone(form.country, form.phone),
+        phone,
         lang: locale,
         pointsToRedeem: discountCents,
       }),
@@ -218,26 +234,50 @@ export default function CheckoutPage() {
               </div>
               <div className="field">
                 <label>{t.checkout.postal}</label>
-                <input required value={form.postal} onChange={(e) => set("postal", e.target.value)} />
+                <input
+                  required={postalRequired}
+                  value={form.postal}
+                  onChange={(e) => set("postal", e.target.value)}
+                  aria-invalid={submitBlockedByPostal}
+                />
+                {submitBlockedByPostal && <p className="field-error">{t.checkout.postalInvalid}</p>}
+                {!isAdminTestMode && form.country && form.country !== "SA" && (
+                  <p className="form-note">{t.checkout.postalOptionalNote}</p>
+                )}
               </div>
             </div>
+            {isAdminTestMode && (
+              <p className="admin-test-mode-note">{t.checkout.adminTestModeNote}</p>
+            )}
             <div className="field-row">
               <div className="field">
                 <label>{t.checkout.country}</label>
-                <CountrySelect required value={form.country} onChange={(v) => set("country", v)} />
+                {isAdminTestMode ? (
+                  <input required value={form.country} onChange={(e) => set("country", e.target.value)} />
+                ) : (
+                  <CountrySelect
+                    required
+                    value={isSupportedCountry(form.country) ? form.country : ""}
+                    onChange={(v) => set("country", v)}
+                  />
+                )}
               </div>
               <div className="field">
                 <label>{t.checkout.phone}</label>
-                <PhoneField
-                  required
-                  country={form.country}
-                  localNumber={form.phone}
-                  onLocalNumberChange={(v) => set("phone", v)}
-                />
+                {isAdminTestMode ? (
+                  <input required dir="ltr" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
+                ) : (
+                  <PhoneField
+                    required
+                    country={isSupportedCountry(form.country) ? form.country : ""}
+                    localNumber={form.phone}
+                    onLocalNumberChange={(v) => set("phone", v)}
+                  />
+                )}
               </div>
             </div>
             {error && <p className="field-error">{error}</p>}
-            <button className="btn btn-brass btn-block" type="submit" disabled={submitting}>
+            <button className="btn btn-brass btn-block" type="submit" disabled={submitDisabled}>
               {submitting ? "…" : t.checkout.placeOrder}
             </button>
           </form>
