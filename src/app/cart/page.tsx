@@ -12,6 +12,12 @@ export default function CartPage() {
   const { items, setQuantity, remove } = useCart();
   const subtotalCents = items.reduce((sum, i) => sum + i.product.priceCents * i.quantity, 0);
 
+  async function handleResult(result: { ok: boolean; error?: string }) {
+    if (!result.ok) {
+      window.alert(t.errors[result.error as keyof typeof t.errors] ?? t.errors.UNKNOWN);
+    }
+  }
+
   return (
     <SiteChrome>
       <section className="cart-page">
@@ -42,10 +48,18 @@ export default function CartPage() {
                       <div className="price">{formatPriceCents(item.product.priceCents, "EUR")}</div>
                       <div className="row-btm">
                         <div className="mini-stepper">
-                          <button onClick={() => setQuantity(item.productId, item.quantity - 1)}>−</button>
+                          <button onClick={() => setQuantity(item.productId, item.quantity - 1).then(handleResult)}>−</button>
                           <span>{item.quantity}</span>
-                          <button onClick={() => setQuantity(item.productId, item.quantity + 1)}>+</button>
+                          <button
+                            disabled={item.quantity >= item.product.stockQuantity}
+                            onClick={() => setQuantity(item.productId, item.quantity + 1).then(handleResult)}
+                          >
+                            +
+                          </button>
                         </div>
+                        {item.quantity >= item.product.stockQuantity && (
+                          <span className="cart-stock-note">{t.cart.maxStockReached}</span>
+                        )}
                         <button className="cart-remove-btn" onClick={() => remove(item.productId)}>
                           {t.cart.remove}
                         </button>

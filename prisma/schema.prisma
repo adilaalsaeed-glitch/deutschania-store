@@ -58,6 +58,11 @@ enum ContentSubmissionStatus {
   REJECTED
 }
 
+enum InvoiceSource {
+  AUTO // generated the moment an order reaches PAID
+  MANUAL // entered by an admin for an off-platform deal, no linked Order
+}
+
 model Category {
   key       String   @id // e.g. "cat_makeup"
   label     Json // {ar, de, en}
@@ -316,6 +321,7 @@ model Order {
   items               OrderItem[]
   loyaltyTransactions LoyaltyTransaction[]
   coupons             Coupon[]
+  invoice             Invoice?
 
   @@map("orders")
 }
@@ -331,4 +337,53 @@ model OrderItem {
   quantity         Int
 
   @@map("order_items")
+}
+
+// One row per (year), atomically incremented to hand out the next sequence number - this is
+// the single counter shared by both AUTO and MANUAL invoices, so numbering has no gaps and no
+// duplicate branches. See src/lib/invoices.ts's getNextInvoiceNumber for the atomic upsert.
+model InvoiceCounter {
+  year       Int @id
+  lastNumber Int @default(0)
+
+  @@map("invoice_counters")
+}
+
+// A legal, immutable snapshot - once issued, nothing here changes even if the underlying
+// product prices, the buyer's saved address, or seller details change later. Corrections are
+// handled by issuing a separate Storno (credit note) invoice, not by editing or deleting this
+// row (no delete route exists for this model on purpose).
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique // "2026-0001"
+  year          Int
+  sequence      Int
+  source        InvoiceSource
+  orderId       String?       @unique
+  order         Order?        @relation(fields: [orderId], references: [id])
+  createdByUserId String? // admin who entered a MANUAL invoice; null for AUTO
+
+  issuedAt     DateTime @default(now())
+  deliveryDate DateTime
+
+  buyerName    String
+  buyerAddress String
+  sellerSnapshot Json // {name, address, taxId, ...} at time of issue
+
+  lineItems     Json // [{description: {ar,de,en}, quantity, unitPriceCents, lineTotalCents}]
+  subtotalCents Int
+  taxRatePercent Int // 0 when the Kleinunternehmer note applies
+  taxCents      Int
+  totalCents    Int
+  currency      String  @default("EUR")
+  kleinunternehmerNote Boolean @default(false) // whether §19 UStG note was printed on this snapshot
+
+  pdfUrlAr String? // Vercel Blob URL - null until PDF generation finishes
+  pdfUrlDe String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([year, sequence])
+  @@index([orderId])
+  @@map("invoices")
 }

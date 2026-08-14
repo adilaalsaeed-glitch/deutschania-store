@@ -49,15 +49,20 @@ export function AccountDashboard({
             </Link>
           </div>
         ) : (
-          <div className="order-status-row">
-            {DASHBOARD_ORDER_STATUSES.map((status) => (
-              <div className="order-status-item" key={status}>
-                <span className="order-status-icon">{ORDER_STATUS_ICONS[status]}</span>
-                <span className="order-status-count">{statusCounts[status] ?? 0}</span>
-                <span className="order-status-label">{t.account.orderStatus[status]}</span>
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="order-status-row">
+              {DASHBOARD_ORDER_STATUSES.map((status) => (
+                <div className="order-status-item" key={status}>
+                  <span className="order-status-icon">{ORDER_STATUS_ICONS[status]}</span>
+                  <span className="order-status-count">{statusCounts[status] ?? 0}</span>
+                  <span className="order-status-label">{t.account.orderStatus[status]}</span>
+                </div>
+              ))}
+            </div>
+            <Link href="/account/orders" className="btn btn-ghost-outline" style={{ display: "inline-flex", marginTop: 14 }}>
+              {t.account.viewAllOrders}
+            </Link>
+          </>
         )}
       </div>
 

@@ -18,12 +18,14 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "@sparticuz/chromium": "^149.0.0",
     "@vercel/blob": "^2.8.0",
     "bcrypt": "^6.0.0",
     "next": "16.2.12",
     "next-auth": "^5.0.0-beta.32",
     "pg": "^8.22.0",
     "prisma": "^7.9.1",
+    "puppeteer-core": "^25.7.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "resend": "^6.18.1",
@@ -40,6 +42,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
     "playwright": "^1.62.1",
+    "puppeteer": "^25.7.0",
     "tsx": "^4.23.5",
     "typescript": "^5"
   },
@@ -49,6 +52,7 @@
     "prisma@7.9.1": true,
     "sharp@0.34.5": true,
     "unrs-resolver@1.12.2": true,
-    "esbuild@0.28.1": true
+    "esbuild@0.28.1": true,
+    "puppeteer@25.7.0": true
   }
 }

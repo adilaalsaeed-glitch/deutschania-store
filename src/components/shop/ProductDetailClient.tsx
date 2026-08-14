@@ -35,6 +35,13 @@ export function ProductDetailClient({ product }: { product: ProductDetail }) {
   const qty = cartLine?.quantity ?? 0;
   const attrs = product.attributes?.[locale as Locale] ?? [];
   const desc = product.description?.[locale as Locale];
+  const isOutOfStock = product.stockQuantity <= 0;
+
+  async function handleResult(result: { ok: boolean; error?: string }) {
+    if (!result.ok) {
+      window.alert(t.errors[result.error as keyof typeof t.errors] ?? t.errors.UNKNOWN);
+    }
+  }
 
   return (
     <section className="product-page">
@@ -70,20 +77,29 @@ export function ProductDetailClient({ product }: { product: ProductDetail }) {
               )}
               <div className="qv-actions">
                 <WishButton productId={product.id} className="pp-wish-btn" />
-                <button
-                  className="btn btn-brass qv-addbtn"
-                  onClick={(e) => {
-                    fly(e.currentTarget, product.imageUrl, product.icon);
-                    add(product.id);
-                  }}
-                >
-                  <span aria-hidden="true">🛒</span> {t.shop.addToCart}
-                </button>
+                {isOutOfStock ? (
+                  <span className="scarcity-badge out-of-stock qv-outofstock">{t.errors.OUT_OF_STOCK}</span>
+                ) : (
+                  <button
+                    className="btn btn-brass qv-addbtn"
+                    onClick={(e) => {
+                      fly(e.currentTarget, product.imageUrl, product.icon);
+                      add(product.id).then(handleResult);
+                    }}
+                  >
+                    <span aria-hidden="true">🛒</span> {t.shop.addToCart}
+                  </button>
+                )}
                 {qty > 0 && (
                   <div className="qty-stepper qv-qty">
-                    <button onClick={() => setQuantity(product.id, qty - 1)}>−</button>
+                    <button onClick={() => setQuantity(product.id, qty - 1).then(handleResult)}>−</button>
                     <span>{qty}</span>
-                    <button onClick={() => setQuantity(product.id, qty + 1)}>+</button>
+                    <button
+                      disabled={qty >= product.stockQuantity}
+                      onClick={() => setQuantity(product.id, qty + 1).then(handleResult)}
+                    >
+                      +
+                    </button>
                   </div>
                 )}
               </div>

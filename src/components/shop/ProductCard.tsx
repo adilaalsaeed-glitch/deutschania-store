@@ -19,7 +19,14 @@ export function ProductCard({ product }: { product: ProductListItem }) {
 
   const cartLine = items.find((i) => i.productId === product.id);
   const qty = cartLine?.quantity ?? 0;
+  const isOutOfStock = product.stockQuantity <= 0;
   const isLowStock = product.stockQuantity > 0 && product.stockQuantity <= LOW_STOCK_THRESHOLD;
+
+  async function handleResult(result: { ok: boolean; error?: string }) {
+    if (!result.ok) {
+      window.alert(t.errors[result.error as keyof typeof t.errors] ?? t.errors.UNKNOWN);
+    }
+  }
 
   return (
     <div className="product-card">
@@ -30,18 +37,23 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           <ProductIcon icon={product.icon} color={product.category.color} />
         )}
         <span className="origin-flag">🇩🇪</span>
-        {isLowStock && (
-          <span className="scarcity-badge">{t.shop.scarcity.replace("{count}", String(product.stockQuantity))}</span>
+        {isOutOfStock ? (
+          <span className="scarcity-badge out-of-stock">{t.admin.outOfStockStatus}</span>
+        ) : (
+          isLowStock && (
+            <span className="scarcity-badge">{t.shop.scarcity.replace("{count}", String(product.stockQuantity))}</span>
+          )
         )}
         <WishButton productId={product.id} className="wish-btn" />
       </Link>
       <button
         className="quick-add"
-        aria-label={t.shop.addToCart}
+        aria-label={isOutOfStock ? t.errors.OUT_OF_STOCK : t.shop.addToCart}
+        disabled={isOutOfStock}
         onClick={(e) => {
           e.preventDefault();
           fly(e.currentTarget, product.imageUrl, product.icon);
-          add(product.id);
+          add(product.id).then(handleResult);
         }}
       >
         +
@@ -54,9 +66,11 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         <div className="product-price">{formatPriceCents(product.priceCents, currency)}</div>
         {qty > 0 && (
           <div className="qty-stepper">
-            <button onClick={() => setQuantity(product.id, qty - 1)}>−</button>
+            <button onClick={() => setQuantity(product.id, qty - 1).then(handleResult)}>−</button>
             <span>{qty}</span>
-            <button onClick={() => setQuantity(product.id, qty + 1)}>+</button>
+            <button disabled={qty >= product.stockQuantity} onClick={() => setQuantity(product.id, qty + 1).then(handleResult)}>
+              +
+            </button>
           </div>
         )}
         <CompareCheck productId={product.id} />

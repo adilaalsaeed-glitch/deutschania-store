@@ -34,6 +34,7 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
   const router = useRouter();
   const [rows, setRows] = useState(products);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [savingStockId, setSavingStockId] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -87,6 +88,24 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
       return;
     }
     setRows((prev) => prev.filter((r) => r.id !== row.id));
+    router.refresh();
+  }
+
+  async function saveStock(row: Row, nextValue: number) {
+    if (nextValue === row.stockQuantity) return;
+    setSavingStockId(row.id);
+    const res = await fetch(`/api/admin/products/${row.id}/stock`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ stockQuantity: nextValue }),
+    });
+    setSavingStockId(null);
+
+    if (!res.ok) {
+      window.alert(t.admin.stockUpdateFailed);
+      return;
+    }
+    setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, stockQuantity: nextValue } : r)));
     router.refresh();
   }
 
@@ -159,9 +178,27 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
                 <td>{formatPriceCents(r.priceCents, "EUR")}</td>
                 <td>{r.category.label[locale]}</td>
                 <td>
-                  <span className={`admin-stock-badge${r.stockQuantity > 0 ? " in-stock" : " out-of-stock"}`}>
-                    {r.stockQuantity > 0 ? `${t.admin.availableStatus} (${r.stockQuantity})` : t.admin.outOfStockStatus}
-                  </span>
+                  <div className="admin-stock-cell">
+                    <input
+                      key={`${r.id}-${r.stockQuantity}`}
+                      type="number"
+                      min={0}
+                      step={1}
+                      defaultValue={r.stockQuantity}
+                      className="admin-stock-input"
+                      disabled={savingStockId === r.id}
+                      onBlur={(e) => {
+                        const next = Math.max(0, Math.floor(Number(e.target.value) || 0));
+                        saveStock(r, next);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") e.currentTarget.blur();
+                      }}
+                    />
+                    <span className={`admin-stock-badge${r.stockQuantity > 0 ? " in-stock" : " out-of-stock"}`}>
+                      {r.stockQuantity > 0 ? t.admin.availableStatus : t.admin.outOfStockStatus}
+                    </span>
+                  </div>
                 </td>
                 <td>
                   <div className="admin-row-actions">

@@ -73,4 +73,31 @@ export async function setTestimonialsEnabled(enabled: boolean): Promise<void> {
   await setSetting(TESTIMONIALS_ENABLED_KEY, enabled ? "true" : "false");
 }
 
+const KLEINUNTERNEHMER_ENABLED_KEY = "invoice_kleinunternehmer_enabled";
+const STANDARD_TAX_RATE_PERCENT_KEY = "invoice_standard_tax_rate_percent";
+const STANDARD_TAX_RATE_PERCENT_DEFAULT = 19; // Germany's standard VAT rate
+
+// On by default: tax status is pending accountant/IHK confirmation (per the business owner),
+// so invoices default to the §19 UStG small-business exemption (0% tax) until this is
+// explicitly turned off from the admin settings panel.
+export async function isKleinunternehmerEnabled(): Promise<boolean> {
+  const value = await getSetting(KLEINUNTERNEHMER_ENABLED_KEY);
+  return value === null ? true : value === "true";
+}
+
+export async function setKleinunternehmerEnabled(enabled: boolean): Promise<void> {
+  await setSetting(KLEINUNTERNEHMER_ENABLED_KEY, enabled ? "true" : "false");
+}
+
+// Only applied when the Kleinunternehmer exemption above is off.
+export async function getStandardTaxRatePercent(): Promise<number> {
+  const value = await getSetting(STANDARD_TAX_RATE_PERCENT_KEY);
+  const parsed = value ? Number(value) : STANDARD_TAX_RATE_PERCENT_DEFAULT;
+  return Number.isFinite(parsed) ? parsed : STANDARD_TAX_RATE_PERCENT_DEFAULT;
+}
+
+export async function setStandardTaxRatePercent(percent: number): Promise<void> {
+  await setSetting(STANDARD_TAX_RATE_PERCENT_KEY, String(percent));
+}
+
 export { REFERRALS_ENABLED_KEY, CONTENT_COUPON_ENABLED_KEY, TESTIMONIALS_ENABLED_KEY };

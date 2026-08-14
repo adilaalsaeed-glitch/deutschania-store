@@ -3,12 +3,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { CartItemDTO } from "@/types/cart";
 
+type CartResult = { ok: boolean; error?: string };
+
 type CartContextValue = {
   items: CartItemDTO[];
   loading: boolean;
   count: number;
-  add: (productId: string, quantity?: number) => Promise<void>;
-  setQuantity: (productId: string, quantity: number) => Promise<void>;
+  add: (productId: string, quantity?: number) => Promise<CartResult>;
+  setQuantity: (productId: string, quantity: number) => Promise<CartResult>;
   remove: (productId: string) => Promise<void>;
   refresh: () => Promise<void>;
 };
@@ -40,24 +42,28 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const add = useCallback(async (productId: string, quantity = 1) => {
+  const add = useCallback(async (productId: string, quantity = 1): Promise<CartResult> => {
     const res = await fetch("/api/cart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ productId, quantity }),
     });
     const data = await res.json();
+    if (!res.ok) return { ok: false, error: data.error };
     setItems(data.items ?? []);
+    return { ok: true };
   }, []);
 
-  const setQuantity = useCallback(async (productId: string, quantity: number) => {
+  const setQuantity = useCallback(async (productId: string, quantity: number): Promise<CartResult> => {
     const res = await fetch("/api/cart", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ productId, quantity }),
     });
     const data = await res.json();
+    if (!res.ok) return { ok: false, error: data.error };
     setItems(data.items ?? []);
+    return { ok: true };
   }, []);
 
   const remove = useCallback(async (productId: string) => {

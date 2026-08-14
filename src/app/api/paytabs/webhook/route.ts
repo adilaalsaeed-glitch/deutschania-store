@@ -4,6 +4,7 @@ import { pointsEarnedForPaidCents } from "@/lib/loyalty";
 import { isReferralsEnabled } from "@/lib/settings";
 import { REFERRAL_COUPON_VALUE_CENTS } from "@/lib/referral";
 import { couponExpiryDate, generateCouponCode } from "@/lib/coupons";
+import { createInvoiceForOrder } from "@/lib/invoices";
 
 // PayTabs calls this server-to-server once a payment finishes (independent of whether the
 // customer's browser makes it back to the return URL). See:
@@ -104,6 +105,18 @@ export async function POST(request: Request) {
       });
     }
   });
+
+  if (isPaid) {
+    // Deliberately outside the transaction above - PDF generation launches a real browser and
+    // uploads to Blob storage, both too slow to hold a DB transaction open for. Not fatal to
+    // the webhook if it fails (the payment itself already succeeded and is fully recorded);
+    // logged for manual follow-up rather than failing the response PayTabs is waiting on.
+    try {
+      await createInvoiceForOrder(order.id);
+    } catch (err) {
+      console.error(`Failed to generate invoice for order ${order.orderNumber}:`, err);
+    }
+  }
 
   return NextResponse.json({ ok: true });
 }

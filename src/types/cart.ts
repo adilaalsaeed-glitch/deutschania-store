@@ -18,5 +18,6 @@ export type CartItemDTO = {
     icon: string;
     imageUrl: string | null;
     categoryKey: string;
+    stockQuantity: number;
   };
 };

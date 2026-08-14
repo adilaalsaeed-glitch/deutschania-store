@@ -32,9 +32,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "VALIDATION_ERROR" }, { status: 400 });
   }
 
+  const product = await prisma.product.findUnique({
+    where: { id: parsed.data.productId },
+    select: { stockQuantity: true },
+  });
+  if (!product) {
+    return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
+  }
+
   const { identity, items } = await getCartWithProducts();
   const where = identity.userId ? { userId: identity.userId } : { sessionId: identity.sessionId };
   const existing = items.find((i) => i.productId === parsed.data.productId);
+
+  const requestedTotal = (existing?.quantity ?? 0) + parsed.data.quantity;
+  if (requestedTotal > product.stockQuantity) {
+    return NextResponse.json({ error: product.stockQuantity <= 0 ? "OUT_OF_STOCK" : "INSUFFICIENT_STOCK" }, { status: 400 });
+  }
 
   if (existing) {
     await prisma.cartItem.update({
@@ -70,6 +83,12 @@ export async function PATCH(request: Request) {
     if (parsed.data.quantity === 0) {
       await prisma.cartItem.delete({ where: { id: existing.id } });
     } else {
+      if (parsed.data.quantity > existing.product.stockQuantity) {
+        return withGuestCookie(
+          NextResponse.json({ error: existing.product.stockQuantity <= 0 ? "OUT_OF_STOCK" : "INSUFFICIENT_STOCK" }, { status: 400 }),
+          identity
+        );
+      }
       await prisma.cartItem.update({ where: { id: existing.id }, data: { quantity: parsed.data.quantity } });
     }
   }

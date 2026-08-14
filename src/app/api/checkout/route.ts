@@ -38,6 +38,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "CART_EMPTY" }, { status: 400 });
   }
 
+  // Final stock check - the cart's own add/update endpoints already guard against this, but
+  // stock can still have changed since (another order, an admin edit) by the time checkout runs.
+  const outOfStock = items.some((i) => i.quantity > i.product.stockQuantity);
+  if (outOfStock) {
+    return NextResponse.json({ error: "INSUFFICIENT_STOCK" }, { status: 400 });
+  }
+
   const subtotalCents = items.reduce((sum, i) => sum + i.product.priceCents * i.quantity, 0);
   const orderNumber = generateOrderNumber();
   const data = parsed.data;

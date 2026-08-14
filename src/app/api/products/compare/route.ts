@@ -25,6 +25,7 @@ export async function GET(request: Request) {
       icon: true,
       imageUrl: true,
       categoryKey: true,
+      stockQuantity: true,
       category: { select: { key: true, label: true, icon: true, color: true } },
     },
   });

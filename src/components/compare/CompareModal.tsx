@@ -53,15 +53,23 @@ export function CompareModal() {
                 <div className="product-name">{p.name[locale]}</div>
                 <div className="product-price">{formatPriceCents(p.priceCents, "EUR")}</div>
                 <div className="compare-cat">{p.category.label[locale]}</div>
-                <button
-                  className="btn btn-brass compare-add"
-                  onClick={(e) => {
-                    fly(e.currentTarget, p.imageUrl, p.icon);
-                    add(p.id);
-                  }}
-                >
-                  <span aria-hidden="true">🛒</span> {t.shop.addToCart}
-                </button>
+                {p.stockQuantity <= 0 ? (
+                  <span className="scarcity-badge out-of-stock qv-outofstock">{t.errors.OUT_OF_STOCK}</span>
+                ) : (
+                  <button
+                    className="btn btn-brass compare-add"
+                    onClick={(e) => {
+                      fly(e.currentTarget, p.imageUrl, p.icon);
+                      add(p.id).then((result) => {
+                        if (!result.ok) {
+                          window.alert(t.errors[result.error as keyof typeof t.errors] ?? t.errors.UNKNOWN);
+                        }
+                      });
+                    }}
+                  >
+                    <span aria-hidden="true">🛒</span> {t.shop.addToCart}
+                  </button>
+                )}
               </div>
             ))}
           </div>
