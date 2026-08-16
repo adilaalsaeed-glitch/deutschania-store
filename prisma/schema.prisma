@@ -18,8 +18,9 @@ enum Role {
 
 enum OrderStatus {
   PENDING
-  PAID
+  PAID // admin-facing label "Processing" - payment confirmed, fulfillment not started yet
   FAILED
+  PREPARING // being packed - the admin-driven fulfillment stage between payment and shipment
   SHIPPED
   DELIVERED
   CANCELLED
@@ -34,6 +35,13 @@ enum LoyaltyTransactionType {
   EARN // credited when an order is confirmed PAID (1 point per 1 EUR actually paid, post-discount)
   REDEEM // debited when points are applied as a checkout discount (held at order creation)
   REFUND // reverses a REDEEM if the order that held those points later fails
+  RETURN // claws back points EARNED on an order that was later returned/cancelled
+}
+
+enum ReturnStatus {
+  REQUESTED // customer asked for a return, within the 14-day withdrawal window
+  APPROVED // admin approved - stock restored, points reversed, Storno invoice issued
+  REJECTED
 }
 
 enum ReferralStatus {
@@ -61,6 +69,7 @@ enum ContentSubmissionStatus {
 enum InvoiceSource {
   AUTO // generated the moment an order reaches PAID
   MANUAL // entered by an admin for an off-platform deal, no linked Order
+  STORNO // credit note correcting an AUTO/MANUAL invoice after an approved return - negative amounts
 }
 
 model Category {
@@ -91,12 +100,21 @@ model Product {
   category    Category @relation(fields: [categoryKey], references: [key])
   featured    Boolean  @default(false)
   stockQuantity Int    @default(0) // admin-managed inventory count; 0 means out of stock
+
+  // Reference-only for now, in preparation for eventual domestic (Germany) sales - 19 or 7,
+  // null when not yet determined. Deliberately NOT applied to AUTO invoices, which stay 0% for
+  // the current export-only markets (SA/AE/QA) - see the note on buildTaxContext in
+  // src/lib/invoices.ts. Only used to pre-fill the tax rate when a MANUAL invoice line item is
+  // linked to this product, and to filter/search the admin product list.
+  domesticTaxRatePercent Int?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   cartItems  CartItem[]
   orderItems OrderItem[]
   wishedBy   WishlistItem[]
+  purchases  Purchase[]
 
   @@index([categoryKey])
   @@map("products")
@@ -114,6 +132,14 @@ model User {
   emailVerified DateTime? // null until the emailed verification link is clicked
   loyaltyPoints Int       @default(0) // cached AVAILABLE balance (points on hold for an in-flight redemption are already subtracted)
   createdAt     DateTime  @default(now())
+
+  // Admin moderation (/admin/users) - blocks login without touching any data, unlike the GDPR
+  // erasure tool at /admin/customers which deletes it. suspendedByUserId is a plain id (no
+  // relation), same pattern as Invoice.createdByUserId.
+  suspended         Boolean   @default(false)
+  suspendedAt       DateTime?
+  suspendedReason   String?
+  suspendedByUserId String?
 
   addresses            Address[]
   cartItems            CartItem[]
@@ -315,8 +341,31 @@ model Order {
   paymentProvider     String      @default("paytabs")
   paytabsTranRef      String? // PayTabs tran_ref, set once the hosted payment page is created
   paidAt              DateTime?
+  lang                String      @default("ar") // checkout language, used to send status-change emails in the right language
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
+
+  // Fulfillment tracking (PAID -> PREPARING -> SHIPPED -> DELIVERED), admin-driven from
+  // /admin/orders. paidAt still stands in for the 14-day Widerrufsrecht window below - these
+  // timestamps are for the fulfillment pipeline itself, not the return-eligibility calculation.
+  trackingNumber String?
+  preparingAt    DateTime?
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+
+  // Set when an admin cancels directly via /admin/orders (before shipment) - distinct from the
+  // customer-return fields below, which track a *return* of an already-shipped/delivered order.
+  // Both paths converge on status: CANCELLED and the same stock/points/Storno reversal.
+  cancelledAt  DateTime?
+  cancelReason String?
+
+  // 14-day withdrawal right (Widerrufsrecht) tracking. The window is measured from paidAt -
+  // there's no *delivery-confirmation* timestamp distinct from deliveredAt being reliably set by
+  // an admin in practice, so paidAt remains the practical stand-in for "receipt of goods".
+  returnStatus      ReturnStatus?
+  returnRequestedAt DateTime?
+  returnReason      String?
+  returnProcessedAt DateTime?
 
   items               OrderItem[]
   loyaltyTransactions LoyaltyTransaction[]
@@ -363,6 +412,12 @@ model Invoice {
   order         Order?        @relation(fields: [orderId], references: [id])
   createdByUserId String? // admin who entered a MANUAL invoice; null for AUTO
 
+  // Set on a STORNO invoice, pointing back at the original AUTO/MANUAL invoice it corrects -
+  // one Storno per original (a second return against the same order isn't supported).
+  correctsInvoiceId String?  @unique
+  correctsInvoice   Invoice? @relation("InvoiceCorrection", fields: [correctsInvoiceId], references: [id])
+  correctedBy       Invoice? @relation("InvoiceCorrection")
+
   issuedAt     DateTime @default(now())
   deliveryDate DateTime
 
@@ -386,4 +441,60 @@ model Invoice {
   @@unique([year, sequence])
   @@index([orderId])
   @@map("invoices")
+}
+
+// Manual log of stock coming IN from suppliers - the counterpart to the sales side (Order/
+// Invoice) already tracked. Together they give the tax advisor a complete picture of goods
+// movement. Free-text supplierName/productName on purpose: a supplier delivery note rarely maps
+// 1:1 onto catalog Products (mixed pallets, packaging units, discontinued items), so this isn't
+// tied to the Product model - it's a bookkeeping record, not an inventory-adjustment mechanism.
+model Purchase {
+  id             String   @id @default(cuid())
+  purchaseDate   DateTime
+  supplierName   String
+  productName    String
+  quantity       Int
+  totalCostCents Int
+
+  // Optional, separate from totalCostCents (the product cost itself) so each component stays
+  // individually visible on the purchase record - both are folded into the unit cost used for
+  // profit-margin calculations (see getLatestUnitCostCents in src/lib/productCost.ts).
+  shippingCostCents Int?
+  customsCostCents  Int?
+
+  currency       String   @default("EUR")
+  notes          String?
+  attachmentUrl  String? // Vercel Blob URL of the supplier's original invoice/receipt (image or PDF)
+
+  // Optional link to a catalog Product, so the sales dashboard's profit-margin calculation can
+  // find "the latest recorded cost" for a product actually sold. Left nullable and separate from
+  // productName on purpose - a supplier delivery often doesn't correspond 1:1 to a catalog item
+  // (mixed pallets, discontinued items), so not every purchase row can or should be linked.
+  // SetNull rather than Cascade: deleting a product shouldn't erase the cost-history record.
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  createdByUserId String? // admin who entered this row - plain id, no relation (see Invoice.createdByUserId)
+  createdAt      DateTime @default(now())
+
+  @@index([purchaseDate])
+  @@index([productId])
+  @@map("purchases")
+}
+
+// General operating costs for a given calendar month that aren't tied to any one product
+// (marketing, subscriptions, general shipping, etc.) - deducted from the sales dashboard's
+// product-margin profit figure to show the fuller "actual net profit" for that month. Deliberately
+// separate from Purchase (which is always product-linked stock cost).
+model MonthlyExpense {
+  id              String   @id @default(cuid())
+  year            Int
+  month           Int // 1-12
+  description     String
+  amountCents     Int
+  createdByUserId String? // admin who entered this row - plain id, no relation (see Purchase.createdByUserId)
+  createdAt       DateTime @default(now())
+
+  @@index([year, month])
+  @@map("monthly_expenses")
 }
