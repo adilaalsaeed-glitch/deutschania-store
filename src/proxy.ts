@@ -13,12 +13,19 @@ export function proxy(request: NextRequest) {
   const auth = request.headers.get("authorization");
 
   if (auth?.startsWith("Basic ")) {
-    const decoded = atob(auth.slice(6));
-    const separatorIndex = decoded.indexOf(":");
-    const user = decoded.slice(0, separatorIndex);
-    const pass = decoded.slice(separatorIndex + 1);
-    if (user === username && pass === password) {
-      return NextResponse.next();
+    // atob() throws on malformed base64 (e.g. a bot or stale client sending a garbled header) -
+    // without this try/catch that exception was unhandled, turning a bad Authorization header
+    // into a 500 instead of the intended 401 challenge.
+    try {
+      const decoded = atob(auth.slice(6));
+      const separatorIndex = decoded.indexOf(":");
+      const user = decoded.slice(0, separatorIndex);
+      const pass = decoded.slice(separatorIndex + 1);
+      if (user === username && pass === password) {
+        return NextResponse.next();
+      }
+    } catch {
+      // fall through to the 401 challenge below
     }
   }
 
