@@ -67,10 +67,17 @@ export default async function AdminInvoicesPage() {
                   <td>{inv.buyerName}</td>
                   <td>
                     <span className={`invoice-source-badge ${inv.source.toLowerCase()}`}>
-                      {inv.source === "AUTO" ? t.admin.invoiceSourceAuto : t.admin.invoiceSourceManual}
+                      {inv.source === "AUTO"
+                        ? t.admin.invoiceSourceAuto
+                        : inv.source === "STORNO"
+                          ? t.admin.invoiceSourceStorno
+                          : t.admin.invoiceSourceManual}
                     </span>
                   </td>
-                  <td>{formatPriceCents(inv.totalCents, "EUR")}</td>
+                  <td>
+                    {inv.totalCents < 0 ? "-" : ""}
+                    {formatPriceCents(Math.abs(inv.totalCents), "EUR")}
+                  </td>
                   <td>
                     <div className="admin-row-actions">
                       {inv.pdfUrlAr ? (

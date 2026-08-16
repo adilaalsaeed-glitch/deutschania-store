@@ -31,6 +31,7 @@ export default async function AdminProductsPage() {
           icon: true,
           categoryKey: true,
           stockQuantity: true,
+          domesticTaxRatePercent: true,
           category: { select: { label: true } },
           _count: { select: { orderItems: true } },
         },

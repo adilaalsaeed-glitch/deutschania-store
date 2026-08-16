@@ -6,8 +6,10 @@ import { isKleinunternehmerEnabled, getStandardTaxRatePercent } from "@/lib/sett
 import { SELLER_INFO } from "@/lib/sellerInfo";
 import type { Locale } from "@/i18n/config";
 
+// Only ar/de PDFs are ever generated (see generateAndStorePdfs) - "en" was never actually
+// rendered anywhere, so line items only need to carry what's really used.
 type LineItem = {
-  description: Record<Locale, string>;
+  description: Record<"ar" | "de", string>;
   quantity: number;
   unitPriceCents: number;
   lineTotalCents: number;
@@ -40,6 +42,9 @@ async function getNextInvoiceNumber(): Promise<{ year: number; sequence: number;
 const copy = {
   ar: {
     title: "فاتورة",
+    stornoTitle: "فاتورة تصحيحية",
+    stornoBadge: "إشعار دائن",
+    correctsLabel: "تصحيح للفاتورة رقم",
     invoiceNumber: "رقم الفاتورة",
     issuedAt: "تاريخ الفاتورة",
     deliveryDate: "تاريخ التسليم",
@@ -57,6 +62,9 @@ const copy = {
   },
   de: {
     title: "Rechnung",
+    stornoTitle: "Korrekturrechnung",
+    stornoBadge: "Gutschrift",
+    correctsLabel: "Korrektur zu Rechnung Nr.",
     invoiceNumber: "Rechnungsnummer",
     issuedAt: "Rechnungsdatum",
     deliveryDate: "Lieferdatum",
@@ -73,6 +81,13 @@ const copy = {
   },
 } as const;
 
+// Storno amounts are stored negative (a true reversal, not just a display flip) - format with a
+// leading "-" instead of relying on toFixed's own minus sign landing after the currency symbol.
+function formatMoney(cents: number): string {
+  const sign = cents < 0 ? "-" : "";
+  return `${sign}${formatPriceCents(Math.abs(cents), "EUR")}`;
+}
+
 function renderInvoiceHtml(
   locale: "ar" | "de",
   data: {
@@ -87,6 +102,8 @@ function renderInvoiceHtml(
     taxCents: number;
     totalCents: number;
     kleinunternehmerNote: boolean;
+    isStorno?: boolean;
+    correctsInvoiceNumber?: string;
   }
 ): string {
   const t = copy[locale];
@@ -95,12 +112,12 @@ function renderInvoiceHtml(
 
   const rows = data.lineItems
     .map(
-      (item) => `
-      <tr>
+      (item, i) => `
+      <tr class="${i % 2 === 1 ? "alt" : ""}">
         <td>${item.description[locale]}</td>
-        <td style="text-align:center;">${item.quantity}</td>
-        <td style="text-align:end;">${formatPriceCents(item.unitPriceCents, "EUR")}</td>
-        <td style="text-align:end;">${formatPriceCents(item.lineTotalCents, "EUR")}</td>
+        <td class="num">${item.quantity}</td>
+        <td class="num">${formatMoney(item.unitPriceCents)}</td>
+        <td class="num">${formatMoney(item.lineTotalCents)}</td>
       </tr>`
     )
     .join("");
@@ -111,70 +128,160 @@ function renderInvoiceHtml(
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: 'Arial', 'Tahoma', sans-serif; color: #1A1D1E; padding: 0; margin: 0; direction: ${dir}; }
-  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
-  .brand { font-size: 1.4rem; font-weight: 700; color: #5C7A5E; }
-  h1 { font-size: 1.3rem; margin: 0 0 4px; }
-  .meta { font-size: 0.85rem; color: #444; }
-  .parties { display: flex; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
-  .party { flex: 1; font-size: 0.85rem; line-height: 1.6; }
-  .party-label { font-weight: 700; font-size: 0.78rem; text-transform: uppercase; opacity: .6; margin-bottom: 4px; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 18px; }
-  th, td { border: 1px solid #ccc; padding: 8px 10px; }
-  th { background: #F5F3EE; text-align: ${dir === "rtl" ? "right" : "left"}; }
-  .totals { width: 280px; margin-inline-start: auto; font-size: 0.88rem; }
-  .totals-row { display: flex; justify-content: space-between; padding: 4px 0; }
-  .totals-row.grand { font-weight: 700; font-size: 1.05rem; border-top: 2px solid #1A1D1E; margin-top: 6px; padding-top: 8px; }
-  .note { margin-top: 24px; font-size: 0.78rem; opacity: .75; line-height: 1.6; }
+  :root {
+    --ink: #5C7A5E;
+    --sand: #EEECE5;
+    --brass: #FCEAAE;
+    --dark-text: #1A1D1E;
+    --bad: #B54B3E;
+    --line-dark: rgba(26, 29, 30, 0.14);
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Arial', 'Tahoma', sans-serif;
+    color: var(--dark-text);
+    margin: 0;
+    padding: 0;
+    direction: ${dir};
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 20px;
+    margin-bottom: 26px;
+    border-bottom: 3px solid var(--ink);
+  }
+  .brand-name { font-size: 1.5rem; font-weight: 700; color: var(--ink); letter-spacing: 0.2px; }
+  .brand-meta { margin-top: 6px; font-size: 0.78rem; color: #555; line-height: 1.7; }
+
+  .doc-meta { text-align: end; }
+  .storno-badge {
+    display: inline-block;
+    background: var(--bad);
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+  }
+  .doc-title { font-size: 1.35rem; font-weight: 700; margin: 0 0 10px; color: ${data.isStorno ? "var(--bad)" : "var(--dark-text)"}; }
+  .doc-meta-row { font-size: 0.82rem; color: #444; margin-bottom: 3px; }
+  .doc-meta-row strong { color: var(--dark-text); }
+
+  .parties { display: flex; gap: 24px; margin-bottom: 28px; }
+  .party-box { flex: 1; background: var(--sand); border-radius: 6px; padding: 16px 18px; }
+  .party-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--ink); margin-bottom: 8px; }
+  .party-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .party-detail { font-size: 0.82rem; color: #444; line-height: 1.7; }
+
+  table.items { width: 100%; border-collapse: collapse; margin-bottom: 22px; }
+  table.items thead th {
+    background: var(--ink);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 10px 12px;
+    text-align: start;
+  }
+  table.items thead th.num { text-align: end; }
+  table.items thead th:first-child { border-start-start-radius: 5px; border-end-start-radius: 5px; }
+  table.items thead th:last-child { border-start-end-radius: 5px; border-end-end-radius: 5px; }
+  table.items tbody td { padding: 10px 12px; font-size: 0.85rem; border-bottom: 1px solid var(--line-dark); }
+  table.items tbody td.num { text-align: end; font-variant-numeric: tabular-nums; }
+  table.items tbody tr.alt { background: rgba(238, 236, 229, 0.5); }
+
+  .totals-block { width: 300px; margin-inline-start: auto; }
+  .totals-row { display: flex; justify-content: space-between; padding: 5px 6px; font-size: 0.85rem; color: #444; }
+  .totals-row.grand {
+    background: var(--brass);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-top: 8px;
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: var(--dark-text);
+  }
+
+  .note-box {
+    margin-top: 26px;
+    padding: 12px 16px;
+    background: var(--sand);
+    border-inline-start: 3px solid var(--ink);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  .footer {
+    margin-top: 40px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line-dark);
+    font-size: 0.7rem;
+    color: #999;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
-  <div class="header">
+  <div class="invoice-header">
     <div>
-      <div class="brand">${SELLER_INFO.name}</div>
-      <div class="meta">${SELLER_INFO.address}</div>
+      <div class="brand-name">${SELLER_INFO.name}</div>
+      <div class="brand-meta">${SELLER_INFO.address}<br />${SELLER_INFO.email}</div>
     </div>
-    <div style="text-align:${dir === "rtl" ? "left" : "right"};">
-      <h1>${t.title}</h1>
-      <div class="meta">${t.invoiceNumber}: <strong>${data.invoiceNumber}</strong></div>
-      <div class="meta">${t.issuedAt}: ${dateFmt(data.issuedAt)}</div>
-      <div class="meta">${t.deliveryDate}: ${dateFmt(data.deliveryDate)}</div>
+    <div class="doc-meta">
+      ${data.isStorno ? `<div class="storno-badge">${t.stornoBadge}</div>` : ""}
+      <div class="doc-title">${data.isStorno ? t.stornoTitle : t.title}</div>
+      <div class="doc-meta-row">${t.invoiceNumber}: <strong>${data.invoiceNumber}</strong></div>
+      <div class="doc-meta-row">${t.issuedAt}: ${dateFmt(data.issuedAt)}</div>
+      <div class="doc-meta-row">${t.deliveryDate}: ${dateFmt(data.deliveryDate)}</div>
+      ${data.isStorno && data.correctsInvoiceNumber ? `<div class="doc-meta-row">${t.correctsLabel}: <strong>${data.correctsInvoiceNumber}</strong></div>` : ""}
     </div>
   </div>
 
   <div class="parties">
-    <div class="party">
+    <div class="party-box">
       <div class="party-label">${t.seller}</div>
-      ${SELLER_INFO.name}<br />
-      ${SELLER_INFO.address}
-      ${SELLER_INFO.taxId ? `<br />${SELLER_INFO.taxId}` : ""}
+      <div class="party-name">${SELLER_INFO.name}</div>
+      <div class="party-detail">${SELLER_INFO.address}${SELLER_INFO.taxId ? `<br />${SELLER_INFO.taxId}` : ""}</div>
     </div>
-    <div class="party">
+    <div class="party-box">
       <div class="party-label">${t.buyer}</div>
-      ${data.buyerName}<br />
-      ${data.buyerAddress}
+      <div class="party-name">${data.buyerName}</div>
+      <div class="party-detail">${data.buyerAddress}</div>
     </div>
   </div>
 
-  <table>
+  <table class="items">
     <thead>
       <tr>
         <th>${t.description}</th>
-        <th style="text-align:center;">${t.quantity}</th>
-        <th style="text-align:end;">${t.unitPrice}</th>
-        <th style="text-align:end;">${t.lineTotal}</th>
+        <th class="num">${t.quantity}</th>
+        <th class="num">${t.unitPrice}</th>
+        <th class="num">${t.lineTotal}</th>
       </tr>
     </thead>
     <tbody>${rows}</tbody>
   </table>
 
-  <div class="totals">
-    <div class="totals-row"><span>${t.subtotal}</span><span>${formatPriceCents(data.subtotalCents, "EUR")}</span></div>
-    <div class="totals-row"><span>${t.tax} (${data.taxRatePercent}%)</span><span>${formatPriceCents(data.taxCents, "EUR")}</span></div>
-    <div class="totals-row grand"><span>${t.total}</span><span>${formatPriceCents(data.totalCents, "EUR")}</span></div>
+  <div class="totals-block">
+    <div class="totals-row"><span>${t.subtotal}</span><span>${formatMoney(data.subtotalCents)}</span></div>
+    <div class="totals-row"><span>${t.tax} (${data.taxRatePercent}%)</span><span>${formatMoney(data.taxCents)}</span></div>
+    <div class="totals-row grand"><span>${t.total}</span><span>${formatMoney(data.totalCents)}</span></div>
   </div>
 
-  ${data.kleinunternehmerNote ? `<div class="note">${t.kleinunternehmer}</div>` : ""}
+  ${data.kleinunternehmerNote ? `<div class="note-box">${t.kleinunternehmer}</div>` : ""}
+
+  <div class="footer">${SELLER_INFO.name} · ${SELLER_INFO.email}</div>
 </body>
 </html>`;
 }
@@ -200,10 +307,23 @@ async function generateAndStorePdfs(
   });
 }
 
+// Used only by AUTO invoices (createInvoiceForOrder below) - deliberately independent of
+// Product.domesticTaxRatePercent, which is a reference-only field for a future domestic-sales
+// feature and is never read here. The storefront currently ships only to SA/AE/QA (export), so
+// every AUTO invoice stays 0% under the Kleinunternehmer/export rules regardless of what any
+// product's domestic rate says - that field only feeds MANUAL invoice line items, which an admin
+// explicitly creates for an off-platform (potentially domestic) sale.
 async function buildTaxContext() {
   const [kleinunternehmer, standardRate] = await Promise.all([isKleinunternehmerEnabled(), getStandardTaxRatePercent()]);
   const taxRatePercent = kleinunternehmer ? 0 : standardRate;
   return { taxRatePercent, kleinunternehmerNote: kleinunternehmer };
+}
+
+// Picks the right-language product name for one invoice line, with a defensive fallback chain -
+// a product missing a translation (e.g. German never filled in) shouldn't render a blank cell.
+function pickLocalizedName(nameSnapshot: unknown, locale: "ar" | "de"): string {
+  const record = nameSnapshot as Partial<Record<Locale, string>> | null | undefined;
+  return record?.[locale] || record?.de || record?.ar || record?.en || "";
 }
 
 // Called from the PayTabs webhook right after an order reaches PAID. Idempotent: if a webhook
@@ -222,8 +342,15 @@ export async function createInvoiceForOrder(orderId: string) {
   const { taxRatePercent, kleinunternehmerNote } = await buildTaxContext();
   const { netCents, taxCents } = computeTaxBreakdown(order.totalCents, taxRatePercent);
 
+  // Each line item's product name is snapshotted here from the order's own nameSnapshot (itself
+  // a snapshot of the real Product.name i18n record taken at checkout) - resolved per-language
+  // right here, so the AR/DE PDFs each get their own correct translation rather than one
+  // language's text leaking into the other.
   const lineItems: LineItem[] = order.items.map((item) => ({
-    description: item.nameSnapshot as Record<Locale, string>,
+    description: {
+      ar: pickLocalizedName(item.nameSnapshot, "ar"),
+      de: pickLocalizedName(item.nameSnapshot, "de"),
+    },
     quantity: item.quantity,
     unitPriceCents: item.priceCentsAtSale,
     lineTotalCents: item.priceCentsAtSale * item.quantity,
@@ -275,26 +402,32 @@ export async function createInvoiceForOrder(orderId: string) {
 
 export type ManualInvoiceInput = {
   buyerName: string;
-  buyerAddress: string;
+  street: string;
+  postalCode: string;
+  city: string;
+  country: string;
   deliveryDate: Date;
   createdByUserId: string;
-  lineItems: { description: string; quantity: number; unitPriceCents: number }[];
+  taxRatePercent: number; // admin's explicit choice at creation time - 19 / 7 / 0
+  kleinunternehmerNote: boolean; // independent of the rate - only true when 0% is specifically the §19 UStG exemption, not e.g. an export sale
+  lineItems: { descriptionAr: string; descriptionDe: string; quantity: number; unitPriceCents: number }[];
 };
 
 export async function createManualInvoice(input: ManualInvoiceInput) {
-  const { taxRatePercent, kleinunternehmerNote } = await buildTaxContext();
-
   const lineItems: LineItem[] = input.lineItems.map((item) => ({
-    description: { ar: item.description, de: item.description, en: item.description },
+    description: { ar: item.descriptionAr, de: item.descriptionDe },
     quantity: item.quantity,
     unitPriceCents: item.unitPriceCents,
     lineTotalCents: item.unitPriceCents * item.quantity,
   }));
   const grossCents = lineItems.reduce((sum, item) => sum + item.lineTotalCents, 0);
-  const { netCents, taxCents } = computeTaxBreakdown(grossCents, taxRatePercent);
+  const { netCents, taxCents } = computeTaxBreakdown(grossCents, input.taxRatePercent);
 
   const { year, sequence, invoiceNumber } = await getNextInvoiceNumber();
   const issuedAt = new Date();
+  // Same composition pattern as the AUTO path's shippingAddress -> buyerAddress above, for a
+  // consistent look between AUTO and MANUAL invoices despite the different input shape.
+  const buyerAddress = `${input.street}, ${input.city} ${input.postalCode}, ${input.country}`;
 
   const invoice = await prisma.invoice.create({
     data: {
@@ -306,14 +439,14 @@ export async function createManualInvoice(input: ManualInvoiceInput) {
       issuedAt,
       deliveryDate: input.deliveryDate,
       buyerName: input.buyerName,
-      buyerAddress: input.buyerAddress,
+      buyerAddress,
       sellerSnapshot: SELLER_INFO,
       lineItems,
       subtotalCents: netCents,
-      taxRatePercent,
+      taxRatePercent: input.taxRatePercent,
       taxCents,
       totalCents: grossCents,
-      kleinunternehmerNote,
+      kleinunternehmerNote: input.kleinunternehmerNote,
     },
   });
 
@@ -322,13 +455,74 @@ export async function createManualInvoice(input: ManualInvoiceInput) {
     issuedAt,
     deliveryDate: input.deliveryDate,
     buyerName: input.buyerName,
-    buyerAddress: input.buyerAddress,
+    buyerAddress,
     lineItems,
     subtotalCents: netCents,
-    taxRatePercent,
+    taxRatePercent: input.taxRatePercent,
     taxCents,
     totalCents: grossCents,
-    kleinunternehmerNote,
+    kleinunternehmerNote: input.kleinunternehmerNote,
+  });
+
+  return invoice;
+}
+
+// Issues a credit note (Storno/Gutschrift) reversing an original AUTO/MANUAL invoice after an
+// approved return - draws the next number from the SAME counter used by every other invoice
+// (never renumbers or touches the original row) and mirrors its line items with every monetary
+// field negated. Idempotent per original invoice via the correctsInvoiceId unique constraint,
+// same shape as createInvoiceForOrder's own idempotency check.
+export async function createStornoInvoice(originalInvoiceId: string) {
+  const existing = await prisma.invoice.findUnique({ where: { correctsInvoiceId: originalInvoiceId } });
+  if (existing) return existing;
+
+  const original = await prisma.invoice.findUniqueOrThrow({ where: { id: originalInvoiceId } });
+
+  const lineItems: LineItem[] = (original.lineItems as unknown as LineItem[]).map((item) => ({
+    description: item.description,
+    quantity: item.quantity,
+    unitPriceCents: -item.unitPriceCents,
+    lineTotalCents: -item.lineTotalCents,
+  }));
+
+  const { year, sequence, invoiceNumber } = await getNextInvoiceNumber();
+  const issuedAt = new Date();
+
+  const invoice = await prisma.invoice.create({
+    data: {
+      invoiceNumber,
+      year,
+      sequence,
+      source: "STORNO",
+      correctsInvoiceId: original.id,
+      issuedAt,
+      deliveryDate: original.deliveryDate,
+      buyerName: original.buyerName,
+      buyerAddress: original.buyerAddress,
+      sellerSnapshot: original.sellerSnapshot as object,
+      lineItems,
+      subtotalCents: -original.subtotalCents,
+      taxRatePercent: original.taxRatePercent,
+      taxCents: -original.taxCents,
+      totalCents: -original.totalCents,
+      kleinunternehmerNote: original.kleinunternehmerNote,
+    },
+  });
+
+  await generateAndStorePdfs(invoice.id, invoiceNumber, {
+    invoiceNumber,
+    issuedAt,
+    deliveryDate: original.deliveryDate,
+    buyerName: original.buyerName,
+    buyerAddress: original.buyerAddress,
+    lineItems,
+    subtotalCents: -original.subtotalCents,
+    taxRatePercent: original.taxRatePercent,
+    taxCents: -original.taxCents,
+    totalCents: -original.totalCents,
+    kleinunternehmerNote: original.kleinunternehmerNote,
+    isStorno: true,
+    correctsInvoiceNumber: original.invoiceNumber,
   });
 
   return invoice;

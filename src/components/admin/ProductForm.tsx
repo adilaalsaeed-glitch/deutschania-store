@@ -21,6 +21,7 @@ type ProductFormData = {
   categoryKey: string;
   featured: boolean;
   attributes: Record<Locale, AttrRow[]>;
+  domesticTaxRatePercent: 19 | 7 | null;
 };
 
 const emptyI18n: I18nText = { ar: "", de: "", en: "" };
@@ -62,6 +63,7 @@ export function ProductForm({
       categoryKey: categories[0]?.key ?? "",
       featured: false,
       attributes: emptyAttrs,
+      domesticTaxRatePercent: null,
     }
   );
   const [priceInput, setPriceInput] = useState((data.priceCents / 100).toFixed(2));
@@ -175,6 +177,19 @@ export function ProductForm({
               <option value="ar">{t.admin.originAr}</option>
             </select>
           </div>
+        </div>
+
+        <div className="field">
+          <label>{t.admin.domesticTaxRate}</label>
+          <select
+            value={data.domesticTaxRatePercent === null ? "" : String(data.domesticTaxRatePercent)}
+            onChange={(e) => update("domesticTaxRatePercent", e.target.value === "" ? null : (Number(e.target.value) as 19 | 7))}
+          >
+            <option value="">{t.admin.domesticTaxRateUndetermined}</option>
+            <option value="19">19%</option>
+            <option value="7">7%</option>
+          </select>
+          <p className="form-note">{t.admin.domesticTaxRateHint}</p>
         </div>
 
         <div className="field">

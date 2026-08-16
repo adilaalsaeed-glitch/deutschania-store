@@ -21,6 +21,7 @@ type Row = {
   icon: string;
   categoryKey: string;
   stockQuantity: number;
+  domesticTaxRatePercent: 19 | 7 | null;
   category: { label: I18nText };
   _count: { orderItems: number };
 };
@@ -28,6 +29,7 @@ type Row = {
 type CategoryOption = { key: string; label: I18nText };
 
 type AvailabilityFilter = "all" | "available" | "out";
+type TaxRateFilter = "all" | "19" | "7" | "undetermined";
 
 export function AdminProductsList({ products, categories }: { products: Row[]; categories: CategoryOption[] }) {
   const { locale, t } = useLocale();
@@ -40,6 +42,7 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [brandFilter, setBrandFilter] = useState("all");
   const [availabilityFilter, setAvailabilityFilter] = useState<AvailabilityFilter>("all");
+  const [taxRateFilter, setTaxRateFilter] = useState<TaxRateFilter>("all");
 
   const brandOptions = useMemo(
     () => Array.from(new Set(rows.map((r) => r.brand))).sort((a, b) => a.localeCompare(b)),
@@ -53,6 +56,9 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
       if (brandFilter !== "all" && r.brand !== brandFilter) return false;
       if (availabilityFilter === "available" && r.stockQuantity <= 0) return false;
       if (availabilityFilter === "out" && r.stockQuantity > 0) return false;
+      if (taxRateFilter === "19" && r.domesticTaxRatePercent !== 19) return false;
+      if (taxRateFilter === "7" && r.domesticTaxRatePercent !== 7) return false;
+      if (taxRateFilter === "undetermined" && r.domesticTaxRatePercent !== null) return false;
       if (q) {
         const haystack = [
           r.brand,
@@ -70,7 +76,7 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
       }
       return true;
     });
-  }, [rows, search, categoryFilter, brandFilter, availabilityFilter]);
+  }, [rows, search, categoryFilter, brandFilter, availabilityFilter, taxRateFilter]);
 
   async function handleDelete(row: Row) {
     const message =
@@ -147,6 +153,12 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
           <option value="available">{t.admin.availableStatus}</option>
           <option value="out">{t.admin.outOfStockStatus}</option>
         </select>
+        <select value={taxRateFilter} onChange={(e) => setTaxRateFilter(e.target.value as TaxRateFilter)}>
+          <option value="all">{t.admin.allDomesticTaxRates}</option>
+          <option value="19">19%</option>
+          <option value="7">7%</option>
+          <option value="undetermined">{t.admin.domesticTaxRateUndetermined}</option>
+        </select>
       </div>
 
       {filteredRows.length === 0 ? (
@@ -157,9 +169,10 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
             <tr>
               <th></th>
               <th>{t.admin.productCol}</th>
-              <th>{t.admin.price}</th>
+              <th className="num-col">{t.admin.price}</th>
               <th>{t.admin.categoryCol}</th>
-              <th>{t.admin.stockQuantity}</th>
+              <th>{t.admin.domesticTaxRate}</th>
+              <th className="num-col">{t.admin.stockQuantity}</th>
               <th></th>
             </tr>
           </thead>
@@ -175,9 +188,10 @@ export function AdminProductsList({ products, categories }: { products: Row[]; c
                   <div className="admin-product-name">{r.name[locale]}</div>
                   <div className="admin-product-brand">{r.brand}</div>
                 </td>
-                <td>{formatPriceCents(r.priceCents, "EUR")}</td>
+                <td className="num-col">{formatPriceCents(r.priceCents, "EUR")}</td>
                 <td>{r.category.label[locale]}</td>
-                <td>
+                <td>{r.domesticTaxRatePercent === null ? t.admin.domesticTaxRateUndetermined : `${r.domesticTaxRatePercent}%`}</td>
+                <td className="num-col">
                   <div className="admin-stock-cell">
                     <input
                       key={`${r.id}-${r.stockQuantity}`}

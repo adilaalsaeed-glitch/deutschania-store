@@ -21,6 +21,7 @@ export const productSchema = z.object({
   featured: z.boolean().default(false),
   stockQuantity: z.number().int().min(0).max(1_000_000).default(0),
   attributes: attributesByLocale.optional(),
+  domesticTaxRatePercent: z.union([z.literal(19), z.literal(7)]).nullable().default(null),
 });
 
 export type ProductInput = z.infer<typeof productSchema>;
@@ -47,5 +48,6 @@ export function normalizeProductInput(data: ProductInput) {
     featured: data.featured,
     stockQuantity: data.stockQuantity,
     attributes: isEmptyAttributes(data.attributes) ? Prisma.JsonNull : data.attributes,
+    domesticTaxRatePercent: data.domesticTaxRatePercent,
   };
 }
