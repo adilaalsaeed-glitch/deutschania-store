@@ -10,6 +10,8 @@ import { CompareProvider } from "@/components/compare/CompareProvider";
 import { CompareModal } from "@/components/compare/CompareModal";
 import { SignOutConfirmProvider } from "@/components/SignOutConfirmProvider";
 import { SignOutConfirmModal } from "@/components/SignOutConfirmModal";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
+import { parseConsentCookie, COOKIE_NAME as CONSENT_COOKIE_NAME } from "@/lib/cookieConsent";
 import { defaultLocale, dir, isLocale, type Locale } from "@/i18n/config";
 import "./globals.css";
 
@@ -22,6 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const jar = await cookies();
   const cookieLocale = jar.get("locale")?.value;
   const locale: Locale = cookieLocale && isLocale(cookieLocale) ? cookieLocale : defaultLocale;
+  const initialConsent = parseConsentCookie(jar.get(CONSENT_COOKIE_NAME)?.value);
 
   return (
     <html lang={locale} dir={dir(locale)} data-scroll-behavior="smooth">
@@ -45,6 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                       <CompareModal />
                       <SignOutConfirmModal />
                       <FlyToCartOverlay />
+                      <CookieConsentBanner initialConsent={initialConsent} />
                     </SignOutConfirmProvider>
                   </CompareProvider>
                 </WishlistProvider>

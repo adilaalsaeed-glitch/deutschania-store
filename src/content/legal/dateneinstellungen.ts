@@ -31,7 +31,7 @@ export const dateneinstellungen: LegalContentByLocale = {
       {
         heading: "خيارات التحكم",
         body: [
-          "نظرًا لأن جميع الكوكيز المستخدمة حاليًا ضرورية لتشغيل الموقع، لا توجد بعد خيارات اختيارية يمكن إيقافها من هنا. عند إضافة أي كوكيز اختيارية (تسويقية أو تحليلية) مستقبلًا، سنوفر في هذه الصفحة أداة تفاعلية للتحكم بها والموافقة عليها أو رفضها بشكل صريح.",
+          "لا يستخدم الموقع حاليًا أي كوكيز تسويقية أو تحليلية فعليًا، لكن الأداة أدناه جاهزة لإدارة موافقتك عليها بشكل صريح فور إضافتها - يمكنك ضبط تفضيلاتك في أي وقت، ولن يتم تفعيل أي أداة تتبع أو تحليلات قبل موافقتك الصريحة.",
         ],
       },
     ],
@@ -62,7 +62,7 @@ export const dateneinstellungen: LegalContentByLocale = {
       {
         heading: "Steuerungsoptionen",
         body: [
-          "Da alle aktuell verwendeten Cookies für den Betrieb der Website notwendig sind, gibt es derzeit noch keine optionalen Cookies, die hier deaktiviert werden könnten. Sobald künftig optionale Cookies (Marketing oder Analyse) eingeführt werden, stellen wir hier ein interaktives Werkzeug bereit, mit dem Sie diese ausdrücklich zulassen oder ablehnen können.",
+          "Die Website verwendet derzeit keine Marketing- oder Analyse-Cookies aktiv, aber das folgende Werkzeug ist bereit, Ihre ausdrückliche Einwilligung zu verwalten, sobald welche eingeführt werden - Sie können Ihre Einstellungen jederzeit anpassen, und kein Tracking- oder Analysetool wird ohne Ihre ausdrückliche Zustimmung aktiviert.",
         ],
       },
     ],
@@ -93,7 +93,7 @@ export const dateneinstellungen: LegalContentByLocale = {
       {
         heading: "Control options",
         body: [
-          "Since every cookie currently in use is necessary for the website to function, there are no optional cookies to disable here yet. Once any optional cookies (marketing or analytics) are introduced in the future, we will provide an interactive tool on this page so you can explicitly allow or decline them.",
+          "The website doesn't actively use any marketing or analytics cookies today, but the tool below is ready to manage your explicit consent as soon as any are introduced - you can adjust your preferences at any time, and no tracking or analytics tool will be activated without your explicit consent.",
         ],
       },
     ],

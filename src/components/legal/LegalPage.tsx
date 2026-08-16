@@ -2,7 +2,15 @@ import Link from "next/link";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import type { LegalContent } from "@/content/legal/types";
 
-export function LegalPage({ content, homeLabel }: { content: LegalContent; homeLabel: string }) {
+export function LegalPage({
+  content,
+  homeLabel,
+  children,
+}: {
+  content: LegalContent;
+  homeLabel: string;
+  children?: React.ReactNode;
+}) {
   return (
     <SiteChrome>
       <section className="cart-page">
@@ -28,6 +36,7 @@ export function LegalPage({ content, homeLabel }: { content: LegalContent; homeL
               )}
             </div>
           ))}
+          {children}
         </div>
       </section>
     </SiteChrome>
