@@ -5,7 +5,17 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatPriceCents } from "@/lib/currency";
 import { ORDER_STATUS_ICONS } from "@/lib/orderStatus";
+import { RETURN_WINDOW_DAYS } from "@/lib/returns";
+import { OrderReturnAction } from "@/components/account/OrderReturnAction";
 import { getDictionary, defaultLocale, isLocale, type Locale } from "@/i18n/config";
+
+// Kept outside the component, mirroring reset-password/page.tsx's checkToken: date math is
+// impure, and the react-hooks/purity lint rule flags impure calls made directly in a render body
+// (including inside a .map() that returns JSX) but not in a plain helper called ahead of it.
+function isEligibleForReturn(order: { status: string; returnStatus: string | null; paidAt: Date | null }): boolean {
+  if (order.status !== "PAID" || order.returnStatus || !order.paidAt) return false;
+  return Date.now() - order.paidAt.getTime() <= RETURN_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+}
 
 export default async function MyOrdersPage() {
   const session = await auth();
@@ -27,6 +37,8 @@ export default async function MyOrdersPage() {
       status: true,
       totalCents: true,
       createdAt: true,
+      paidAt: true,
+      returnStatus: true,
       invoice: { select: { id: true, pdfUrlAr: true, pdfUrlDe: true } },
     },
   });
@@ -48,8 +60,11 @@ export default async function MyOrdersPage() {
             </div>
           ) : (
             <div className="analytics-list" style={{ marginTop: 20 }}>
-              {orders.map((order) => (
-                <div className="analytics-list-row order-row" key={order.id}>
+              {orders.map((order) => {
+                const eligibleForReturn = isEligibleForReturn(order);
+                return (
+                <div className="order-row-wrap" key={order.id}>
+                <div className="analytics-list-row order-row">
                   <span className="order-row-icon">{ORDER_STATUS_ICONS[order.status] ?? "📦"}</span>
                   <div className="analytics-list-info">
                     <div className="admin-product-name" dir="ltr" style={{ textAlign: "start" }}>
@@ -82,7 +97,12 @@ export default async function MyOrdersPage() {
                     )}
                   </div>
                 </div>
-              ))}
+                <div className="order-return-row">
+                  <OrderReturnAction orderId={order.id} eligible={eligibleForReturn} returnStatus={order.returnStatus} />
+                </div>
+                </div>
+                );
+              })}
             </div>
           )}
         </div>

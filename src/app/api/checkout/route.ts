@@ -109,6 +109,7 @@ export async function POST(request: Request) {
           pointsDiscountCents: pointsToRedeem,
           totalCents: subtotalCents - pointsToRedeem,
           currency: "EUR",
+          lang: data.lang,
           items: {
             create: items.map((i) => ({
               productId: i.productId,
