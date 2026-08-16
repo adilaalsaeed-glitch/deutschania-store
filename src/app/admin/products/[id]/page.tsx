@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { ProductMarginBox } from "@/components/admin/ProductMarginBox";
+import { getLatestUnitCostCents } from "@/lib/productCost";
 import { getDictionary, defaultLocale, isLocale, type Locale } from "@/i18n/config";
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -14,7 +16,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
 
   const { id } = await params;
 
-  const [product, categories] = await Promise.all([
+  const [product, categories, latestPurchase, unitCostCents] = await Promise.all([
     prisma.product.findUnique({
       where: { id },
       select: {
@@ -29,9 +31,16 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
         categoryKey: true,
         featured: true,
         attributes: true,
+        domesticTaxRatePercent: true,
       },
     }),
     prisma.category.findMany({ select: { key: true, label: true }, orderBy: { sortOrder: "asc" } }),
+    prisma.purchase.findFirst({
+      where: { productId: id },
+      orderBy: { purchaseDate: "desc" },
+      select: { purchaseDate: true },
+    }),
+    getLatestUnitCostCents(id),
   ]);
 
   if (!product) {
@@ -55,6 +64,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
     categoryKey: product.categoryKey,
     featured: product.featured,
     attributes: (product.attributes as never) ?? { ar: [], de: [], en: [] },
+    domesticTaxRatePercent: product.domesticTaxRatePercent as 19 | 7 | null,
   };
 
   return (
@@ -64,6 +74,13 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           {t.admin.backToProducts}
         </Link>
         <h1 className="auth-title">{t.admin.editProduct}</h1>
+        <ProductMarginBox
+          t={t}
+          locale={locale}
+          priceCents={product.priceCents}
+          unitCostCents={unitCostCents}
+          costDate={latestPurchase?.purchaseDate ?? null}
+        />
         <ProductForm mode="edit" productId={id} categories={categories as never} initial={initial} />
       </div>
     </div>
