@@ -24,8 +24,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!valid) return null;
 
         // Login page checks /api/register/status separately to show a specific
-        // "please verify your email" message rather than a generic failure here.
+        // "please verify your email" / "account suspended" message rather than a generic
+        // failure here.
         if (!user.emailVerified) return null;
+        if (user.suspended) return null;
 
         return {
           id: user.id,

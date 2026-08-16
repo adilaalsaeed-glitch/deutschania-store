@@ -15,11 +15,12 @@ export async function GET(request: Request) {
 
   const user = await prisma.user.findUnique({
     where: { email: parsed.data.email },
-    select: { emailVerified: true },
+    select: { emailVerified: true, suspended: true },
   });
 
   return NextResponse.json({
     exists: !!user,
     verified: !!user?.emailVerified,
+    suspended: !!user?.suspended,
   });
 }

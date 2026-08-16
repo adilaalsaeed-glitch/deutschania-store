@@ -36,7 +36,9 @@ export default function LoginPage() {
       const statusRes = await fetch(`/api/register/status?email=${encodeURIComponent(email)}`);
       const status = await statusRes.json().catch(() => null);
       setSubmitting(false);
-      if (status?.exists && !status.verified) {
+      if (status?.exists && status.suspended) {
+        setError(t.errors.ACCOUNT_SUSPENDED);
+      } else if (status?.exists && !status.verified) {
         setUnverified(true);
         setError(t.auth.emailNotVerified);
       } else {
