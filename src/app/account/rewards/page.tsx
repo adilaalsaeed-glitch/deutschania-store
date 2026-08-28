@@ -16,7 +16,7 @@ export default async function RewardsHubPage() {
   const [referralsEnabled, featuredProduct] = await Promise.all([
     isReferralsEnabled(),
     prisma.product.findFirst({
-      where: { featured: true },
+      where: { featured: true, category: { archived: false } },
       orderBy: { updatedAt: "desc" },
       select: {
         slug: true,

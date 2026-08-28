@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   }
 
   const products = await prisma.product.findMany({
-    where: { id: { in: ids } },
+    where: { id: { in: ids }, category: { archived: false } },
     select: {
       id: true,
       slug: true,

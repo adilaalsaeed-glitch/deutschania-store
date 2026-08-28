@@ -23,6 +23,7 @@ export default async function Home({
 
   const [productsRaw, categories, testimonials, topSellers] = await Promise.all([
     prisma.product.findMany({
+      where: { category: { archived: false } },
       select: {
         id: true,
         slug: true,

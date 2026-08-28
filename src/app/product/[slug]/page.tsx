@@ -10,8 +10,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
 
   const [product, categories] = await Promise.all([
-    prisma.product.findUnique({
-      where: { slug },
+    prisma.product.findFirst({
+      where: { slug, category: { archived: false } },
       include: { category: true },
     }),
     prisma.category.findMany({

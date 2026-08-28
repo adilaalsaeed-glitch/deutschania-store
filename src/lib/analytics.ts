@@ -33,7 +33,7 @@ export async function getTopSellingProducts(limit = 8): Promise<TopSellingProduc
   if (ids.length === 0) return [];
 
   const products = await prisma.product.findMany({
-    where: { id: { in: ids } },
+    where: { id: { in: ids }, category: { archived: false } },
     select: {
       id: true,
       slug: true,
