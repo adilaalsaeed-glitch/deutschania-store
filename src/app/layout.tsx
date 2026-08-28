@@ -16,8 +16,8 @@ import { defaultLocale, dir, isLocale, type Locale } from "@/i18n/config";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "deutschania — متجر المنتجات الألمانية",
-  description: "Authentic German products, delivered across the Arab world.",
+  title: "deutschania — Damentaschen aus China",
+  description: "Stilvolle Damentaschen, importiert aus China, geliefert innerhalb Deutschlands.",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

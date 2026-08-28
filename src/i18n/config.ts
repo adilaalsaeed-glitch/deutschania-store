@@ -4,7 +4,7 @@ import en from "./en.json";
 
 export const locales = ["ar", "de", "en"] as const;
 export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = "ar";
+export const defaultLocale: Locale = "de";
 export const rtlLocales: Locale[] = ["ar"];
 
 const dictionaries: Record<Locale, typeof en> = { ar, de, en };

@@ -1,5 +1,5 @@
 {
-  "announce": "Deutsche Qualität... in Ihren Händen.",
+  "announce": "Qualität, die Sie verdienen... in Ihren Händen.",
   "marketNotice": "🇩🇪 Wir liefern derzeit innerhalb Deutschlands",
   "nav": {
     "cart": "Warenkorb",
@@ -18,8 +18,7 @@
     "signOut": "Abmelden",
     "rewardsPrograms": "Prämienprogramme",
     "adminDashboard": "Admin-Bereich",
-    "groupDe": "Ihr Wegweiser zu deutschen Produkten",
-    "groupAr": "Produkte für Deutschland"
+    "groupDe": "Unsere Damentaschen-Kollektion"
   },
   "categories": {
     "cat_makeup": "Make-up",
@@ -31,20 +30,20 @@
     "cat_personalcare": "Körperpflege"
   },
   "hero": {
-    "eyebrow": "DEUTSCHE PRODUKTE FÜR DIE ARABISCHE WELT",
-    "title": "Ihr verlässlicher Wegweiser zu deutschen Produkten.",
-    "subtitle": "Wir wählen deutsche Produkte sorgfältig aus und liefern sie zu wettbewerbsfähigen Preisen in die arabische Welt.\nMake-up, Hautpflege, Nahrungsergänzung, Lebensmittel und mehr — direkt beschafft.",
+    "eyebrow": "DAMENTASCHEN VON CHINA NACH DEUTSCHLAND",
+    "title": "Ihr verlässlicher Wegweiser zu den schönsten Damentaschen.",
+    "subtitle": "Wir wählen elegante Damentaschen sorgfältig von den besten Lieferanten aus und liefern sie zu wettbewerbsfähigen Preisen innerhalb Deutschlands.\nHandtaschen, Rucksäcke, Geldbörsen, Reisetaschen und Umhängetaschen — geprüfte Qualität, modernes Design.",
     "cta1": "Kollektion entdecken"
   },
   "trustBar": {
-    "quality": "100% deutsche Qualität",
+    "quality": "100% geprüfte Qualität",
     "shipping": "Schneller Versand",
     "payment": "Sichere Zahlung",
     "returns": "Einfache Rückgabe"
   },
   "brandsCarousel": {
     "eyebrow": "UNSERE MARKEN",
-    "title": "Vertrauenswürdige deutsche Marken"
+    "title": "Marken, denen wir vertrauen"
   },
   "home": {
     "topSellersEyebrow": "BESTSELLER",
@@ -63,7 +62,7 @@
   },
   "shop": {
     "eyebrow": "DER SHOP",
-    "title": "Ihr Wegweiser zu deutschen Produkten",
+    "title": "Unsere Damentaschen-Kollektion",
     "searchPh": "Produkte suchen...",
     "sortFeatured": "Empfohlen",
     "sortPriceAsc": "Preis: aufsteigend",
@@ -140,16 +139,16 @@
     "eyebrow": "SO FUNKTIONIERT ES",
     "title": "Von der Beschaffung bis zur Haustür",
     "s1t": "Beschaffung & Prüfung",
-    "s1d": "Wir identifizieren verifizierte deutsche Hersteller und prüfen Qualität und Zuverlässigkeit.",
+    "s1d": "Wir identifizieren verifizierte Hersteller in China und prüfen Qualität und Zuverlässigkeit.",
     "s2t": "Qualität & Zertifizierung",
-    "s2d": "Jede Sendung wird vor dem Versand nach deutschen/EU- und Zielmarktstandards geprüft.",
+    "s2d": "Jede Taschenlieferung wird vor dem Verkauf nach europäischen Qualitätsstandards geprüft.",
     "s3t": "Zoll & Logistik",
-    "s3d": "Wir übernehmen Exportdokumente, Zollabfertigung und Fracht — See, Luft oder Straße.",
+    "s3d": "Wir übernehmen Importdokumente, Zollabfertigung und Fracht von China nach Deutschland — auf dem See- oder Luftweg.",
     "s4t": "Lieferung & Support",
     "s4d": "Die Ware kommt planmäßig an — mit Unterstützung bei Retouren und Nachbestellungen."
   },
   "footer": {
-    "about": "deutschania ist ein Unternehmen mit Sitz in Deutschland, das authentische deutsche Produkte in die arabische Welt bringt.",
+    "about": "deutschania ist ein Unternehmen mit Sitz in Deutschland, das die schönsten Damentaschen-Kollektionen importiert und innerhalb Deutschlands liefert.",
     "rights": "Alle Rechte vorbehalten.",
     "impressum": "Impressum",
     "agb": "AGB",

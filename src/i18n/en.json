@@ -1,5 +1,5 @@
 {
-  "announce": "German quality... in your hands.",
+  "announce": "Quality you deserve... in your hands.",
   "marketNotice": "🇩🇪 We currently ship within Germany",
   "nav": {
     "cart": "Cart",
@@ -18,8 +18,7 @@
     "signOut": "Sign out",
     "rewardsPrograms": "Rewards Programs",
     "adminDashboard": "Admin Dashboard",
-    "groupDe": "Your guide to German products",
-    "groupAr": "Products headed to Germany"
+    "groupDe": "Our Women's Bags Collection"
   },
   "categories": {
     "cat_makeup": "Makeup",
@@ -31,20 +30,20 @@
     "cat_personalcare": "Personal Care"
   },
   "hero": {
-    "eyebrow": "GERMAN PRODUCTS FOR THE ARAB WORLD",
-    "title": "Your trusted guide to German products.",
-    "subtitle": "We carefully select German products and deliver them to the Arab world at competitive prices.\nMakeup, skincare, supplements, food and more — sourced directly.",
+    "eyebrow": "WOMEN'S BAGS FROM CHINA TO GERMANY",
+    "title": "Your trusted guide to the finest women's bags.",
+    "subtitle": "We carefully select elegant women's bags from the best suppliers and deliver them within Germany at competitive prices.\nHandbags, backpacks, wallets, travel bags and crossbody bags — guaranteed quality, modern design.",
     "cta1": "Explore the collection"
   },
   "trustBar": {
-    "quality": "100% German Quality",
+    "quality": "100% Inspected Quality",
     "shipping": "Fast Shipping",
     "payment": "Secure Payment",
     "returns": "Easy Returns"
   },
   "brandsCarousel": {
     "eyebrow": "OUR BRANDS",
-    "title": "Trusted German Brands"
+    "title": "Brands We Trust"
   },
   "home": {
     "topSellersEyebrow": "BESTSELLERS",
@@ -63,7 +62,7 @@
   },
   "shop": {
     "eyebrow": "THE STORE",
-    "title": "Your guide to German products",
+    "title": "Our Women's Bags Collection",
     "searchPh": "Search products...",
     "sortFeatured": "Featured",
     "sortPriceAsc": "Price: Low to High",
@@ -140,16 +139,16 @@
     "eyebrow": "HOW IT WORKS",
     "title": "From sourcing to your door",
     "s1t": "Sourcing & Vetting",
-    "s1d": "We identify verified German manufacturers and suppliers, checked for quality and reliability.",
+    "s1d": "We identify verified manufacturers and suppliers in China, checked for quality and reliability.",
     "s2t": "Quality & Certification",
-    "s2d": "Every shipment is checked against German/EU and destination-market standards before it moves.",
+    "s2d": "Every bag shipment is checked against European quality standards before it goes on sale.",
     "s3t": "Customs & Logistics",
-    "s3d": "We manage export documentation, customs clearance and freight — sea, air or road.",
+    "s3d": "We manage import documentation, customs clearance and freight from China to Germany — by sea or air.",
     "s4t": "Delivery & After-sales",
     "s4d": "Goods arrive on schedule, with support for returns, claims or reorders."
   },
   "footer": {
-    "about": "deutschania is a Germany-based company bringing authentic German products to buyers across the Arab world.",
+    "about": "deutschania is a Germany-based company importing beautiful women's bag collections and delivering them within Germany.",
     "rights": "All rights reserved.",
     "impressum": "Impressum",
     "agb": "AGB",
