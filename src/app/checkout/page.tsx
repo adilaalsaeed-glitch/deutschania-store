@@ -10,7 +10,7 @@ import { formatPriceCents } from "@/lib/currency";
 import { maxRedeemablePoints, pointsEarnedForPaidCents, MIN_REDEEM_POINTS } from "@/lib/loyalty";
 import { CountrySelect, PhoneField } from "@/components/CountryPhoneField";
 import { combinePhone, isSupportedCountry } from "@/data/countries";
-import { isValidSaudiPostalCode } from "@/data/postalCodes";
+import { hasRealPostalSystem, isPostalCodeValid } from "@/data/postalCodes";
 
 type CheckoutForm = {
   fullName: string;
@@ -46,12 +46,12 @@ export default function CheckoutPage() {
   const discountCents = Math.min(pointsToRedeem, maxRedeemable);
   const totalCents = subtotalCents - discountCents;
 
-  // Real regional-prefix validation against Saudi Post's actual structure - the UAE and Qatar
-  // have no postal code system at all (P.O. Box-only mail delivery), so there's nothing to
-  // validate there; the field is simply optional for them. Skipped entirely in admin test mode,
-  // where the country field itself isn't restricted to SA/AE/QA in the first place.
-  const postalRequired = !isAdminTestMode && form.country === "SA";
-  const postalValid = isAdminTestMode || form.country !== "SA" || isValidSaudiPostalCode(form.postal);
+  // Validated against the destination country's postal pattern (see postalCodes.ts) - a country
+  // with no postal system at all would simply have nothing to validate, and the field would be
+  // optional for it. Skipped entirely in admin test mode, where the country field itself isn't
+  // restricted to SUPPORTED_COUNTRIES in the first place.
+  const postalRequired = !isAdminTestMode && hasRealPostalSystem(form.country);
+  const postalValid = isAdminTestMode || isPostalCodeValid(form.country, form.postal);
   const submitBlockedByPostal = postalRequired && form.postal.trim().length > 0 && !postalValid;
   const submitDisabled = submitting || (postalRequired && !postalValid);
 
@@ -253,7 +253,7 @@ export default function CheckoutPage() {
                   aria-invalid={submitBlockedByPostal}
                 />
                 {submitBlockedByPostal && <p className="field-error">{t.checkout.postalInvalid}</p>}
-                {!isAdminTestMode && form.country && form.country !== "SA" && (
+                {!isAdminTestMode && form.country && !hasRealPostalSystem(form.country) && (
                   <p className="form-note">{t.checkout.postalOptionalNote}</p>
                 )}
               </div>

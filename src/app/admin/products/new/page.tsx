@@ -13,6 +13,7 @@ export default async function NewProductPage() {
   }
 
   const categories = await prisma.category.findMany({
+    where: { archived: false },
     select: { key: true, label: true },
     orderBy: { sortOrder: "asc" },
   });

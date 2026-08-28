@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Prisma } from "@/generated/prisma/client";
+import { isSourceCountry } from "@/data/sourceCountries";
 
 const i18nText = z.object({ ar: z.string(), de: z.string(), en: z.string() });
 const attributeRow = z.object({ label: z.string().min(1), value: z.string().min(1) });
@@ -16,7 +17,7 @@ export const productSchema = z.object({
   description: i18nText.optional(),
   priceCents: z.number().int().min(0).max(100_000_000),
   imageUrl: z.url().nullable().optional(),
-  origin: z.enum(["de", "ar"]),
+  sourceCountry: z.string().refine(isSourceCountry, "Invalid source country"),
   categoryKey: z.string().min(1),
   featured: z.boolean().default(false),
   stockQuantity: z.number().int().min(0).max(1_000_000).default(0),
@@ -43,7 +44,7 @@ export function normalizeProductInput(data: ProductInput) {
     description: isEmptyI18n(data.description) ? Prisma.JsonNull : data.description,
     priceCents: data.priceCents,
     imageUrl: data.imageUrl || null,
-    origin: data.origin,
+    sourceCountry: data.sourceCountry,
     categoryKey: data.categoryKey,
     featured: data.featured,
     stockQuantity: data.stockQuantity,

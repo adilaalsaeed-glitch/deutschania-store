@@ -4,9 +4,7 @@ import type { Locale } from "@/i18n/config";
 // entry here — the registration and checkout forms, and their server-side validation, all read
 // from this single list.
 export const SUPPORTED_COUNTRIES = [
-  { code: "SA", flag: "🇸🇦", dialCode: "+966", name: { ar: "السعودية", de: "Saudi-Arabien", en: "Saudi Arabia" } },
-  { code: "AE", flag: "🇦🇪", dialCode: "+971", name: { ar: "الإمارات", de: "Vereinigte Arabische Emirate", en: "United Arab Emirates" } },
-  { code: "QA", flag: "🇶🇦", dialCode: "+974", name: { ar: "قطر", de: "Katar", en: "Qatar" } },
+  { code: "DE", flag: "🇩🇪", dialCode: "+49", name: { ar: "ألمانيا", de: "Deutschland", en: "Germany" } },
 ] as const;
 
 export type CountryCode = (typeof SUPPORTED_COUNTRIES)[number]["code"];
@@ -24,7 +22,7 @@ export function dialCodeFor(code: CountryCode | ""): string {
 }
 
 // Combines the dial code (from the selected country) with a locally-typed number, stripping
-// any leading zero (e.g. "0501234567" -> "+966501234567") since that's how numbers are commonly
+// any leading zero (e.g. "01701234567" -> "+491701234567") since that's how numbers are commonly
 // written locally but not how they're written in E.164-ish international form.
 export function combinePhone(code: CountryCode | "", localNumber: string): string {
   const digits = localNumber.replace(/\D/g, "").replace(/^0+/, "");
@@ -32,7 +30,7 @@ export function combinePhone(code: CountryCode | "", localNumber: string): strin
 }
 
 // Inverse of combinePhone, for pre-filling an edit form from a value stored as
-// dial-code + local number (e.g. "+966501234567" -> { country: "SA", localNumber: "501234567" }).
+// dial-code + local number (e.g. "+491701234567" -> { country: "DE", localNumber: "1701234567" }).
 export function splitPhone(value: string): { country: CountryCode | ""; localNumber: string } {
   for (const c of SUPPORTED_COUNTRIES) {
     if (value.startsWith(c.dialCode)) {

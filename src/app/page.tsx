@@ -32,7 +32,7 @@ export default async function Home({
         currency: true,
         icon: true,
         imageUrl: true,
-        origin: true,
+        sourceCountry: true,
         categoryKey: true,
         featured: true,
         stockQuantity: true,
@@ -42,6 +42,7 @@ export default async function Home({
       orderBy: { createdAt: "asc" },
     }),
     prisma.category.findMany({
+      where: { archived: false },
       select: { key: true, label: true, icon: true, color: true },
       orderBy: { sortOrder: "asc" },
     }),

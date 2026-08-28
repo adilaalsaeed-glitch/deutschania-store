@@ -6,6 +6,7 @@ import { useLocale } from "@/components/LocaleProvider";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import type { Locale } from "@/i18n/config";
 import type { AttrRow, I18nText } from "@/types/product";
+import { SOURCE_COUNTRIES } from "@/data/sourceCountries";
 
 type CategoryOption = { key: string; label: I18nText };
 
@@ -17,7 +18,7 @@ type ProductFormData = {
   priceCents: number;
   stockQuantity: number;
   imageUrl: string | null;
-  origin: "de" | "ar";
+  sourceCountry: string;
   categoryKey: string;
   featured: boolean;
   attributes: Record<Locale, AttrRow[]>;
@@ -59,7 +60,7 @@ export function ProductForm({
       priceCents: 0,
       stockQuantity: 0,
       imageUrl: null,
-      origin: "de",
+      sourceCountry: "CN",
       categoryKey: categories[0]?.key ?? "",
       featured: false,
       attributes: emptyAttrs,
@@ -172,9 +173,12 @@ export function ProductForm({
           </div>
           <div className="field">
             <label>{t.admin.origin}</label>
-            <select value={data.origin} onChange={(e) => update("origin", e.target.value as "de" | "ar")}>
-              <option value="de">{t.admin.originDe}</option>
-              <option value="ar">{t.admin.originAr}</option>
+            <select value={data.sourceCountry} onChange={(e) => update("sourceCountry", e.target.value)}>
+              {SOURCE_COUNTRIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.name[locale]}
+                </option>
+              ))}
             </select>
           </div>
         </div>

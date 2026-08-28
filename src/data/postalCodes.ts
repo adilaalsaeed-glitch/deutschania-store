@@ -1,50 +1,27 @@
-import type { CountryCode } from "@/data/countries";
-
-// Saudi Post (SPL) assigns the first digit of every 5-digit postal code to one of eight
-// administrative postal regions - 0 and 9 are never issued. This is the real, documented
-// structure of the Saudi postal system (not a full district-level lookup - Saudi Post's
-// complete district table has thousands of entries and isn't practically embeddable as a
-// static file, but validating the regional prefix is a genuine structural check, not just a
-// digit-count check).
-// Source: https://en.wikipedia.org/wiki/Postal_codes_in_Saudi_Arabia
-const SAUDI_REGION_BY_PREFIX: Record<string, string> = {
-  "1": "Riyadh Region",
-  "2": "Makkah Region",
-  "3": "Eastern Province",
-  "4": "Medina & Tabuk",
-  "5": "Qassim & Ha'il",
-  "6": "Asir, Najran & Al Bahah",
-  "7": "Northern Borders & Al Jawf",
-  "8": "Jizan",
+// Per-country postal code patterns, keyed by ISO 3166-1 alpha-2. Not every SUPPORTED_COUNTRIES
+// entry needs one here - a country with no rule defined simply isn't validated beyond presence
+// (see isPostalCodeValid). Germany (Deutsche Post) uses a plain 5-digit code with no
+// regional-prefix structure to check.
+const POSTAL_PATTERNS: Record<string, RegExp> = {
+  DE: /^\d{5}$/,
 };
 
-// The UAE and Qatar have no postal/ZIP code system at all - both countries deliver mail
-// exclusively via P.O. Box, with no street-address postal code ever assigned. There is no
-// "official range" to validate against for these two, unlike Saudi Arabia. The postal field
-// is treated as optional for them (see hasRealPostalSystem below) rather than validated
-// against a fabricated range.
-export const COUNTRIES_WITHOUT_POSTAL_SYSTEM: readonly CountryCode[] = ["AE", "QA"] as const;
+// Countries with no postal/ZIP code system at all (P.O.-Box-only mail delivery, no street-address
+// postal code ever assigned) — the field is optional for them rather than validated. Empty for
+// now; kept as a list (not a single hardcoded check) so a future country without one can be added
+// without touching the validation logic itself.
+export const COUNTRIES_WITHOUT_POSTAL_SYSTEM: readonly string[] = [] as const;
 
-export function hasRealPostalSystem(country: CountryCode | ""): boolean {
-  return country === "SA";
-}
-
-export function isValidSaudiPostalCode(postal: string): boolean {
-  const digits = postal.trim();
-  if (!/^\d{5}$/.test(digits)) return false;
-  return digits[0] in SAUDI_REGION_BY_PREFIX;
-}
-
-export function saudiPostalRegion(postal: string): string | null {
-  const digits = postal.trim();
-  if (!/^\d{5}$/.test(digits)) return null;
-  return SAUDI_REGION_BY_PREFIX[digits[0]] ?? null;
+export function hasRealPostalSystem(country: string): boolean {
+  return country !== "" && !COUNTRIES_WITHOUT_POSTAL_SYSTEM.includes(country);
 }
 
 // Central check used by both the checkout page (live UI feedback) and the checkout API
-// (server-side enforcement) - AE/QA always pass (no system to validate against), SA must
-// match the regional-prefix structure, blank is only valid for countries without a system.
-export function isPostalCodeValid(country: CountryCode | "", postal: string): boolean {
+// (server-side enforcement) - a country with no postal system always passes, one with no pattern
+// defined here isn't blocked on it, otherwise the value must match that country's pattern.
+export function isPostalCodeValid(country: string, postal: string): boolean {
   if (!hasRealPostalSystem(country)) return true;
-  return isValidSaudiPostalCode(postal);
+  const pattern = POSTAL_PATTERNS[country];
+  if (!pattern) return true;
+  return pattern.test(postal.trim());
 }

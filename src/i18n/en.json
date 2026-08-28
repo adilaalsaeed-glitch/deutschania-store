@@ -1,6 +1,6 @@
 {
   "announce": "German quality... in your hands.",
-  "marketNotice": "🇸🇦 We currently ship only to Saudi Arabia, the UAE and Qatar",
+  "marketNotice": "🇩🇪 We currently ship within Germany",
   "nav": {
     "cart": "Cart",
     "compare": "Compare",
@@ -132,7 +132,7 @@
     "payCard": "Credit / debit card",
     "paymentFailedTitle": "Payment failed",
     "processing": "Processing...",
-    "postalInvalid": "This postal code doesn't match Saudi Post's official regional format.",
+    "postalInvalid": "This postal code doesn't match the German 5-digit format.",
     "postalOptionalNote": "This country has no official postal code system - this field is optional.",
     "adminTestModeNote": "Admin test mode: the country restriction is bypassed so you can test checkout with your real address."
   },
@@ -312,9 +312,7 @@
     "slug": "Slug (URL)",
     "slugHint": "Used in the product page URL - letters, numbers, and dashes only, no spaces.",
     "category": "Category",
-    "origin": "Origin",
-    "originDe": "German product (sold to Arab customers)",
-    "originAr": "Arab product (sold to German customers)",
+    "origin": "Source Country",
     "domesticTaxRate": "Domestic tax rate (Germany)",
     "domesticTaxRateHint": "Reference only for now - not applied automatically to auto-generated export invoices, which stay at 0%. Used to pre-fill manual invoice line items and to filter the product list.",
     "domesticTaxRateUndetermined": "To be determined later",
@@ -685,7 +683,7 @@
     "POINTS_INSUFFICIENT_BALANCE": "You don't have enough points.",
     "POINTS_EXCEEDS_CAP": "Points can cover at most 5% of the order value.",
     "POINTS_LOGIN_REQUIRED": "Log in to use your points.",
-    "COUNTRY_NOT_SUPPORTED": "Sorry, we currently only serve Saudi Arabia, the UAE and Qatar.",
+    "COUNTRY_NOT_SUPPORTED": "Sorry, we currently only ship within Germany.",
     "FEATURE_DISABLED": "This feature isn't available right now.",
     "SUBMISSION_ALREADY_PENDING": "You already have an application under review.",
     "ORDER_NOT_FOUND": "Order not found.",

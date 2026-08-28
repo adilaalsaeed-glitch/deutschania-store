@@ -15,6 +15,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       include: { category: true },
     }),
     prisma.category.findMany({
+      where: { archived: false },
       select: { key: true, label: true, icon: true, color: true },
       orderBy: { sortOrder: "asc" },
     }),

@@ -32,6 +32,7 @@ export const subCategories: Record<Locale, Record<string, SubcategoryGroup[]>> =
       { title: "Personal Care", items: ["Deodorant", "Shaving & Hair Removal", "Oral Care", "Women's Care"] },
       { title: "Sets & Gifts", items: ["Bath Sets", "Body Care Sets", "Travel Sets"] },
     ],
+    cat_bags: [{ items: ["Handbags", "Backpacks", "Wallets", "Travel Bags", "Crossbody & Shoulder Bags"] }],
   },
   de: {
     cat_makeup: [
@@ -62,6 +63,7 @@ export const subCategories: Record<Locale, Record<string, SubcategoryGroup[]>> =
       { title: "Persönliche Pflege", items: ["Deodorant", "Rasur & Haarentfernung", "Mundpflege", "Damenpflege"] },
       { title: "Sets & Geschenke", items: ["Badesets", "Körperpflegesets", "Reisesets"] },
     ],
+    cat_bags: [{ items: ["Handtaschen", "Rucksäcke", "Geldbörsen", "Reisetaschen", "Umhängetaschen"] }],
   },
   ar: {
     cat_makeup: [
@@ -92,5 +94,6 @@ export const subCategories: Record<Locale, Record<string, SubcategoryGroup[]>> =
       { title: "العناية الشخصية", items: ["مزيل العرق", "أدوات الحلاقة وإزالة الشعر", "العناية بالفم", "عناية المرأة"] },
       { title: "المجموعات والهدايا", items: ["مجموعات الاستحمام", "مجموعات العناية بالجسم", "مجموعات السفر"] },
     ],
+    cat_bags: [{ items: ["شنط يد", "شنط ظهر", "محافظ", "حقائب سفر", "شنط كروس/كتف"] }],
   },
 };

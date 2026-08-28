@@ -43,7 +43,7 @@ export async function getTopSellingProducts(limit = 8): Promise<TopSellingProduc
       currency: true,
       icon: true,
       imageUrl: true,
-      origin: true,
+      sourceCountry: true,
       categoryKey: true,
       featured: true,
       stockQuantity: true,

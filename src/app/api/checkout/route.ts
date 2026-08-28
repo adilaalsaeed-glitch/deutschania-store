@@ -7,10 +7,10 @@ import { getCartWithProducts } from "@/lib/cart";
 import { createHostedPaymentPage } from "@/lib/paytabs";
 import { validateRedemption } from "@/lib/loyalty";
 import { isSupportedCountry } from "@/data/countries";
-import { isValidSaudiPostalCode } from "@/data/postalCodes";
+import { isPostalCodeValid } from "@/data/postalCodes";
 
 // country/postal are checked by hand below rather than via z.enum/refine - the rules depend on
-// isAdmin (the store owner's own account bypasses the SA/AE/QA restriction entirely, to test
+// isAdmin (the store owner's own account bypasses the country restriction entirely, to test
 // checkout with their real address; see the admin-test-mode note on the checkout page).
 const checkoutSchema = z.object({
   fullName: z.string().min(1).max(120),
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     if (!isSupportedCountry(parsed.data.country)) {
       return NextResponse.json({ error: "COUNTRY_NOT_SUPPORTED" }, { status: 400 });
     }
-    if (parsed.data.country === "SA" && !isValidSaudiPostalCode(parsed.data.postal)) {
+    if (!isPostalCodeValid(parsed.data.country, parsed.data.postal)) {
       return NextResponse.json({ error: "VALIDATION_ERROR" }, { status: 400 });
     }
   }

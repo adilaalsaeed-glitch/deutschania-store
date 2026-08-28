@@ -10,7 +10,7 @@ export type ProductListItem = {
   currency: string;
   icon: string;
   imageUrl: string | null;
-  origin: string;
+  sourceCountry: string;
   categoryKey: string;
   featured: boolean;
   stockQuantity: number;

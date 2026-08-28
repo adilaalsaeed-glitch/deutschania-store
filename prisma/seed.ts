@@ -8,19 +8,26 @@ const prisma = new PrismaClient({ adapter });
 type Lang = "ar" | "de" | "en";
 type I18n = Record<Lang, string>;
 
+// archived:true entries are the old (pre-pivot) catalog - kept, not deleted, so historical
+// products/orders that still reference them stay intact; hidden from customer-facing browsing
+// and the admin "new product" category picker (see the `where: { archived: false }` filters at
+// every read site). archived:false is the current catalog.
 const categories: {
   key: string;
   icon: string;
   color: string;
   label: I18n;
+  sourceCountry: string;
+  archived: boolean;
 }[] = [
-  { key: "cat_makeup", icon: "💄", color: "#B5677A", label: { en: "Makeup", de: "Make-up", ar: "المكياج" } },
-  { key: "cat_skincare", icon: "🧴", color: "#4F8C8C", label: { en: "Skincare", de: "Hautpflege", ar: "العناية بالبشرة" } },
-  { key: "cat_haircare", icon: "💇", color: "#7C5F9E", label: { en: "Hair Care", de: "Haarpflege", ar: "العناية بالشعر" } },
-  { key: "cat_supplements", icon: "💊", color: "#4F7C68", label: { en: "Supplements & Vitamins", de: "Nahrungsergänzung", ar: "مكملات غذائية" } },
-  { key: "cat_food", icon: "🍫", color: "#6B4028", label: { en: "German Food & Drinks", de: "Lebensmittel & Getränke", ar: "أغذية ومشروبات ألمانية" } },
-  { key: "cat_kidssnacks", icon: "🍪", color: "#C08A4A", label: { en: "Kids' Snacks", de: "Kindersnacks", ar: "سناكات للأطفال" } },
-  { key: "cat_personalcare", icon: "🧼", color: "#3F6E7C", label: { en: "Personal Care", de: "Körperpflege", ar: "العناية الشخصية" } },
+  { key: "cat_makeup", icon: "💄", color: "#B5677A", label: { en: "Makeup", de: "Make-up", ar: "المكياج" }, sourceCountry: "DE", archived: true },
+  { key: "cat_skincare", icon: "🧴", color: "#4F8C8C", label: { en: "Skincare", de: "Hautpflege", ar: "العناية بالبشرة" }, sourceCountry: "DE", archived: true },
+  { key: "cat_haircare", icon: "💇", color: "#7C5F9E", label: { en: "Hair Care", de: "Haarpflege", ar: "العناية بالشعر" }, sourceCountry: "DE", archived: true },
+  { key: "cat_supplements", icon: "💊", color: "#4F7C68", label: { en: "Supplements & Vitamins", de: "Nahrungsergänzung", ar: "مكملات غذائية" }, sourceCountry: "DE", archived: true },
+  { key: "cat_food", icon: "🍫", color: "#6B4028", label: { en: "German Food & Drinks", de: "Lebensmittel & Getränke", ar: "أغذية ومشروبات ألمانية" }, sourceCountry: "DE", archived: true },
+  { key: "cat_kidssnacks", icon: "🍪", color: "#C08A4A", label: { en: "Kids' Snacks", de: "Kindersnacks", ar: "سناكات للأطفال" }, sourceCountry: "DE", archived: true },
+  { key: "cat_personalcare", icon: "🧼", color: "#3F6E7C", label: { en: "Personal Care", de: "Körperpflege", ar: "العناية الشخصية" }, sourceCountry: "DE", archived: true },
+  { key: "cat_bags", icon: "👜", color: "#8C5B4F", label: { en: "Women's Bags", de: "Damentaschen", ar: "الشنط النسائية" }, sourceCountry: "CN", archived: false },
 ];
 
 // Attribute rows shown on the product page, keyed by category then language.
@@ -122,8 +129,8 @@ async function main() {
   for (const [sortOrder, cat] of categories.entries()) {
     await prisma.category.upsert({
       where: { key: cat.key },
-      update: { label: cat.label, icon: cat.icon, color: cat.color, origin: "de", sortOrder },
-      create: { key: cat.key, label: cat.label, icon: cat.icon, color: cat.color, origin: "de", sortOrder },
+      update: { label: cat.label, icon: cat.icon, color: cat.color, sourceCountry: cat.sourceCountry, archived: cat.archived, sortOrder },
+      create: { key: cat.key, label: cat.label, icon: cat.icon, color: cat.color, sourceCountry: cat.sourceCountry, archived: cat.archived, sortOrder },
     });
   }
 
@@ -141,7 +148,7 @@ async function main() {
         priceCents: Math.round(p.price * 100),
         currency: "EUR",
         icon: p.icon,
-        origin: "de",
+        sourceCountry: "DE",
         categoryKey: p.cat,
         featured: index < 6,
       },

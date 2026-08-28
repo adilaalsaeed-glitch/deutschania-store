@@ -1,6 +1,6 @@
 {
   "announce": "Deutsche Qualität... in Ihren Händen.",
-  "marketNotice": "🇸🇦 Wir liefern derzeit nur nach Saudi-Arabien, in die VAE und nach Katar",
+  "marketNotice": "🇩🇪 Wir liefern derzeit innerhalb Deutschlands",
   "nav": {
     "cart": "Warenkorb",
     "compare": "Vergleichen",
@@ -132,7 +132,7 @@
     "payCard": "Kredit-/Debitkarte",
     "paymentFailedTitle": "Zahlung fehlgeschlagen",
     "processing": "Wird verarbeitet...",
-    "postalInvalid": "Diese Postleitzahl entspricht nicht dem offiziellen Format der saudischen Post.",
+    "postalInvalid": "Diese Postleitzahl entspricht nicht dem deutschen 5-stelligen Format.",
     "postalOptionalNote": "Für dieses Land gibt es kein offizielles Postleitzahlensystem - dieses Feld ist optional.",
     "adminTestModeNote": "Admin-Testmodus: Die Länderbeschränkung wurde umgangen, damit Sie den Checkout mit Ihrer echten Adresse testen können."
   },
@@ -312,9 +312,7 @@
     "slug": "Slug (URL)",
     "slugHint": "Wird in der Produkt-URL verwendet - nur englische Buchstaben, Zahlen und Bindestriche, keine Leerzeichen.",
     "category": "Kategorie",
-    "origin": "Herkunft",
-    "originDe": "Deutsches Produkt (verkauft an Araber)",
-    "originAr": "Arabisches Produkt (verkauft nach Deutschland)",
+    "origin": "Herkunftsland",
     "domesticTaxRate": "Inländischer Steuersatz (Deutschland)",
     "domesticTaxRateHint": "Vorerst nur ein Referenzwert - wird nicht automatisch auf automatisch erstellte Export-Rechnungen angewendet, die bei 0% bleiben. Dient dazu, Positionen in manuellen Rechnungen vorzubelegen und die Produktliste zu filtern.",
     "domesticTaxRateUndetermined": "Später festlegen",
@@ -685,7 +683,7 @@
     "POINTS_INSUFFICIENT_BALANCE": "Ihr Punktestand reicht nicht aus.",
     "POINTS_EXCEEDS_CAP": "Punkte können höchstens 5 % des Bestellwerts abdecken.",
     "POINTS_LOGIN_REQUIRED": "Melden Sie sich an, um Ihre Punkte zu nutzen.",
-    "COUNTRY_NOT_SUPPORTED": "Leider sind wir derzeit nur in Saudi-Arabien, den VAE und Katar verfügbar.",
+    "COUNTRY_NOT_SUPPORTED": "Leider sind wir derzeit nur innerhalb Deutschlands verfügbar.",
     "FEATURE_DISABLED": "Diese Funktion ist derzeit nicht verfügbar.",
     "SUBMISSION_ALREADY_PENDING": "Sie haben bereits einen Antrag in Prüfung.",
     "ORDER_NOT_FOUND": "Bestellung nicht gefunden.",

@@ -9,6 +9,7 @@ import { ProductIcon } from "@/components/shop/ProductIcon";
 import { WishButton } from "@/components/wishlist/WishButton";
 import { CompareCheck } from "@/components/compare/CompareCheck";
 import { LOW_STOCK_THRESHOLD } from "@/lib/constants";
+import { flagEmoji } from "@/data/sourceCountries";
 import type { ProductListItem } from "@/types/product";
 
 export function ProductCard({ product }: { product: ProductListItem }) {
@@ -36,7 +37,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         ) : (
           <ProductIcon icon={product.icon} color={product.category.color} />
         )}
-        <span className="origin-flag">🇩🇪</span>
+        <span className="origin-flag">{flagEmoji(product.sourceCountry)}</span>
         {isOutOfStock ? (
           <span className="scarcity-badge out-of-stock">{t.admin.outOfStockStatus}</span>
         ) : (

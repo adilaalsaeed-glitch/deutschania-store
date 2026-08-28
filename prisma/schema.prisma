@@ -26,11 +26,6 @@ enum OrderStatus {
   CANCELLED
 }
 
-enum Origin {
-  de // German products sold into the Arab world
-  ar // products sourced from the Arab world, sold into Germany
-}
-
 enum LoyaltyTransactionType {
   EARN // credited when an order is confirmed PAID (1 point per 1 EUR actually paid, post-discount)
   REDEEM // debited when points are applied as a checkout discount (held at order creation)
@@ -73,33 +68,39 @@ enum InvoiceSource {
 }
 
 model Category {
-  key       String   @id // e.g. "cat_makeup"
-  label     Json // {ar, de, en}
-  icon      String // emoji, kept from the original prototype
-  color     String // hex, used for card accents
-  sortOrder Int      @default(0) // display order everywhere categories are listed (Postgres doesn't guarantee row order without this)
-  origin    Origin
-  products Product[]
+  key           String    @id // e.g. "cat_makeup"
+  label         Json // {ar, de, en}
+  icon          String // emoji, kept from the original prototype
+  color         String // hex, used for card accents
+  sortOrder     Int       @default(0) // display order everywhere categories are listed (Postgres doesn't guarantee row order without this)
+  sourceCountry String // ISO 3166-1 alpha-2 of the supplying country, e.g. "CN" - free-text (validated
+  // at the app layer against src/data/sourceCountries.ts) rather than an enum, so adding a new
+  // sourcing country never needs a schema migration
+  archived      Boolean   @default(false) // hidden from customer-facing browsing and the admin "new product"
+  // category picker once true, but never deleted - existing products/orders keep referencing the row
+  products      Product[]
 
   @@map("categories")
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  brand       String
-  name        Json // {ar, de, en}
-  description Json? // {ar, de, en}
-  attributes  Json? // [{label, value}] per active language, resolved at read time
-  priceCents  Int
-  currency    String   @default("EUR")
-  icon        String // fallback SVG key from the original prototype
-  imageUrl    String?
-  origin      Origin
-  categoryKey String
-  category    Category @relation(fields: [categoryKey], references: [key])
-  featured    Boolean  @default(false)
-  stockQuantity Int    @default(0) // admin-managed inventory count; 0 means out of stock
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  brand         String
+  name          Json // {ar, de, en}
+  description   Json? // {ar, de, en}
+  attributes    Json? // [{label, value}] per active language, resolved at read time
+  priceCents    Int
+  currency      String   @default("EUR")
+  icon          String // fallback SVG key from the original prototype
+  imageUrl      String?
+  sourceCountry String // ISO 3166-1 alpha-2 of the supplying country, e.g. "CN" - see the note on
+  // Category.sourceCountry; kept independently per-product since a category's default sourcing
+  // country isn't necessarily true of every product in it
+  categoryKey   String
+  category      Category @relation(fields: [categoryKey], references: [key])
+  featured      Boolean  @default(false)
+  stockQuantity Int      @default(0) // admin-managed inventory count; 0 means out of stock
 
   // Reference-only for now, in preparation for eventual domestic (Germany) sales - 19 or 7,
   // null when not yet determined. Deliberately NOT applied to AUTO invoices, which stay 0% for
@@ -108,8 +109,8 @@ model Product {
   // linked to this product, and to filter/search the admin product list.
   domesticTaxRatePercent Int?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   cartItems  CartItem[]
   orderItems OrderItem[]
@@ -141,17 +142,17 @@ model User {
   suspendedReason   String?
   suspendedByUserId String?
 
-  addresses            Address[]
-  cartItems            CartItem[]
-  wishlist             WishlistItem[]
-  orders               Order[]
-  verificationTokens   EmailVerificationToken[]
-  passwordResetTokens  PasswordResetToken[]
-  loyaltyTransactions  LoyaltyTransaction[]
-  coupons              Coupon[]
-  referralsMade        Referral[] @relation("ReferralsMade")
-  referredBy           Referral?  @relation("ReferralsReceived")
-  contentSubmissions   ContentSubmission[]
+  addresses           Address[]
+  cartItems           CartItem[]
+  wishlist            WishlistItem[]
+  orders              Order[]
+  verificationTokens  EmailVerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+  loyaltyTransactions LoyaltyTransaction[]
+  coupons             Coupon[]
+  referralsMade       Referral[]               @relation("ReferralsMade")
+  referredBy          Referral?                @relation("ReferralsReceived")
+  contentSubmissions  ContentSubmission[]
 
   @@map("users")
 }
@@ -178,21 +179,21 @@ model Referral {
 // content-coupon rewards. FIXED coupons use valueCents; PERCENTAGE coupons use percentage
 // (+ optional minOrderCents floor) and ignore valueCents.
 model Coupon {
-  id           String              @id @default(cuid())
-  code         String              @unique
-  userId       String
-  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  discountType CouponDiscountType  @default(FIXED)
-  valueCents   Int                 @default(0)
-  percentage   Int? // 1-100, only set when discountType is PERCENTAGE
+  id            String             @id @default(cuid())
+  code          String             @unique
+  userId        String
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discountType  CouponDiscountType @default(FIXED)
+  valueCents    Int                @default(0)
+  percentage    Int? // 1-100, only set when discountType is PERCENTAGE
   minOrderCents Int? // order subtotal must be at least this much to use the coupon
-  source       String // "REFERRAL" | "CONTENT"
-  status       CouponStatus        @default(ACTIVE)
-  expiresAt    DateTime
-  redeemedAt   DateTime?
-  orderId      String?
-  order        Order?              @relation(fields: [orderId], references: [id])
-  createdAt    DateTime            @default(now())
+  source        String // "REFERRAL" | "CONTENT"
+  status        CouponStatus       @default(ACTIVE)
+  expiresAt     DateTime
+  redeemedAt    DateTime?
+  orderId       String?
+  order         Order?             @relation(fields: [orderId], references: [id])
+  createdAt     DateTime           @default(now())
 
   contentSubmission ContentSubmission?
 
@@ -204,19 +205,19 @@ model Coupon {
 // and, if approved, get a percentage coupon. Reviewed manually by an admin (follower count and
 // video content aren't verified programmatically).
 model ContentSubmission {
-  id                String                   @id @default(cuid())
+  id                String                  @id @default(cuid())
   userId            String
-  user              User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   profileUrl        String
   videoUrl          String
   thumbnailUrl      String? // set at approval time: auto-fetched for TikTok (public oEmbed), manual for Instagram (no public oEmbed access)
   consentAcceptedAt DateTime
-  status            ContentSubmissionStatus  @default(PENDING)
+  status            ContentSubmissionStatus @default(PENDING)
   reviewedBy        String?
   reviewedAt        DateTime?
-  couponId          String?                  @unique
-  coupon            Coupon?                  @relation(fields: [couponId], references: [id])
-  createdAt         DateTime                 @default(now())
+  couponId          String?                 @unique
+  coupon            Coupon?                 @relation(fields: [couponId], references: [id])
+  createdAt         DateTime                @default(now())
 
   @@index([userId])
   @@map("content_submissions")
@@ -326,12 +327,12 @@ model WishlistItem {
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  orderNumber     String      @unique
-  userId          String?
-  user            User?       @relation(fields: [userId], references: [id])
-  email           String
-  shippingAddress Json // snapshot at time of order
+  id                  String      @id @default(cuid())
+  orderNumber         String      @unique
+  userId              String?
+  user                User?       @relation(fields: [userId], references: [id])
+  email               String
+  shippingAddress     Json // snapshot at time of order
   subtotalCents       Int
   pointsRedeemed      Int         @default(0) // points held against this order at creation time (1 point = 1 cent discount)
   pointsDiscountCents Int         @default(0) // == pointsRedeemed; kept as its own field for readability at call sites
@@ -376,9 +377,9 @@ model Order {
 }
 
 model OrderItem {
-  id               String  @id @default(cuid())
+  id               String   @id @default(cuid())
   orderId          String
-  order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order            Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId        String?
   product          Product? @relation(fields: [productId], references: [id])
   nameSnapshot     Json // {ar, de, en} at time of purchase
@@ -403,13 +404,13 @@ model InvoiceCounter {
 // handled by issuing a separate Storno (credit note) invoice, not by editing or deleting this
 // row (no delete route exists for this model on purpose).
 model Invoice {
-  id            String        @id @default(cuid())
-  invoiceNumber String        @unique // "2026-0001"
-  year          Int
-  sequence      Int
-  source        InvoiceSource
-  orderId       String?       @unique
-  order         Order?        @relation(fields: [orderId], references: [id])
+  id              String        @id @default(cuid())
+  invoiceNumber   String        @unique // "2026-0001"
+  year            Int
+  sequence        Int
+  source          InvoiceSource
+  orderId         String?       @unique
+  order           Order?        @relation(fields: [orderId], references: [id])
   createdByUserId String? // admin who entered a MANUAL invoice; null for AUTO
 
   // Set on a STORNO invoice, pointing back at the original AUTO/MANUAL invoice it corrects -
@@ -421,16 +422,16 @@ model Invoice {
   issuedAt     DateTime @default(now())
   deliveryDate DateTime
 
-  buyerName    String
-  buyerAddress String
+  buyerName      String
+  buyerAddress   String
   sellerSnapshot Json // {name, address, taxId, ...} at time of issue
 
-  lineItems     Json // [{description: {ar,de,en}, quantity, unitPriceCents, lineTotalCents}]
-  subtotalCents Int
-  taxRatePercent Int // 0 when the Kleinunternehmer note applies
-  taxCents      Int
-  totalCents    Int
-  currency      String  @default("EUR")
+  lineItems            Json // [{description: {ar,de,en}, quantity, unitPriceCents, lineTotalCents}]
+  subtotalCents        Int
+  taxRatePercent       Int // 0 when the Kleinunternehmer note applies
+  taxCents             Int
+  totalCents           Int
+  currency             String  @default("EUR")
   kleinunternehmerNote Boolean @default(false) // whether §19 UStG note was printed on this snapshot
 
   pdfUrlAr String? // Vercel Blob URL - null until PDF generation finishes
@@ -462,9 +463,9 @@ model Purchase {
   shippingCostCents Int?
   customsCostCents  Int?
 
-  currency       String   @default("EUR")
-  notes          String?
-  attachmentUrl  String? // Vercel Blob URL of the supplier's original invoice/receipt (image or PDF)
+  currency      String  @default("EUR")
+  notes         String?
+  attachmentUrl String? // Vercel Blob URL of the supplier's original invoice/receipt (image or PDF)
 
   // Optional link to a catalog Product, so the sales dashboard's profit-margin calculation can
   // find "the latest recorded cost" for a product actually sold. Left nullable and separate from
@@ -475,7 +476,7 @@ model Purchase {
   product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   createdByUserId String? // admin who entered this row - plain id, no relation (see Invoice.createdByUserId)
-  createdAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
 
   @@index([purchaseDate])
   @@index([productId])

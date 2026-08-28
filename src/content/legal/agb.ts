@@ -21,13 +21,13 @@ export const agb: LegalContentByLocale = {
       {
         heading: "3. الأسعار وتكاليف الشحن",
         body: [
-          "جميع الأسعار المعروضة تشمل ضريبة القيمة المضافة المعمول بها ما لم يُذكر خلاف ذلك، ولا تشمل تكاليف الشحن والجمارك التي تُحتسب وتُعرض بشكل منفصل عند إتمام الطلب.",
+          "جميع الأسعار المعروضة تشمل ضريبة القيمة المضافة المعمول بها ما لم يُذكر خلاف ذلك، ولا تشمل تكاليف الشحن التي تُحتسب وتُعرض بشكل منفصل عند إتمام الطلب.",
         ],
       },
       {
         heading: "4. التسليم",
         body: [
-          "تُبذل عناية معقولة للالتزام بمواعيد التسليم المُعلنة، إلا أنها تقديرية وقد تتأثر بعوامل خارجة عن إرادة الشركة كالتخليص الجمركي. سيتم إخطار العميل في حال وجود أي تأخير جوهري متوقع.",
+          "تُبذل عناية معقولة للالتزام بمواعيد التسليم المُعلنة، إلا أنها تقديرية وقد تتأثر بعوامل خارجة عن إرادة الشركة. سيتم إخطار العميل في حال وجود أي تأخير جوهري متوقع.",
         ],
       },
       {
@@ -82,13 +82,13 @@ export const agb: LegalContentByLocale = {
       {
         heading: "3. Preise und Versandkosten",
         body: [
-          "Alle angegebenen Preise verstehen sich, sofern nicht anders angegeben, inklusive der gesetzlichen Umsatzsteuer und zzgl. Versandkosten sowie ggf. anfallender Zollgebühren, die separat beim Bestellvorgang ausgewiesen werden.",
+          "Alle angegebenen Preise verstehen sich, sofern nicht anders angegeben, inklusive der gesetzlichen Umsatzsteuer und zzgl. Versandkosten, die separat beim Bestellvorgang ausgewiesen werden.",
         ],
       },
       {
         heading: "4. Lieferung",
         body: [
-          "Angegebene Liefertermine sind voraussichtliche Termine und können durch Umstände außerhalb des Einflussbereichs des Unternehmens, etwa Zollabfertigung, beeinflusst werden. Bei einer wesentlichen zu erwartenden Verzögerung wird der Kunde informiert.",
+          "Angegebene Liefertermine sind voraussichtliche Termine und können durch Umstände außerhalb des Einflussbereichs des Unternehmens beeinflusst werden. Bei einer wesentlichen zu erwartenden Verzögerung wird der Kunde informiert.",
         ],
       },
       {
@@ -143,13 +143,13 @@ export const agb: LegalContentByLocale = {
       {
         heading: "3. Prices and shipping costs",
         body: [
-          "Unless stated otherwise, all listed prices include applicable value-added tax and exclude shipping costs and any customs duties, which are calculated and shown separately during checkout.",
+          "Unless stated otherwise, all listed prices include applicable value-added tax and exclude shipping costs, which are calculated and shown separately during checkout.",
         ],
       },
       {
         heading: "4. Delivery",
         body: [
-          "Stated delivery times are estimates and may be affected by circumstances outside the company's control, such as customs clearance. The customer will be notified in the event of any significant expected delay.",
+          "Stated delivery times are estimates and may be affected by circumstances outside the company's control. The customer will be notified in the event of any significant expected delay.",
         ],
       },
       {
